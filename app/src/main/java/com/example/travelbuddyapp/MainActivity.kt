@@ -1,5 +1,6 @@
 package com.example.travelbuddyapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,7 +36,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 class MainActivity : ComponentActivity() {
@@ -53,14 +61,24 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigator() {
     val navController = rememberNavController()
+    val context = LocalContext.current // Obtener el contexto aquí
+
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
-        composable("loginScreen") { LoginScreen(onRegisterClick={navController.navigate("registerUser")},
-            onForgetPassword={navController.navigate("recoverPassword")})}
-        composable("registerUser"){RegisterUserScreen()}
+        composable("loginScreen") {
+            LoginScreen(
+                context = context,
+                onRegisterClick = { navController.navigate("registerUser") },
+                onForgetPassword = { navController.navigate("recoverPassword") },
+                onLoginSuccess = { navController.navigate("home") }
+            )
+        }
+        composable("registerUser"){ RegisterUserScreen() }
         composable("recoverPassword"){ RecoverPassword() }
+        composable("home") { HomeScreen() }
     }
 }
+
 
 @Composable
 fun RegisterUserScreen() {
@@ -253,7 +271,13 @@ fun SplashScreen(navController: NavHostController) {
 }
 
 @Composable
-fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
+fun LoginScreen(context: Context, onRegisterClick: () -> Unit, onForgetPassword: () -> Unit, onLoginSuccess: () -> Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Variables de estado para los campos de texto
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -311,7 +335,7 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                         clip = true
                     )
                     .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -331,21 +355,26 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
 
                     // Campo Email
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = email,
+                        onValueChange = { email = it },  // Actualiza el estado del email
                         placeholder = {
                             Text("Email",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp),
+                            .padding(bottom = 12.dp)
+                            .onFocusChanged { state ->
+                                if (state.isFocused) {
+                                    keyboardController?.show() // Muestra el teclado cuando el campo recibe el enfoque
+                                }
+                            },
                         shape = RoundedCornerShape(40.dp),
-
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -354,12 +383,12 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                             unfocusedContainerColor = Color(0xFFFFFFFB),
                             disabledContainerColor = Color(0xFFFFFFFB)
                         )
-
                     )
 
+                    // Campo Contraseña
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = password,
+                        onValueChange = { password = it },  // Actualiza el estado de la contraseña
                         placeholder = { Text("Contraseña",
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Normal,
@@ -371,7 +400,12 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                             Icon(Icons.Default.Visibility, contentDescription = null)
                         },
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .onFocusChanged { state ->
+                                if (state.isFocused) {
+                                    keyboardController?.show() // Muestra el teclado cuando el campo recibe el enfoque
+                                }
+                            },
                         shape = RoundedCornerShape(40.dp),
                         visualTransformation = PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
@@ -382,7 +416,6 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                             unfocusedContainerColor = Color(0xFFFFFFFB),
                             disabledContainerColor = Color(0xFFFFFFFB)
                         )
-
                     )
 
                     Text(
@@ -390,17 +423,28 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(top = 12.dp)
-                            .clickable {onForgetPassword() },
+                            .clickable { onForgetPassword() },
                         fontSize = 12.sp,
-                        color = Color(0xFF9D7DF2) ,
+                        color = Color(0xFF9D7DF2),
                         fontFamily = SaralaFont,
-                        fontWeight = FontWeight.SemiBold ,
-
+                        fontWeight = FontWeight.SemiBold,
                     )
 
                     // Botón Iniciar sesión
                     Button(
-                        onClick = {},
+                        onClick = {
+                            val email = email // Obtén el valor del correo
+                            val password = password // Obtén el valor de la contraseña
+
+                            // Simular llamada al servidor
+                            val fakeAuthToken = "Bearer abcdef12345"
+
+                            // Guardar el token
+                            saveAuthToken(context, fakeAuthToken)
+
+                            // Navegar al Home
+                            onLoginSuccess()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 24.dp),
@@ -426,7 +470,6 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable { onRegisterClick() }
-
                         )
                         Text(
                             text = "Regístrate",
@@ -435,15 +478,15 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable { onRegisterClick() }
-
                         )
                     }
                 }
             }
         }
     }
-
 }
+
+
 
 @Composable
 fun RecoverPassword(){
@@ -561,6 +604,35 @@ fun RecoverPassword(){
 
 
 }
+
+
+@Composable
+fun HomeScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Bienvenido a TravelBuddy!",
+            fontSize = 24.sp,
+            color = Color(0xFFA181FA),
+            fontFamily = SaralaFont,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+fun saveAuthToken(context: Context, token: String) {
+    val sharedPref = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+    with(sharedPref.edit()) {
+        putString("auth_token", token)
+        apply()
+    }
+}
+
+
 
 
 
