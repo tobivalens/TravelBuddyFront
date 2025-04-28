@@ -1,8 +1,9 @@
 package com.example.travelbuddyapp
-
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,15 +33,35 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.shadow
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.datasource.local.LocalDataSourceProvider
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.core.DataStore
+import androidx.navigation.NavController
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "AppVariables")
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        LocalDataSourceProvider.init(applicationContext.dataStore)
+        enableEdgeToEdge()
         setContent {
             TravelBuddyAppTheme {
                 AppNavigator()
@@ -52,6 +73,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigator() {
+    val viewModel: AuthViewModel = viewModel()
+    viewModel.login("atkinsonvi2@gmail.com", "apps2025") // Cambiar credenciales segun requiera.
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
@@ -64,6 +87,17 @@ fun AppNavigator() {
 
 @Composable
 fun RegisterUserScreen() {
+
+    val viewModel: AuthViewModel = viewModel()
+    val firstName = remember { mutableStateOf("") }
+    val lastName = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val phone = remember { mutableStateOf("") }
+    val birthDate = remember { mutableStateOf("") }
+    val location = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val confirmPassword = remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -118,11 +152,144 @@ fun RegisterUserScreen() {
                             .align(Alignment.Start)
                             .padding(bottom = 24.dp)
                     )
-
-                    // Campo Email
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = firstName.value,
+                        onValueChange = {firstName.value = it},
+                        placeholder = {
+                            Text("Nombre",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Person, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = lastName.value,
+                        onValueChange = {lastName.value = it},
+                        placeholder = {
+                            Text("Apellido",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Person, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = phone.value,
+                        onValueChange = {phone.value = it},
+                        placeholder = {
+                            Text("Telefono",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Phone, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = location.value,
+                        onValueChange = {location.value = it},
+                        placeholder = {
+                            Text("Ubicacion",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.LocationOn, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = birthDate.value,
+                        onValueChange = {birthDate.value = it},
+                        placeholder = {
+                            Text("Fecha de nacimiento (YYYY-MM-DD)",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Cake, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = email.value,
+                        onValueChange = {email.value = it},
                         placeholder = {
                             Text("Email",
                                 fontFamily = SaralaFont,
@@ -148,8 +315,8 @@ fun RegisterUserScreen() {
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = password.value,
+                        onValueChange = {password.value = it},
                         placeholder = { Text("Contraseña",
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Normal,
@@ -177,8 +344,8 @@ fun RegisterUserScreen() {
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = confirmPassword.value,
+                        onValueChange = {confirmPassword.value = it},
                         placeholder = { Text("Confirmar contraseña",
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Normal,
@@ -206,7 +373,17 @@ fun RegisterUserScreen() {
 
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                                    viewModel.register(
+                                    firstName.value,
+                                    lastName.value,
+                                    email.value,
+                                    password.value,
+                                    phone.value,
+                                    location.value,
+                                    birthDate.value
+                                )
+                                  },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 24.dp),
