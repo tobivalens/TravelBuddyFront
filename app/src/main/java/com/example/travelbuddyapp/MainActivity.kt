@@ -103,7 +103,6 @@ fun AppNavigator() {
 fun RegisterUserScreen() {
 
     val viewModel: AuthViewModel = viewModel()
-    viewModel.login("atkinsonvi2@gmail.com", "apps2025")
     val firstName = remember { mutableStateOf("") }
     val lastName = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
