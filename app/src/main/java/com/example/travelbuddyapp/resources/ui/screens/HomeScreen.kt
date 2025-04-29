@@ -21,11 +21,9 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.resources.icons.AppIcons
 
-// 1) Colores
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight   = Color(0xFFB085F5)
 
-// 2) Modelo de datos
 data class TravelItem(
     val id: String,
     val imageUrl: String,
@@ -33,7 +31,6 @@ data class TravelItem(
     val description: String
 )
 
-// 3) Pantalla principal
 @Composable
 fun HomeScreen(
     userName: String,
@@ -73,7 +70,6 @@ fun HomeScreen(
     }
 }
 
-// 4) Barra superior
 @Composable
 fun HomeTopBar(userName: String, onSearchClick: () -> Unit) {
     Row(
@@ -99,7 +95,6 @@ fun HomeTopBar(userName: String, onSearchClick: () -> Unit) {
     }
 }
 
-// 5) Row de pestañas custom
 @Composable
 fun HomeTabRow(
     tabs: List<String>,
@@ -133,7 +128,6 @@ fun HomeTabRow(
     }
 }
 
-// 6) Contenedor blanco + lista
 @Composable
 fun TravelList(
     items: List<TravelItem>,
@@ -162,7 +156,6 @@ fun TravelList(
     }
 }
 
-// 7) Tarjeta de cada viaje
 @Composable
 fun TravelItemCard(
     item: TravelItem,
@@ -215,7 +208,6 @@ fun TravelItemCard(
     }
 }
 
-// 8) Barra de navegación inferior
 @Composable
 fun HomeBottomBar(
     onHomeClick: () -> Unit,
