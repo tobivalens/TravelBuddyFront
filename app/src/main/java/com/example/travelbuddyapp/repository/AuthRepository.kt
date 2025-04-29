@@ -45,14 +45,14 @@ class AuthRepository(
     }
 
     suspend fun register(registerData: RegisterData, phone: String, location:String, birthDate: String): Boolean {
-        val token = LocalDataSourceProvider.get().load("accesstoken").firstOrNull()
-        val response = authService.register("Bearer $token", registerData)
+        
+        val response = authService.register(registerData)
 
         return if (response.isSuccessful) {
             val directus_user_id = response.body()?.data?.id
             if (directus_user_id != null) {
                 val registerDataExtra = RegisterDataExtra(directus_user_id, phone, location, birthDate)
-                authService.registerAppUser("Bearer $token", registerDataExtra)
+                authService.registerAppUser(registerDataExtra)
                 true
             } else {
                 Log.e("REGISTER", "directus_user_id es null")
