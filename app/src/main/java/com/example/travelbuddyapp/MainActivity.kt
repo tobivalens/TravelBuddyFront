@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {
             LoginScreen(
@@ -108,7 +108,11 @@ fun AppNavigator() {
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
         composable("home"){ HomeScreen()}
-        composable("profile"){ UserProfile() }
+        composable("profile"){ UserProfile(
+            onHomeClick = {
+                navController.navigate("home")
+            }
+        ) }
         composable("home"){ HomeScreen(
             userName = "Juan David Reyes",
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
@@ -842,7 +846,9 @@ fun HomeScreen() {
 }
 
 @Composable
-fun UserProfile() {
+fun UserProfile(
+    onHomeClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -1045,11 +1051,17 @@ fun UserProfile() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color.White
-                )
+                IconButton(
+                    onClick = {
+                        onHomeClick()
+                    }
+                ) {
+                    Icon(
+                        imageVector      = Icons.Default.Home,
+                        contentDescription = "Home",
+                        tint             = Color.White
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
