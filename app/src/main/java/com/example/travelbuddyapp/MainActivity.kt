@@ -1,4 +1,5 @@
 package com.example.travelbuddyapp
+
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -69,6 +70,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.compose.ui.platform.LocalContext
+import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
+import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "AppVariables")
@@ -99,13 +102,50 @@ fun AppNavigator() {
                 context = context,
                 onRegisterClick = { navController.navigate("registerUser") },
                 onForgetPassword = { navController.navigate("recoverPassword") },
-                onLoginSuccess = { navController.navigate("profile") }
+                onLoginSuccess = { navController.navigate("home") }
             )
         }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
         composable("home"){ HomeScreen()}
-        composable("profile"){ UserProfile() }
+        composable("profile"){ UserProfile(
+            onHomeClick = {
+                navController.navigate("home")
+            }
+        ) }
+        composable("home"){ HomeScreen(
+            userName = "Juan David Reyes",
+            tabs = listOf("Todos", "Mis Viajes", "Otros"),
+            travels = listOf(
+                TravelItem(
+                    id = "montaña",
+                    imageUrl = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg",
+                    title = "Viaje a montaña",
+                    description = "Un gran viaje a la montaña"
+                )
+            ),
+            selectedTab = 0,
+            onTabSelected = { idx ->
+                var selectedTab = idx
+            },
+            onSearchClick = {
+                navController.navigate("splash")
+            },
+            onTravelClick = { item ->
+                navController.navigate("travelDetail/${item.id}")
+            },
+            onHomeClick = {
+                navController.navigate("home") {
+                    popUpTo("home") { inclusive = true }
+                }
+            },
+            onAddClick = {
+                navController.navigate("createTravel")
+            },
+            onProfileClick = {
+                navController.navigate("profile")
+            }
+        )}
     }
 }
 
@@ -113,6 +153,7 @@ fun AppNavigator() {
 fun RegisterUserScreen() {
 
     val viewModel: AuthViewModel = viewModel()
+    viewModel.login("atkinsonvi2@gmail.com", "apps2025")
     val firstName = remember { mutableStateOf("") }
     val lastName = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -782,6 +823,8 @@ fun RecoverPassword(){
             }
         }
     }
+
+
 }
 
 @Composable
@@ -803,7 +846,9 @@ fun HomeScreen() {
 }
 
 @Composable
-fun UserProfile() {
+fun UserProfile(
+    onHomeClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -1006,11 +1051,17 @@ fun UserProfile() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color.White
-                )
+                IconButton(
+                    onClick = {
+                        onHomeClick()
+                    }
+                ) {
+                    Icon(
+                        imageVector      = Icons.Default.Home,
+                        contentDescription = "Home",
+                        tint             = Color.White
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
