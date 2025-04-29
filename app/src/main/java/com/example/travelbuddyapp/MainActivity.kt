@@ -53,6 +53,14 @@ import androidx.datastore.core.DataStore
 import androidx.navigation.NavController
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.travelbuddyapp.viewmodel.AUTH_STATE
+import androidx.compose.ui.platform.LocalContext
+
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "AppVariables")
 
@@ -73,15 +81,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigator() {
-    val viewModel: AuthViewModel = viewModel()
-    viewModel.login("atkinsonvi2@gmail.com", "apps2025") // Cambiar credenciales segun requiera.
+    val context = LocalContext.current
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
-        composable("loginScreen") { LoginScreen(onRegisterClick={navController.navigate("registerUser")},
-            onForgetPassword={navController.navigate("recoverPassword")})}
+        composable("loginScreen") {
+            LoginScreen(
+                context = context,
+                onRegisterClick = { navController.navigate("registerUser") },
+                onForgetPassword = { navController.navigate("recoverPassword") },
+                onLoginSuccess = { navController.navigate("home") }
+            )
+        }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
+        composable("home"){ HomeScreen()}
     }
 }
 
@@ -430,7 +444,26 @@ fun SplashScreen(navController: NavHostController) {
 }
 
 @Composable
-fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
+fun LoginScreen(
+    context: Context,
+    onRegisterClick: () -> Unit,
+    onForgetPassword: () -> Unit,
+    onLoginSuccess: () -> Unit
+) {
+
+    val viewModel: AuthViewModel = viewModel() //
+    val authState by viewModel.authState.collectAsState()
+
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(authState.state) {
+        if (authState.state == AUTH_STATE) {
+            onLoginSuccess()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -508,12 +541,12 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
 
                     // Campo Email
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = email.value,
+                        onValueChange = {email.value = it},
                         placeholder = {
                             Text("Email",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7))},
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null)
@@ -535,8 +568,8 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = password.value,
+                        onValueChange = {password.value = it},
                         placeholder = { Text("Contraseña",
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Normal,
@@ -573,11 +606,14 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
                         fontFamily = SaralaFont,
                         fontWeight = FontWeight.SemiBold ,
 
-                    )
+                        )
 
                     // Botón Iniciar sesión
                     Button(
-                        onClick = {},
+                        onClick = {
+                            isLoading = true
+                            viewModel.login(email.value, password.value)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 24.dp),
@@ -621,6 +657,7 @@ fun LoginScreen(onRegisterClick: ()-> Unit, onForgetPassword: ()-> Unit) {
     }
 
 }
+
 
 @Composable
 fun RecoverPassword(){
@@ -738,6 +775,26 @@ fun RecoverPassword(){
 
 
 }
+
+@Composable
+fun HomeScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Bienvenido a TravelBuddy!",
+            fontSize = 24.sp,
+            color = Color(0xFFA181FA),
+            fontFamily = SaralaFont,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+
 
 
 
