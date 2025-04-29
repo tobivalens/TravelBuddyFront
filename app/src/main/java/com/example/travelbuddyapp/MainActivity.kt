@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.travelbuddyapp.ui.theme.TravelBuddyAppTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
@@ -34,12 +36,19 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,6 +107,8 @@ fun AppNavigator() {
         }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
+        composable("home"){ HomeScreen()}
+        composable("profile"){ UserProfile() }
         composable("home"){ HomeScreen(
             userName = "Juan David Reyes",
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
@@ -810,6 +821,248 @@ fun RecoverPassword(){
     }
 
 
+}
+
+@Composable
+fun HomeScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Bienvenido a TravelBuddy!",
+            fontSize = 24.sp,
+            color = Color(0xFFA181FA),
+            fontFamily = SaralaFont,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun UserProfile() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8)) // fondo gris claro
+    ) {
+        Column {
+            // Parte superior morada
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(Color(0xFFA181FA)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color(0xFFE0E0E0), shape = CircleShape)
+                            .border(2.dp, Color.White, shape = CircleShape)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Daniel Escobar",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = SaralaFont,
+                        color = Color.White
+                    )
+                }
+            }
+
+            // Caja de opciones
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = (-50).dp)
+                    .padding(horizontal = 24.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(24.dp),
+                        clip = true
+                    )
+                    .background(Color.White, shape = RoundedCornerShape(24.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                ) {
+                    // Primer opción
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                tint = Color(0xFFA181FA)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Editar Perfil",
+                                fontSize = 16.sp,
+                                fontFamily = SaralaFont,
+                                color = Color.Black
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ArrowForwardIos,
+                            contentDescription = null,
+                            tint = Color(0xFFA181FA),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(color = Color(0xFFA181FA))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Segunda opción
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AttachMoney,
+                                contentDescription = null,
+                                tint = Color(0xFFA181FA)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Mis Gastos",
+                                fontSize = 16.sp,
+                                fontFamily = SaralaFont,
+                                color = Color.Black
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ArrowForwardIos,
+                            contentDescription = null,
+                            tint = Color(0xFFA181FA),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(color = Color(0xFFA181FA))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Tercera opción
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = null,
+                                tint = Color(0xFFA181FA)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Configuración",
+                                fontSize = 16.sp,
+                                fontFamily = SaralaFont,
+                                color = Color.Black
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ArrowForwardIos,
+                            contentDescription = null,
+                            tint = Color(0xFFA181FA),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(color = Color(0xFFA181FA))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Cuarta opción
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.ExitToApp,
+                                contentDescription = null,
+                                tint = Color(0xFFA181FA)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Cerrar Sesión",
+                                fontSize = 16.sp,
+                                fontFamily = SaralaFont,
+                                color = Color.Black
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ArrowForwardIos,
+                            contentDescription = null,
+                            tint = Color(0xFFA181FA),
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Barra de navegación inferior
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(Color(0xFFA181FA))
+                .height(60.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "Home",
+                    tint = Color.White
+                )
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    tint = Color.White
+                )
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    tint = Color.White
+                )
+            }
+        }
+    }
 }
 
 
