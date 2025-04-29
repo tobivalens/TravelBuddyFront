@@ -15,10 +15,10 @@ interface AuthService {
     suspend fun getAllUsers(@Header("Authorization") authorization:String) : UserResponse
 
     @POST("/users")
-    suspend fun register(@Header("Authorization") authorization: String, @Body registerData: RegisterData): Response<RegisterResponse>
+    suspend fun register(@Body registerData: RegisterData): Response<RegisterResponse>
 
     @POST("/items/travel_buddy_user")
-    suspend fun registerAppUser(@Header("Authorization") authorization: String, @Body registerDataExtra: RegisterDataExtra): RegisterExtraResponse
+    suspend fun registerAppUser(@Body registerDataExtra: RegisterDataExtra): RegisterExtraResponse
 }
 
 data class RegisterData(
