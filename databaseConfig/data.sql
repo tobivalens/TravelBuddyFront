@@ -85,6 +85,9 @@ CREATE TABLE Notificacion (
 );
 
 
+INSERT INTO directus_roles(id, name, icon, description)
+VALUES('9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'Usuario', 'user', 'Rol para usuarios autenticados');
+
 INSERT INTO directus_permissions (
   collection,
   action,

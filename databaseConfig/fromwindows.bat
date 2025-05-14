@@ -1,6 +1,6 @@
 @echo off
 
-SET CONTAINER_NAME=directusmoviles-db-1
+SET CONTAINER_NAME=databaseconfig-db-1
 SET SQL_FILE=.\data.sql
 SET DB_NAME=directus
 SET DB_USER=directus

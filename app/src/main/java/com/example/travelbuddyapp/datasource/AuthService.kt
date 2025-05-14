@@ -19,6 +19,9 @@ interface AuthService {
 
     @POST("/items/travel_buddy_user")
     suspend fun registerAppUser(@Body registerDataExtra: RegisterDataExtra): RegisterExtraResponse
+
+    @POST("/items/evento")
+    suspend fun createEvent(@Header("Authorization") authorization: String, @Body eventData: EventData): CreateEventResponse
 }
 
 data class RegisterData(
@@ -26,7 +29,8 @@ data class RegisterData(
     val first_name: String,
     val last_name: String,
     val email: String,
-    val password: String
+    val password: String,
+    val role: String
 
 )
 
@@ -41,7 +45,13 @@ data class RegisterDataExtra(
 
 data class RegisterExtraResponse(
 
-    val id_usuario: Int
+    val data: RegisterExtraResponseData
+)
+
+data class RegisterExtraResponseData(
+
+    val id_usuario: Int,
+    val directus_user_id: String
 )
 
 data class RegisterResponse(
@@ -55,7 +65,8 @@ data class DirectusUserData(
     val id: String,
     val first_name: String,
     val last_name: String,
-    val email: String
+    val email: String,
+
 
 )
 
@@ -70,7 +81,7 @@ data class LoginResponseData(
 
 data class LoginData(
     val email:String,
-    val password:String
+    val password:String,
 )
 
 data class UserResponse(
@@ -81,4 +92,19 @@ data class UserDTO(
     val first_name:String,
     val last_name:String,
     val email: String
+)
+
+data class EventData(
+
+    val nombre: String,
+    val descripcion: String,
+    val codigo_union: String,
+    val id_administrador: Int
+)
+
+data class CreateEventResponse(
+
+    val id_evento: String,
+    val codigo_union: String
+
 )
