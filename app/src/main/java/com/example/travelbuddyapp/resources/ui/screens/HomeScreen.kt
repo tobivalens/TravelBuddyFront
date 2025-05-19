@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.resources.icons.AppIcons
+import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight   = Color(0xFFB085F5)
@@ -76,13 +78,17 @@ fun HomeTopBar(userName: String, onSearchClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(PurplePrimary)
+            .background(PurpleLight)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Text(
             text  = "¡Hola $userName!",
             color = Color.White,
-            style = MaterialTheme.typography.headlineMedium
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 25.sp,
+            fontFamily = SaralaFont
+
         )
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = onSearchClick) {
@@ -121,7 +127,8 @@ fun HomeTabRow(
                 Text(
                     text  = label,
                     color = if (isSelected) PurplePrimary else Color.White,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    fontFamily = SaralaFont
                 )
             }
         }
@@ -136,14 +143,16 @@ fun TravelList(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White, shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .padding(top = 16.dp)
+            .background(Color.White, shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp))
+            .padding(top = 10.dp)
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Viajes",
             style = MaterialTheme.typography.titleLarge,
             color = PurplePrimary,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+            modifier = Modifier.padding(horizontal = 35.dp, vertical = 7.dp),
+            fontFamily = SaralaFont
         )
 
         LazyColumn(
@@ -164,7 +173,7 @@ fun TravelItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 35.dp, vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -194,14 +203,17 @@ fun TravelItemCard(
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = PurplePrimary
+                    color = PurplePrimary,
+                    fontFamily = SaralaFont
+
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    fontFamily = SaralaFont
                 )
             }
         }
