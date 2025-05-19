@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -59,6 +60,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.mutableStateOf
@@ -85,11 +87,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.compose.ui.platform.LocalContext
+import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.resources.ui.screens.AppBottomNavigationBar
 import com.example.travelbuddyapp.resources.ui.screens.CustomTabBar
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -114,6 +118,19 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
+    var activity by remember{
+        mutableStateOf(
+            Activity(
+                id = "1",
+                title = "Cabaña de skiing",
+                description = "Reserva confirmada en nuestra acogedora cabaña con acceso directo a las pistas de ski.",
+                date = "27 de julio de 2025",
+                time = "10:00 AM",
+                location = "El Albergue de las Nieves Skiing Chalet",
+                imageUrl = "https://images.unsplash.com/photo-1586378742040-2e4c89f5ef7e"
+            )
+        )
+    }
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {
@@ -167,6 +184,24 @@ fun AppNavigator() {
         )}
         composable("createEvent"){CreateEventScreen()}
         composable("editEvent") { EditEventScreen(navController) }
+        composable("detail") {
+            ActivityDetailScreen(
+                activity = activity,
+                onEditClick = { navController.navigate("edit") }
+            )
+        }
+
+        composable("edit") {
+            EditActivityScreen(
+                activity = activity,
+                onSave = {
+                    activity = it
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }
 
@@ -1903,6 +1938,302 @@ fun HomeEventScreen() {
         }
     }
 
+}
+
+data class Activity(
+    val id: String,
+    val title: String,
+    val description: String,
+    val date: String,
+    val time: String,
+    val location: String,
+    val imageUrl: String
+)
+
+@Composable
+fun ActivityDetailScreen(
+    activity: Activity,
+    onEditClick: () -> Unit
+) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF7F7F7))
+            .verticalScroll(rememberScrollState())
+    ) {
+        // Barra superior personalizada
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFA181FA))
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+            }
+
+
+        }
+
+        AsyncImage(
+            model = activity.imageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                text = activity.title,
+                color = Color(0xCC52545B),
+                fontSize = 26.sp,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onEditClick) {
+                Icon(Icons.Default.Edit, contentDescription = null, tint = Color(0xCC52545B), modifier = Modifier.size(28.dp))
+            }
+        }
+
+
+
+
+        DetailBlock("Descripción", activity.description)
+        DetailBlock("Fecha", activity.date)
+        DetailBlock("Hora", activity.time)
+        DetailBlock("Ubicación", activity.location)
+        DetailBlock("Archivos adjuntos", "No hay archivos aún")
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .height(48.dp),
+            shape = RoundedCornerShape(40.dp)
+        ) {
+            Text("Eliminar actividad")
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(Icons.Default.Delete, contentDescription = null)
+
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+fun EditActivityScreen(
+    activity: Activity,
+    onSave: (Activity) -> Unit,
+    onBack: () -> Unit
+) {
+
+    val scrollState = rememberScrollState()
+    var title by remember { mutableStateOf(activity.title) }
+    var description by remember { mutableStateOf(activity.description) }
+    var date by remember { mutableStateOf(activity.date) }
+    var time by remember { mutableStateOf(activity.time) }
+    var location by remember { mutableStateOf(activity.location) }
+    var photo by remember { mutableStateOf("foto.jpg") }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F7FC))
+    ) {
+        Column {
+            // Header morado
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFA181FA))
+                    .padding(start = 6.dp, top = 6.dp, bottom = 4.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Modificar",
+                        fontSize = 22.sp,
+                        color = Color.White,
+
+                        )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Text(
+                    "¡Editemos:",
+                    fontSize = 26.sp,
+                    color = Color(0xFF52545B),
+
+                    )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    title,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF52545B),
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LabeledField("Nombre", title, Icons.Default.Edit) { title = it }
+                LabeledField("Descripción", description, Icons.Default.Description) { description = it }
+                DateField("Fecha", date) { showDatePicker = true }
+                DateField("Hora", time) { showTimePicker = true }
+                LabeledField("Ubicación", location, Icons.Default.Place) { location = it }
+                LabeledField("Foto", photo, Icons.Default.Image) { photo = it }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        onSave(
+                            activity.copy(
+                                title = title,
+                                description = description,
+                                date = date,
+                                time = time,
+                                location = location
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                    shape = RoundedCornerShape(55.dp)
+                ) {
+                    Text(
+                        "Guardar",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+
+                        )
+                }
+            }
+        }
+
+
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = {
+                it?.let { date = dateFormatter.format(Date(it)) }
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onTimeSelected = { selectedTime ->
+                time = selectedTime ?: time
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
+        )
+    }
+}
+
+
+
+
+
+
+
+
+@Composable
+fun TimePickerDialog(
+    onTimeSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+
+    var hour by remember { mutableStateOf(12) }
+    var minute by remember { mutableStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val timeStr = String.format("%02d:%02d", hour, minute)
+                    onTimeSelected(timeStr)
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        text = {
+            Column {
+                Text("Selecciona hora")
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+
+                    Button(onClick = { if (hour > 0) hour-- }) { Text("-") }
+                    Text(" $hour h ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (hour < 23) hour++ }) { Text("+") }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(onClick = { if (minute > 0) minute -= 5 }) { Text("-") }
+                    Text(" $minute m ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (minute < 55) minute += 5 }) { Text("+") }
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun DetailBlock(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 14.dp)
+            .clip(RoundedCornerShape(28.dp))
+            .background(Color(0xFFB085F5))
+            .padding(20.dp)
+    ) {
+        Text(text = label, fontSize = 12.sp, color = Color.White)
+        Spacer(modifier = Modifier.height(17 .dp))
+        Text(text = value, fontSize = 15.sp, color = Color.White)
+    }
 }
 
 
