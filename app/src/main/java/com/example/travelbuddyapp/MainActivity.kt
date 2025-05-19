@@ -34,10 +34,12 @@ import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.datasource.Activity
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
+import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.CreateEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
+import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
 import com.example.travelbuddyapp.resources.ui.screens.RecoverPassword
 import com.example.travelbuddyapp.resources.ui.screens.RegisterUserScreen
 import com.example.travelbuddyapp.resources.ui.screens.UserProfile
@@ -105,7 +107,13 @@ fun AppNavigator() {
         composable("profile"){ UserProfile(
             onHomeClick = {
                 navController.navigate("home")
-            }
+            },
+
+            onAddClick = {
+                navController.navigate("optionalAdd")
+            },
+
+            onProfileClick = {navController.navigate("userProfile") }
         ) }
         composable("home"){ HomeScreen(
             userName = "Juan David Reyes",
@@ -134,13 +142,23 @@ fun AppNavigator() {
                 }
             },
             onAddClick = {
-                navController.navigate("createTravel")
+                navController.navigate("optionalAdd")
             },
             onProfileClick = {
                 navController.navigate("profile")
             }
         )}
-        composable("createEvent"){CreateEventScreen()}
+        composable("createEvent"){CreateEvent(
+            navController,
+
+            onHomeClick = {
+            navController.navigate("home") },
+            onAddClick = {
+                navController.navigate("optionalAdd")
+            },
+
+            onProfileClick = {navController.navigate("userProfile") }
+        )}
         composable("editEvent") { EditEventScreen(navController) }
         composable("detail") {
             ActivityDetailScreen(
@@ -159,6 +177,15 @@ fun AppNavigator() {
                 onBack = { navController.popBackStack() }
             )
         }
+        composable("optionalAdd"){ OptionAddScreen( navController,onHomeClick = {
+            navController.navigate("home")
+        },
+
+            onAddClick = {
+                navController.navigate("optionalAdd")
+            },
+
+            onProfileClick = {navController.navigate("userProfile") })}
 
     }
 }
