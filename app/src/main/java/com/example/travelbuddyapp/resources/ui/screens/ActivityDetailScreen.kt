@@ -36,7 +36,8 @@ import com.example.travelbuddyapp.datasource.Activity
 @Composable
 fun ActivityDetailScreen(
     activity: Activity,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -45,7 +46,6 @@ fun ActivityDetailScreen(
             .background(Color(0xFFF7F7F7))
             .verticalScroll(rememberScrollState())
     ) {
-        // Barra superior personalizada
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -53,8 +53,13 @@ fun ActivityDetailScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
             }
 
 

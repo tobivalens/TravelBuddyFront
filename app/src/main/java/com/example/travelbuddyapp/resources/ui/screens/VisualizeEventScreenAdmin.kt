@@ -115,7 +115,7 @@ fun VisualizeEventScreenAdmin(
                     when (index) {
                         0 -> navController.navigate("VisualizeEvent")
                         1 -> navController.navigate("gastos")
-                        2 -> navController.navigate("VisualizeActivity")
+                        2 -> navController.navigate("ViSualizeActivities")
                     }
                 }
             )

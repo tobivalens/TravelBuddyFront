@@ -30,10 +30,13 @@ import androidx.datastore.core.DataStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.example.travelbuddyapp.datasource.Activities
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.datasource.Activity
+import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
+import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.CreateEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
@@ -96,6 +99,7 @@ fun AppNavigator() {
         composable("recoverPassword"){ RecoverPassword() }
         composable("editEvent"){ EditEventScreen(navController)}
         composable("gastos"){}
+        composable("ViSualizeActivities"){ ActivitiesScreen(navController)}
         composable("VisualizeActivity"){
 
         }
@@ -116,6 +120,22 @@ fun AppNavigator() {
 
             onProfileClick = {navController.navigate("userProfile") }
         ) }
+
+        composable("activities") {
+            ActivitiesScreen(navController = navController)
+        }
+
+        composable("createActivity") {
+            CreateActivityScreen(
+                activity = activity, // Actividad vacía para crear nueva
+                onSave = { updatedActivity ->
+                    // Aquí podrías guardar la actividad
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         composable("home"){ HomeScreen(
             userName = "Juan David Reyes",
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
@@ -161,10 +181,12 @@ fun AppNavigator() {
             onProfileClick = {navController.navigate("userProfile") }
         )}
         composable("editEvent") { EditEventScreen(navController) }
+
         composable("detail") {
             ActivityDetailScreen(
                 activity = activity,
-                onEditClick = { navController.navigate("edit") }
+                onEditClick = { navController.navigate("edit") },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
