@@ -1509,7 +1509,7 @@ fun CreateActivityScreen(
                         tint = Color.White
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(15.dp))
                 Text(
                     text = "Nueva actividad",
                     fontSize = 20.sp,
@@ -1522,11 +1522,10 @@ fun CreateActivityScreen(
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 100.dp) // para dar espacio bajo el botón
                 .fillMaxWidth()
         ) {
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Text("¡Vamos a crear una", fontSize = 32.sp, color = Color(0xFF52545B))
 
@@ -1591,38 +1590,15 @@ fun CreateActivityScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(40.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
-                shape = RoundedCornerShape(55.dp)
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Text("Guardar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
             // Este spacer agrega margen debajo del botón aunque se haga scroll
-            Spacer(modifier = Modifier.height(5.dp))
-        }
-
-        // Barra inferior
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(Color(0xFFA181FA))
-                .height(60.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 48.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = { /* Navegar a Home */ }) {
-                    Icon(Icons.Default.Home, contentDescription = "Home", tint = Color.White)
-                }
-                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-                Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
-            }
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 
