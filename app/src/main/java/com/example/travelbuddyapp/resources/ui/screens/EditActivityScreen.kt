@@ -229,7 +229,6 @@ fun TimePickerDialog(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabeledFieldL(
     label: String,
@@ -237,31 +236,54 @@ fun LabeledFieldL(
     icon: ImageVector,
     onValueChange: (String) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 7.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp)
+    ) {
         Text(
             text = label,
             color = Color(0xFFA181FA),
             fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp,
+            fontSize = 16.sp
+        )
 
-            )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.width(380.dp).height(45.dp),
+            modifier = Modifier
+                .width(380.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x0F000000),
+                    ambientColor = Color(0x0F000000)
+                ),
             leadingIcon = {
-                Icon(icon, contentDescription = null, tint = Color(0xFFA181FA))
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Color(0xFFA181FA)
+                )
             },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 16.sp
+            ),
             shape = RoundedCornerShape(55.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color(0xFFFFFBFB),
+            singleLine = false,        // ← permite múltiples líneas
+            maxLines = 6,              // ← opcional: limitar cuántas líneas puede crecer
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFA181FA),
                 unfocusedBorderColor = Color(0xFFD3D3D3),
-                focusedLabelColor = Color(0xFFA181FA),
-                unfocusedLabelColor = Color(0xFFA181FA),
-
-                )
-
+                focusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                disabledTextColor = Color.Gray,
+                cursorColor = Color(0xFFA181FA),
+                focusedContainerColor = Color(0xFFFFFBFB),
+                unfocusedContainerColor = Color(0xFFFFFBFB),
+            )
 
         )
     }
@@ -286,14 +308,22 @@ fun DateFieldL(
             fontSize = 16.sp,
 
             )
-        Box(modifier = Modifier.fillMaxWidth().clickable { onClick() }) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }) {
             OutlinedTextField(
                 value = value,
                 onValueChange = {},
-                modifier = Modifier.width(380.dp).height(45.dp),
+                modifier = Modifier
+                    .width(380.dp)
+                    .height(60.dp),
                 enabled = false,
                 leadingIcon = {
-                    Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Color(0xFFA181FA))
+                    Icon(
+                        Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = Color(0xFFA181FA)
+                    )
                 },
                 shape = RoundedCornerShape(55.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
