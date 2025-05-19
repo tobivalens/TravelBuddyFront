@@ -1,4 +1,5 @@
 package com.example.travelbuddyapp
+
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -56,6 +57,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.mutableStateOf
@@ -77,14 +79,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
-
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "AppVariables")
 
@@ -107,7 +112,23 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "splash") {
+
+    var activity by remember {
+        mutableStateOf(
+            Activity(
+                id = "",
+                title = "",
+                description = "",
+                date = "",
+                time = "",
+                location = "",
+                imageUrl = ""
+            )
+        )
+    }
+
+
+    NavHost(navController = navController, startDestination = "createActivity") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {
             LoginScreen(
@@ -117,48 +138,61 @@ fun AppNavigator() {
                 onLoginSuccess = { navController.navigate("createEvent") }
             )
         }
-        composable("registerUser"){RegisterUserScreen()}
-        composable("recoverPassword"){ RecoverPassword() }
-        composable("home"){ HomeScreen()}
-        composable("profile"){ UserProfile(
-            onHomeClick = {
-                navController.navigate("home")
-            }
-        ) }
-        composable("home"){ HomeScreen(
-            userName = "Juan David Reyes",
-            tabs = listOf("Todos", "Mis Viajes", "Otros"),
-            travels = listOf(
-                TravelItem(
-                    id = "montaña",
-                    imageUrl = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg",
-                    title = "Viaje a montaña",
-                    description = "Un gran viaje a la montaña"
-                )
-            ),
-            selectedTab = 0,
-            onTabSelected = { idx ->
-                var selectedTab = idx
-            },
-            onSearchClick = {
-                navController.navigate("splash")
-            },
-            onTravelClick = { item ->
-                navController.navigate("travelDetail/${item.id}")
-            },
-            onHomeClick = {
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = true }
+        composable("registerUser") { RegisterUserScreen() }
+        composable("recoverPassword") { RecoverPassword() }
+        composable("createActivity") {
+            CreateActivityScreen(
+                activity = activity,
+                onSave = {
+                    activity = it
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("profile") {
+            UserProfile(
+                onHomeClick = {
+                    navController.navigate("home")
                 }
-            },
-            onAddClick = {
-                navController.navigate("createTravel")
-            },
-            onProfileClick = {
-                navController.navigate("profile")
-            }
-        )}
-        composable("createEvent"){CreateEventScreen()}
+            )
+        }
+        composable("home") {
+            HomeScreen(
+                userName = "Juan David Reyes",
+                tabs = listOf("Todos", "Mis Viajes", "Otros"),
+                travels = listOf(
+                    TravelItem(
+                        id = "montaña",
+                        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg",
+                        title = "Viaje a montaña",
+                        description = "Un gran viaje a la montaña"
+                    )
+                ),
+                selectedTab = 0,
+                onTabSelected = { idx ->
+                    var selectedTab = idx
+                },
+                onSearchClick = {
+                    navController.navigate("splash")
+                },
+                onTravelClick = { item ->
+                    navController.navigate("travelDetail/${item.id}")
+                },
+                onHomeClick = {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                onAddClick = {
+                    navController.navigate("createTravel")
+                },
+                onProfileClick = {
+                    navController.navigate("profile")
+                }
+            )
+        }
+        composable("createEvent") { CreateEventScreen() }
         composable("editEvent") { EditEventScreen(navController) }
     }
 }
@@ -214,12 +248,16 @@ fun RegisterUserScreen() {
                         shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
                         clip = true
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
+                    )
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(40.dp).verticalScroll(scrollState),
+                        .padding(40.dp)
+                        .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -234,12 +272,15 @@ fun RegisterUserScreen() {
                     )
                     TextField(
                         value = firstName.value,
-                        onValueChange = {firstName.value = it},
+                        onValueChange = { firstName.value = it },
                         placeholder = {
-                            Text("Nombre",
+                            Text(
+                                "Nombre",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Person, contentDescription = null)
                         },
@@ -261,12 +302,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = lastName.value,
-                        onValueChange = {lastName.value = it},
+                        onValueChange = { lastName.value = it },
                         placeholder = {
-                            Text("Apellido",
+                            Text(
+                                "Apellido",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Person, contentDescription = null)
                         },
@@ -288,12 +332,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = phone.value,
-                        onValueChange = {phone.value = it},
+                        onValueChange = { phone.value = it },
                         placeholder = {
-                            Text("Telefono",
+                            Text(
+                                "Telefono",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Phone, contentDescription = null)
                         },
@@ -315,12 +362,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = location.value,
-                        onValueChange = {location.value = it},
+                        onValueChange = { location.value = it },
                         placeholder = {
-                            Text("Ubicacion",
+                            Text(
+                                "Ubicacion",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.LocationOn, contentDescription = null)
                         },
@@ -342,12 +392,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = birthDate.value,
-                        onValueChange = {birthDate.value = it},
+                        onValueChange = { birthDate.value = it },
                         placeholder = {
-                            Text("Fecha de nacimiento (YYYY-MM-DD)",
+                            Text(
+                                "Fecha de nacimiento (YYYY-MM-DD)",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Cake, contentDescription = null)
                         },
@@ -369,12 +422,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = email.value,
-                        onValueChange = {email.value = it},
+                        onValueChange = { email.value = it },
                         placeholder = {
-                            Text("Email",
+                            Text(
+                                "Email",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null)
                         },
@@ -396,11 +452,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = password.value,
-                        onValueChange = {password.value = it},
-                        placeholder = { Text("Contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)) },
+                        onValueChange = { password.value = it },
+                        placeholder = {
+                            Text(
+                                "Contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
@@ -425,11 +485,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = confirmPassword.value,
-                        onValueChange = {confirmPassword.value = it},
-                        placeholder = { Text("Confirmar contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)) },
+                        onValueChange = { confirmPassword.value = it },
+                        placeholder = {
+                            Text(
+                                "Confirmar contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
@@ -482,7 +546,8 @@ fun RegisterUserScreen() {
             }
         }
 
-    }}
+    }
+}
 
 @Composable
 fun CreateEventScreen() {
@@ -527,8 +592,11 @@ fun CreateEventScreen() {
                         shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
                         clip = true
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
+                    )
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -547,12 +615,15 @@ fun CreateEventScreen() {
                     )
                     TextField(
                         value = eventName.value,
-                        onValueChange = {eventName.value = it},
+                        onValueChange = { eventName.value = it },
                         placeholder = {
-                            Text("Nombre",
+                            Text(
+                                "Nombre",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Event, contentDescription = null)
                         },
@@ -574,12 +645,15 @@ fun CreateEventScreen() {
 
                     TextField(
                         value = eventDescription.value,
-                        onValueChange = {eventDescription.value = it},
+                        onValueChange = { eventDescription.value = it },
                         placeholder = {
-                            Text("Descripcion",
+                            Text(
+                                "Descripcion",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Description, contentDescription = null)
                         },
@@ -624,7 +698,8 @@ fun CreateEventScreen() {
             }
         }
 
-    }}
+    }
+}
 
 @Composable
 fun SplashScreen(navController: NavHostController) {
@@ -727,8 +802,11 @@ fun LoginScreen(
                         shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
                         clip = true
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
+                    )
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -749,12 +827,15 @@ fun LoginScreen(
                     // Campo Email
                     TextField(
                         value = email.value,
-                        onValueChange = {email.value = it},
+                        onValueChange = { email.value = it },
                         placeholder = {
-                            Text("Email",
+                            Text(
+                                "Email",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null)
                         },
@@ -776,11 +857,15 @@ fun LoginScreen(
 
                     TextField(
                         value = password.value,
-                        onValueChange = {password.value = it},
-                        placeholder = { Text("Contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)) },
+                        onValueChange = { password.value = it },
+                        placeholder = {
+                            Text(
+                                "Contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
@@ -807,11 +892,11 @@ fun LoginScreen(
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(top = 12.dp)
-                            .clickable {onForgetPassword() },
+                            .clickable { onForgetPassword() },
                         fontSize = 12.sp,
-                        color = Color(0xFF9D7DF2) ,
+                        color = Color(0xFF9D7DF2),
                         fontFamily = SaralaFont,
-                        fontWeight = FontWeight.SemiBold ,
+                        fontWeight = FontWeight.SemiBold,
 
                         )
 
@@ -867,7 +952,7 @@ fun LoginScreen(
 
 
 @Composable
-fun RecoverPassword(){
+fun RecoverPassword() {
 
     Box(
         modifier = Modifier
@@ -895,8 +980,11 @@ fun RecoverPassword(){
                         shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
                         clip = true
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
+                    )
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -905,13 +993,12 @@ fun RecoverPassword(){
                 ) {
 
 
-
                     Text(
                         text = " Recuperar contraseña     ",
                         fontSize = 28.sp,
                         fontFamily = SaralaFont,
                         fontWeight = FontWeight.Normal,
-                        color =  Color(0xFFA181FA),
+                        color = Color(0xFFA181FA),
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.Start)
@@ -936,10 +1023,13 @@ fun RecoverPassword(){
                         value = "",
                         onValueChange = {},
                         placeholder = {
-                            Text("Email",
+                            Text(
+                                "Email",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
-                                color = Color(0xFFCBC7C7))},
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null)
                         },
@@ -1213,9 +1303,9 @@ fun UserProfile(
                     }
                 ) {
                     Icon(
-                        imageVector      = Icons.Default.Home,
+                        imageVector = Icons.Default.Home,
                         contentDescription = "Home",
-                        tint             = Color.White
+                        tint = Color.White
                     )
                 }
                 Icon(
@@ -1262,7 +1352,11 @@ fun EditEventScreen(navController: NavController) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -1279,17 +1373,28 @@ fun EditEventScreen(navController: NavController) {
 
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Text("¡Editemos:", fontSize = 26.sp, fontFamily = SaralaFont)
-                Text("Viaje a la montaña!", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
+                Text(
+                    "Viaje a la montaña!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = SaralaFont
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                LabeledField("Nombre", title, Icons.Default.Edit) { title = it }
-                LabeledField("Descripción", description, Icons.Default.Description) { description = it }
+                LabeledField("Nombre", title, Icons.Default.Edit, { title = it }, "")
+                LabeledField(
+                    "Descripción",
+                    description,
+                    Icons.Default.Description,
+                    { description = it },
+                    ""
+                )
 
-                DateField("Día de inicio", startDate) { showStartDatePicker = true }
-                DateField("Día de finalización", endDate) { showEndDatePicker = true }
+                DateField("Día de inicio", startDate, { showStartDatePicker = true }, "")
+                DateField("Día de finalización", endDate, { showEndDatePicker = true }, "")
 
-                LabeledField("Foto", photo, Icons.Default.Image) { photo = it }
+                LabeledField("Foto", photo, Icons.Default.Image, { photo = it }, "")
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -1315,7 +1420,9 @@ fun EditEventScreen(navController: NavController) {
                 .height(60.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 48.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 48.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -1331,7 +1438,7 @@ fun EditEventScreen(navController: NavController) {
     if (showStartDatePicker) {
         DatePickerModal(
             onDateSelected = {
-                it?.let { millis -> startDate = formatter.format(java.util.Date(millis)) }
+                it?.let { millis -> startDate = formatter.format(Date(millis)) }
             },
             onDismiss = { showStartDatePicker = false }
         )
@@ -1340,53 +1447,281 @@ fun EditEventScreen(navController: NavController) {
     if (showEndDatePicker) {
         DatePickerModal(
             onDateSelected = {
-                it?.let { millis -> endDate = formatter.format(java.util.Date(millis)) }
+                it?.let { millis -> endDate = formatter.format(Date(millis)) }
             },
             onDismiss = { showEndDatePicker = false }
         )
     }
 }
 
+//Crear actividad
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class Activity(
+    val id: String,
+    val title: String,
+    val description: String,
+    val date: String,
+    val time: String,
+    val location: String,
+    val imageUrl: String
+)
+
 @Composable
-private fun LabeledField(
-    label: String,
-    value: String,
-    icon: ImageVector,
-    onValueChange: (String) -> Unit
+fun CreateActivityScreen(
+    activity: Activity,
+    onSave: (Activity) -> Unit,
+    onBack: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(
-            text = label,
-            color = Color(0xFFA181FA),
-            fontWeight = FontWeight.SemiBold,
-            fontFamily = SaralaFont
-        )
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-                Icon(icon, contentDescription = null, tint = Color(0xFFA181FA))
+
+    val scrollState = rememberScrollState()
+    var title by remember { mutableStateOf(activity.title) }
+    var description by remember { mutableStateOf(activity.description) }
+    var date by remember { mutableStateOf(activity.date) }
+    var time by remember { mutableStateOf(activity.time) }
+    var location by remember { mutableStateOf(activity.location) }
+    var photo by remember { mutableStateOf(activity.imageUrl) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F7FC))
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFA181FA))
+                .padding(start = 8.dp, top = 12.dp, bottom = 16.dp)
+                .align(Alignment.TopStart), // Para que quede arriba
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Nueva actividad",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 100.dp) // para dar espacio bajo el botón
+                .fillMaxWidth()
+        ) {
+
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Text("¡Vamos a crear una", fontSize = 32.sp, color = Color(0xFF52545B))
+
+            Text(
+                "nueva actividad!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF52545B)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LabeledField(
+                "Nombre",
+                title,
+                Icons.Default.Edit,
+                { title = it },
+                "¿Cuál es el nombre de la actividad?"
+            )
+            LabeledField(
+                "Descripción",
+                description,
+                Icons.Default.Description,
+                { description = it },
+                "¿Cuál es la descripción de la actividad?"
+            )
+            DateField(
+                "Fecha",
+                date,
+                { showDatePicker = true },
+                "¿Cuál será la fecha de la actividad"
+            )
+            DateField("Hora", time, { showTimePicker = true }, "¿Cuál es la hora de la actividad?")
+            LabeledField(
+                "Ubicación",
+                location,
+                Icons.Default.Place,
+                { location = it },
+                "¿Dónde se va a realizar la actividad?"
+            )
+            LabeledField(
+                "Foto",
+                photo,
+                Icons.Default.Image,
+                { photo = it },
+                "Añade una foto del evento (opcional)"
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Button(
+                onClick = {
+                    onSave(
+                        activity.copy(
+                            title = title,
+                            description = description,
+                            date = date,
+                            time = time,
+                            location = location
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                shape = RoundedCornerShape(55.dp)
+            ) {
+                Text("Guardar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            // Este spacer agrega margen debajo del botón aunque se haga scroll
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+
+        // Barra inferior
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(Color(0xFFA181FA))
+                .height(60.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = { /* Navegar a Home */ }) {
+                    Icon(Icons.Default.Home, contentDescription = "Home", tint = Color.White)
+                }
+                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
+            }
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = {
+                it?.let { date = dateFormatter.format(Date(it)) }
+                showDatePicker = false
             },
-            shape = RoundedCornerShape(16.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color.White,
-                focusedBorderColor = Color(0xFFA181FA),
-                unfocusedBorderColor = Color(0xFFD3D3D3)
-            ),
-            textStyle = LocalTextStyle.current.copy(fontFamily = SaralaFont)
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onTimeSelected = { selectedTime ->
+                time = selectedTime ?: time
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateField(
+fun LabeledField(
     label: String,
     value: String,
-    onClick: () -> Unit
+    icon: ImageVector,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .width(380.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x0F000000),
+                    ambientColor = Color(0x0F000000)
+                ),
+            leadingIcon = {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Color(0xFFA181FA)
+                )
+            },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 16.sp
+            ),
+            shape = RoundedCornerShape(55.dp),
+            singleLine = false,        // ← permite múltiples líneas
+            maxLines = 6,              // ← opcional: limitar cuántas líneas puede crecer
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFA181FA),
+                unfocusedBorderColor = Color(0xFFD3D3D3),
+                focusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                disabledTextColor = Color.Gray,
+                cursorColor = Color(0xFFA181FA),
+                focusedContainerColor = Color(0xFFFFFBFB),
+                unfocusedContainerColor = Color(0xFFFFFBFB),
+            ),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                )
+            }
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateField(
+    label: String,
+    value: String,
+    onClick: () -> Unit,
+    placeholder: String
 ) {
     Column(
         modifier = Modifier
@@ -1397,37 +1732,43 @@ private fun DateField(
             text = label,
             color = Color(0xFFA181FA),
             fontWeight = FontWeight.SemiBold,
-            fontFamily = SaralaFont
-        )
+            fontSize = 16.sp,
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-        ) {
+            )
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }) {
             OutlinedTextField(
                 value = value,
                 onValueChange = {},
                 modifier = Modifier
-                    .fillMaxWidth(),
-                enabled = false, // Desactivado para evitar que reciba focus
+                    .width(380.dp)
+                    .height(60.dp),
+                enabled = false,
                 leadingIcon = {
-                    Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Color(0xFFA181FA))
+                    Icon(
+                        Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = Color(0xFFA181FA)
+                    )
                 },
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(55.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = Color(0xFFFFFBFB),
                     disabledTextColor = Color.Black,
                     disabledBorderColor = Color(0xFFD3D3D3),
-                    disabledLabelColor = Color.Gray,
-                    disabledLeadingIconColor = Color(0xFFA181FA),
-                    containerColor = Color.White
+                    disabledLeadingIconColor = Color(0xFFA181FA)
                 ),
-                textStyle = LocalTextStyle.current.copy(fontFamily = SaralaFont)
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                    )
+                }
             )
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1458,5 +1799,112 @@ fun DatePickerModal(
         }
     ) {
         DatePicker(state = datePickerState)
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    onTimeSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    // Aquí un ejemplo simple de picker de hora con un diálogo custom o usando Material TimePicker si tienes dependencia
+    // Para simplicidad, aquí uso un AlertDialog con dropdowns o input para hora, puedes reemplazar por implementación más completa
+
+    var hour by remember { mutableStateOf(12) }
+    var minute by remember { mutableStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val timeStr = String.format("%02d:%02d", hour, minute)
+                    onTimeSelected(timeStr)
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        text = {
+            Column {
+                Text("Selecciona hora")
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    // Simple NumberPickers o dropdowns para hora y minuto, aquí dejo ejemplos de botones para aumentar/disminuir
+                    Button(onClick = { if (hour > 0) hour-- }) { Text("-") }
+                    Text(" $hour h ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (hour < 23) hour++ }) { Text("+") }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(onClick = { if (minute > 0) minute -= 5 }) { Text("-") }
+                    Text(" $minute m ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (minute < 55) minute += 5 }) { Text("+") }
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun DetailBlock(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFB085F5))
+            .padding(16.dp)
+    ) {
+        Text(text = label, fontSize = 12.sp, color = Color.White)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = value, fontSize = 16.sp, color = Color.White)
+    }
+}
+
+@Composable
+fun EditField(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    onValueChange: (String) -> Unit,
+    readOnly: Boolean = false
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            readOnly = readOnly,
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                Icon(icon, contentDescription = null, tint = Color(0xFFA181FA))
+            },
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                disabledBorderColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White
+            )
+        )
     }
 }
