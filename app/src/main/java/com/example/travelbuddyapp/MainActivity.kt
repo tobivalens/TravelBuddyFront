@@ -87,6 +87,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.resources.ui.screens.AppBottomNavigationBar
 import com.example.travelbuddyapp.resources.ui.screens.CustomTabBar
@@ -2233,6 +2235,788 @@ fun DetailBlock(label: String, value: String) {
         Text(text = label, fontSize = 12.sp, color = Color.White)
         Spacer(modifier = Modifier.height(17 .dp))
         Text(text = value, fontSize = 15.sp, color = Color.White)
+    }
+}
+
+//Crear actividad
+
+data class Activity(
+    val id: String,
+    val title: String,
+    val description: String,
+    val date: String,
+    val time: String,
+    val location: String,
+    val imageUrl: String
+)
+
+@Composable
+fun CreateActivityScreen(
+    activity: Activity,
+    onSave: (Activity) -> Unit,
+    onBack: () -> Unit
+) {
+
+    val scrollState = rememberScrollState()
+    var title by remember { mutableStateOf(activity.title) }
+    var description by remember { mutableStateOf(activity.description) }
+    var date by remember { mutableStateOf(activity.date) }
+    var time by remember { mutableStateOf(activity.time) }
+    var location by remember { mutableStateOf(activity.location) }
+    var photo by remember { mutableStateOf(activity.imageUrl) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F7FC))
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFA181FA))
+                .padding(start = 8.dp, top = 12.dp, bottom = 16.dp)
+                .align(Alignment.TopStart), // Para que quede arriba
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(
+                    text = "Nueva actividad",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .fillMaxWidth()
+        ) {
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            Text("¡Vamos a crear una", fontSize = 32.sp, color = Color(0xFF52545B))
+
+            Text(
+                "nueva actividad!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF52545B)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LabeledField(
+                "Nombre",
+                title,
+                Icons.Default.Edit,
+                { title = it },
+                "¿Cuál es el nombre de la actividad?"
+            )
+            LabeledField(
+                "Descripción",
+                description,
+                Icons.Default.Description,
+                { description = it },
+                "¿Cuál es la descripción de la actividad?"
+            )
+            DateField(
+                "Fecha",
+                date,
+                { showDatePicker = true },
+                "¿Cuál será la fecha de la actividad"
+            )
+            DateField("Hora", time, { showTimePicker = true }, "¿Cuál es la hora de la actividad?")
+            LabeledField(
+                "Ubicación",
+                location,
+                Icons.Default.Place,
+                { location = it },
+                "¿Dónde se va a realizar la actividad?"
+            )
+            LabeledField(
+                "Foto",
+                photo,
+                Icons.Default.Image,
+                { photo = it },
+                "Añade una foto del evento (opcional)"
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Button(
+                onClick = {
+                    onSave(
+                        activity.copy(
+                            title = title,
+                            description = description,
+                            date = date,
+                            time = time,
+                            location = location
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Guardar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            // Este spacer agrega margen debajo del botón aunque se haga scroll
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = {
+                it?.let { date = dateFormatter.format(Date(it)) }
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onTimeSelected = { selectedTime ->
+                time = selectedTime ?: time
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabeledField(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .width(380.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x0F000000),
+                    ambientColor = Color(0x0F000000)
+                ),
+            leadingIcon = {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Color(0xFFA181FA)
+                )
+            },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 16.sp
+            ),
+            shape = RoundedCornerShape(55.dp),
+            singleLine = false,        // ← permite múltiples líneas
+            maxLines = 6,              // ← opcional: limitar cuántas líneas puede crecer
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFA181FA),
+                unfocusedBorderColor = Color(0xFFD3D3D3),
+                focusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                disabledTextColor = Color.Gray,
+                cursorColor = Color(0xFFA181FA),
+                focusedContainerColor = Color(0xFFFFFBFB),
+                unfocusedContainerColor = Color(0xFFFFFBFB),
+            ),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                )
+            }
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateField(
+    label: String,
+    value: String,
+    onClick: () -> Unit,
+    placeholder: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+
+            )
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                modifier = Modifier
+                    .width(380.dp)
+                    .height(60.dp),
+                enabled = false,
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = Color(0xFFA181FA)
+                    )
+                },
+                shape = RoundedCornerShape(55.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = Color(0xFFFFFBFB),
+                    disabledTextColor = Color.Black,
+                    disabledBorderColor = Color(0xFFD3D3D3),
+                    disabledLeadingIconColor = Color(0xFFA181FA)
+                ),
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+    val confirmEnabled = remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis)
+                    onDismiss()
+                },
+                enabled = confirmEnabled.value
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    onTimeSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    // Aquí un ejemplo simple de picker de hora con un diálogo custom o usando Material TimePicker si tienes dependencia
+    // Para simplicidad, aquí uso un AlertDialog con dropdowns o input para hora, puedes reemplazar por implementación más completa
+
+    var hour by remember { mutableStateOf(12) }
+    var minute by remember { mutableStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val timeStr = String.format("%02d:%02d", hour, minute)
+                    onTimeSelected(timeStr)
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        text = {
+            Column {
+                Text("Selecciona hora")
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    // Simple NumberPickers o dropdowns para hora y minuto, aquí dejo ejemplos de botones para aumentar/disminuir
+                    Button(onClick = { if (hour > 0) hour-- }) { Text("-") }
+                    Text(" $hour h ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (hour < 23) hour++ }) { Text("+") }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(onClick = { if (minute > 0) minute -= 5 }) { Text("-") }
+                    Text(" $minute m ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (minute < 55) minute += 5 }) { Text("+") }
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun DetailBlock(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFB085F5))
+            .padding(16.dp)
+    ) {
+        Text(text = label, fontSize = 12.sp, color = Color.White)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = value, fontSize = 16.sp, color = Color.White)
+    }
+}
+
+//Crear Actividad
+
+//Crear actividad
+
+data class Activity(
+    val id: String,
+    val title: String,
+    val description: String,
+    val date: String,
+    val time: String,
+    val location: String,
+    val imageUrl: String
+)
+
+@Composable
+fun CreateActivityScreen(
+    activity: Activity,
+    onSave: (Activity) -> Unit,
+    onBack: () -> Unit
+) {
+
+    val scrollState = rememberScrollState()
+    var title by remember { mutableStateOf(activity.title) }
+    var description by remember { mutableStateOf(activity.description) }
+    var date by remember { mutableStateOf(activity.date) }
+    var time by remember { mutableStateOf(activity.time) }
+    var location by remember { mutableStateOf(activity.location) }
+    var photo by remember { mutableStateOf(activity.imageUrl) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F7FC))
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFA181FA))
+                .padding(start = 8.dp, top = 12.dp, bottom = 16.dp)
+                .align(Alignment.TopStart), // Para que quede arriba
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(
+                    text = "Nueva actividad",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .fillMaxWidth()
+        ) {
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            Text("¡Vamos a crear una", fontSize = 32.sp, color = Color(0xFF52545B))
+
+            Text(
+                "nueva actividad!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF52545B)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LabeledField(
+                "Nombre",
+                title,
+                Icons.Default.Edit,
+                { title = it },
+                "¿Cuál es el nombre de la actividad?"
+            )
+            LabeledField(
+                "Descripción",
+                description,
+                Icons.Default.Description,
+                { description = it },
+                "¿Cuál es la descripción de la actividad?"
+            )
+            DateField(
+                "Fecha",
+                date,
+                { showDatePicker = true },
+                "¿Cuál será la fecha de la actividad"
+            )
+            DateField("Hora", time, { showTimePicker = true }, "¿Cuál es la hora de la actividad?")
+            LabeledField(
+                "Ubicación",
+                location,
+                Icons.Default.Place,
+                { location = it },
+                "¿Dónde se va a realizar la actividad?"
+            )
+            LabeledField(
+                "Foto",
+                photo,
+                Icons.Default.Image,
+                { photo = it },
+                "Añade una foto del evento (opcional)"
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Button(
+                onClick = {
+                    onSave(
+                        activity.copy(
+                            title = title,
+                            description = description,
+                            date = date,
+                            time = time,
+                            location = location
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Guardar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            // Este spacer agrega margen debajo del botón aunque se haga scroll
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = {
+                it?.let { date = dateFormatter.format(Date(it)) }
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onTimeSelected = { selectedTime ->
+                time = selectedTime ?: time
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabeledField(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .width(380.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x0F000000),
+                    ambientColor = Color(0x0F000000)
+                ),
+            leadingIcon = {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Color(0xFFA181FA)
+                )
+            },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 16.sp
+            ),
+            shape = RoundedCornerShape(55.dp),
+            singleLine = false,        // ← permite múltiples líneas
+            maxLines = 6,              // ← opcional: limitar cuántas líneas puede crecer
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFA181FA),
+                unfocusedBorderColor = Color(0xFFD3D3D3),
+                focusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                disabledTextColor = Color.Gray,
+                cursorColor = Color(0xFFA181FA),
+                focusedContainerColor = Color(0xFFFFFBFB),
+                unfocusedContainerColor = Color(0xFFFFFBFB),
+            ),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                )
+            }
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateField(
+    label: String,
+    value: String,
+    onClick: () -> Unit,
+    placeholder: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+
+            )
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                modifier = Modifier
+                    .width(380.dp)
+                    .height(60.dp),
+                enabled = false,
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.CalendarToday,
+                        contentDescription = null,
+                        tint = Color(0xFFA181FA)
+                    )
+                },
+                shape = RoundedCornerShape(55.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = Color(0xFFFFFBFB),
+                    disabledTextColor = Color.Black,
+                    disabledBorderColor = Color(0xFFD3D3D3),
+                    disabledLeadingIconColor = Color(0xFFA181FA)
+                ),
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+    val confirmEnabled = remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis)
+                    onDismiss()
+                },
+                enabled = confirmEnabled.value
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    onTimeSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    // Aquí un ejemplo simple de picker de hora con un diálogo custom o usando Material TimePicker si tienes dependencia
+    // Para simplicidad, aquí uso un AlertDialog con dropdowns o input para hora, puedes reemplazar por implementación más completa
+
+    var hour by remember { mutableStateOf(12) }
+    var minute by remember { mutableStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val timeStr = String.format("%02d:%02d", hour, minute)
+                    onTimeSelected(timeStr)
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        text = {
+            Column {
+                Text("Selecciona hora")
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    // Simple NumberPickers o dropdowns para hora y minuto, aquí dejo ejemplos de botones para aumentar/disminuir
+                    Button(onClick = { if (hour > 0) hour-- }) { Text("-") }
+                    Text(" $hour h ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (hour < 23) hour++ }) { Text("+") }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(onClick = { if (minute > 0) minute -= 5 }) { Text("-") }
+                    Text(" $minute m ", modifier = Modifier.padding(horizontal = 8.dp))
+                    Button(onClick = { if (minute < 55) minute += 5 }) { Text("+") }
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun DetailBlock(label: String, value: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFB085F5))
+            .padding(16.dp)
+    ) {
+        Text(text = label, fontSize = 12.sp, color = Color.White)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = value, fontSize = 16.sp, color = Color.White)
     }
 }
 
