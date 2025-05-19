@@ -90,6 +90,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
+import com.example.travelbuddyapp.datasource.Activity
 import com.example.travelbuddyapp.resources.ui.screens.AppBottomNavigationBar
 import com.example.travelbuddyapp.resources.ui.screens.CustomTabBar
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
@@ -133,6 +134,7 @@ fun AppNavigator() {
             )
         )
     }
+
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {
@@ -140,12 +142,22 @@ fun AppNavigator() {
                 context = context,
                 onRegisterClick = { navController.navigate("registerUser") },
                 onForgetPassword = { navController.navigate("recoverPassword") },
-                onLoginSuccess = { navController.navigate("createEvent") }
+                onLoginSuccess = { navController.navigate("home") }
             )
         }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
-        composable("home"){ HomeScreen()}
+        composable("editEvent"){ EditEventScreen(navController)}
+        composable("gastos"){}
+        composable("VisualizeActivity"){
+
+        }
+        composable("VisualizeEvent"){
+            VisualizeEventScreenAdmin(
+                onBackClick = {navController.navigate("home")},
+                onEditEvent = {navController.navigate("editEvent")},
+                navController = navController
+            )}
         composable("profile"){ UserProfile(
             onHomeClick = {
                 navController.navigate("home")
@@ -170,7 +182,7 @@ fun AppNavigator() {
                 navController.navigate("splash")
             },
             onTravelClick = { item ->
-                navController.navigate("travelDetail/${item.id}")
+                navController.navigate("VisualizeEvent")
             },
             onHomeClick = {
                 navController.navigate("home") {
@@ -1030,23 +1042,7 @@ fun RecoverPassword(){
 
 }
 
-@Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF2F3F8)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Bienvenido a TravelBuddy!",
-            fontSize = 24.sp,
-            color = Color(0xFFA181FA),
-            fontFamily = SaralaFont,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
+
 
 @Composable
 fun UserProfile(
@@ -1695,7 +1691,11 @@ fun VisualizeEventScreen(
 @Composable
 fun VisualizeEventScreenAdmin(
     eventTitle: String = "Viaje a la montaña",
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onEditEvent: () -> Unit = {},
+    navController: NavController
+
+
 ) {
     val scrollState = rememberScrollState()
     var selectedTab by remember { mutableStateOf(0) }
@@ -1722,7 +1722,7 @@ fun VisualizeEventScreenAdmin(
                         )
                     }
                 },  actions = {
-                    IconButton(onClick = { /* acción editar */ }) {
+                    IconButton(onClick = onEditEvent) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Editar",
@@ -1750,7 +1750,14 @@ fun VisualizeEventScreenAdmin(
             CustomTabBar (
                 tabs = tabs,
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { index ->
+                    selectedTab = index
+                    when (index) {
+                        0 -> navController.navigate("VisualizeEvent")
+                        1 -> navController.navigate("gastos")
+                        2 -> navController.navigate("VisualizeActivity")
+                    }
+                }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -1908,7 +1915,7 @@ fun ParticipantItem(name: String) {
 }
 
 
-
+/**
 @Composable
 fun HomeEventScreen() {
 
@@ -1930,7 +1937,7 @@ fun HomeEventScreen() {
             }
             //esto era para pruebas
             composable("recoverPassword") {
-                VisualizeEventScreenAdmin()
+                VisualizeEventScreenAdmin(navController)
             }
 
             composable("1") {
@@ -1939,18 +1946,9 @@ fun HomeEventScreen() {
             }
         }
     }
-
 }
 
-data class Activity(
-    val id: String,
-    val title: String,
-    val description: String,
-    val date: String,
-    val time: String,
-    val location: String,
-    val imageUrl: String
-)
+**/
 
 @Composable
 fun ActivityDetailScreen(
