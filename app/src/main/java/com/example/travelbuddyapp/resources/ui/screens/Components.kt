@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.travelbuddyapp.resources.icons.AppIcons
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 @Composable
@@ -212,5 +213,50 @@ fun ParticipantItem(name: String) {
         }
 
         HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+    }
+}
+
+
+
+@Composable
+fun HomeBottomBar(
+    onHomeClick: () -> Unit,
+    onAddClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
+    NavigationBar(
+        containerColor = Color(0xFFA181FA),
+        tonalElevation = 8.dp
+    ) {
+        NavigationBarItem(
+            icon = { Icon(AppIcons.HomeSelected(), contentDescription = "Inicio") },
+            selected = true,
+            onClick = onHomeClick,
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent, // sin fondo
+                selectedIconColor = Color.White,    // ícono blanco al seleccionar
+                unselectedIconColor = Color.White   // ícono blanco al no seleccionar
+            )
+        )
+        NavigationBarItem(
+            icon = { Icon(AppIcons.add(), contentDescription = "Nuevo") },
+            selected = false,
+            onClick = onAddClick,
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent,
+                selectedIconColor = Color.White,
+                unselectedIconColor = Color.White
+            )
+        )
+        NavigationBarItem(
+            icon = { Icon(AppIcons.profile(), contentDescription = "Perfil") },
+            selected = false,
+            onClick = onProfileClick,
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent,
+                selectedIconColor = Color.White,
+                unselectedIconColor = Color.White
+            )
+        )
     }
 }

@@ -81,6 +81,8 @@ fun HomeTopBar(userName: String, onSearchClick: () -> Unit) {
             .background(PurpleLight)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
+
         Text(
             text  = "¡Hola $userName!",
             color = Color.White,
@@ -110,7 +112,7 @@ fun HomeTabRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 20.dp)
     ) {
         tabs.forEachIndexed { index, label ->
             val isSelected = index == selectedIndex
@@ -217,33 +219,5 @@ fun TravelItemCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun HomeBottomBar(
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit
-) {
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 8.dp
-    ) {
-        NavigationBarItem(
-            icon = { Icon(AppIcons.HomeSelected(), contentDescription = "Inicio") },
-            selected = true,
-            onClick = onHomeClick
-        )
-        NavigationBarItem(
-            icon = { Icon(AppIcons.add(), contentDescription = "Nuevo") },
-            selected = false,
-            onClick = onAddClick
-        )
-        NavigationBarItem(
-            icon = { Icon(AppIcons.profile(), contentDescription = "Perfil") },
-            selected = false,
-            onClick = onProfileClick
-        )
     }
 }

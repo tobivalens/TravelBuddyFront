@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -55,13 +56,17 @@ import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
 @Composable
-fun CreateEvent(navController: NavController) {
+fun CreateEvent(
+    navController: NavController,
+    onHomeClick: () -> Unit,
+    onAddClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
     val viewModel: AuthViewModel = viewModel()
 
     var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf(" ") }
+    var description by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
     var photo by remember { mutableStateOf("") }
@@ -69,84 +74,95 @@ fun CreateEvent(navController: NavController) {
     var showEndDatePicker by remember { mutableStateOf(false) }
     val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale("es", "ES"))
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF2F3F8))
-    ) {
-        Column {
-            // Encabezado superior
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFA181FA))
-                    .padding(start = 8.dp, top = 12.dp, bottom = 16.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+    Scaffold(
+        bottomBar = {
+            HomeBottomBar(
+                onHomeClick = onHomeClick,
+                onAddClick = onAddClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(Color(0xFFF2F3F8))
+        ) {
+            Column {
+                // Encabezado superior
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFA181FA))
+                        .padding(start = 8.dp, top = 12.dp, bottom = 16.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Nuevo Evento",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontFamily = SaralaFont
+                        )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Nuevo Evento",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        fontFamily = SaralaFont
-                    )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                Text("¡Vamos a crear un ", fontSize = 26.sp, fontFamily = SaralaFont)
-                Text("nuevo evento!", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                LabeledField111("Nombre", title, Icons.Default.Edit) { title = it }
-                LabeledField111("Descripción", description, Icons.Default.Description) { description = it }
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    Text("¡Vamos a crear un ", fontSize = 26.sp, fontFamily = SaralaFont)
+                    Text("nuevo evento!", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
 
-                DateField111("Día de inicio", startDate) { showStartDatePicker = true }
-                DateField111("Día de finalización", endDate) { showEndDatePicker = true }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                LabeledField111("Foto", photo, Icons.Default.Image) { photo = it }
+                    LabeledField111("Nombre", title, Icons.Default.Edit) { title = it }
+                    LabeledField111("Descripción", description, Icons.Default.Description) { description = it }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    DateField111("Día de inicio", startDate) { showStartDatePicker = true }
+                    DateField111("Día de finalización", endDate) { showEndDatePicker = true }
 
-                Button(
-                    onClick = { /* navController.navigate("saveSuccess") */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Text("Crear Evento", color = Color.White, fontSize = 16.sp, fontFamily = SaralaFont)
+                    LabeledField111("Foto", photo, Icons.Default.Image) { photo = it }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { /* navController.navigate("saveSuccess") */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Text("Crear Evento", color = Color.White, fontSize = 16.sp, fontFamily = SaralaFont)
+                    }
                 }
             }
         }
 
-    }
+        // Date pickers fuera del Scaffold
+        if (showStartDatePicker) {
+            DatePickerModal111(
+                onDateSelected = {
+                    it?.let { millis -> startDate = formatter.format(java.util.Date(millis)) }
+                },
+                onDismiss = { showStartDatePicker = false }
+            )
+        }
 
-    if (showStartDatePicker) {
-        DatePickerModal111(
-            onDateSelected = {
-                it?.let { millis -> startDate = formatter.format(java.util.Date(millis)) }
-            },
-            onDismiss = { showStartDatePicker = false }
-        )
-    }
-
-    if (showEndDatePicker) {
-        DatePickerModal111(
-            onDateSelected = {
-                it?.let { millis -> endDate = formatter.format(java.util.Date(millis)) }
-            },
-            onDismiss = { showEndDatePicker = false }
-        )
+        if (showEndDatePicker) {
+            DatePickerModal111(
+                onDateSelected = {
+                    it?.let { millis -> endDate = formatter.format(java.util.Date(millis)) }
+                },
+                onDismiss = { showEndDatePicker = false }
+            )
+        }
     }
 }
 
