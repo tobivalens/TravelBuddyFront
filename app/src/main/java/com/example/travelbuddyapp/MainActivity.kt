@@ -38,6 +38,7 @@ import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.CreateEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
+import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
 import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
 import com.example.travelbuddyapp.resources.ui.screens.RecoverPassword
@@ -187,11 +188,25 @@ fun AppNavigator() {
 
             onProfileClick = {navController.navigate("userProfile") })}
 
+        composable("joinEvent"){
+            JoinEventScreen(
+                navController,onHomeClick = {
+                    navController.navigate("home") },
+                onAddClick = {
+                    navController.navigate("optionalAdd")
+                },
+
+                onProfileClick = {navController.navigate("userProfile") }
+            )
+        }
+
     }
+
+
 }
 
 
-@Composable
+  @Composable
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(true) {
         delay(3000) // 3 segundos
