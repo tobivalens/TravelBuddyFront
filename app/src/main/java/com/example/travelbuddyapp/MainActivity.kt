@@ -1,6 +1,7 @@
 package com.example.travelbuddyapp
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.travelbuddyapp.ui.theme.TravelBuddyAppTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
@@ -39,8 +42,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
@@ -56,6 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.datasource.local.LocalDataSourceProvider
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
+import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.core.DataStore
@@ -67,8 +73,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 
@@ -101,7 +108,7 @@ fun AppNavigator() {
                 context = context,
                 onRegisterClick = { navController.navigate("registerUser") },
                 onForgetPassword = { navController.navigate("recoverPassword") },
-                onLoginSuccess = { navController.navigate("home") }
+                onLoginSuccess = { navController.navigate("createEvent") }
             )
         }
         composable("registerUser"){RegisterUserScreen()}
@@ -145,6 +152,14 @@ fun AppNavigator() {
                 navController.navigate("profile")
             }
         )}
+        composable("createEvent"){CreateEventScreen(navController)}
+        composable("listEvents"){ ListEventsScreen(navController) }
+        composable("editEvent/{id}",
+            arguments = listOf(navArgument("id") {type = NavType.IntType})
+        ) {backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("id") ?: return@composable
+            EditEventScreen(eventId)
+        }
     }
 }
 
@@ -467,6 +482,225 @@ fun RegisterUserScreen() {
 
     }}
 
+@Composable
+fun CreateEventScreen(navController: NavHostController) {
+
+    val viewModel: AuthViewModel = viewModel()
+    val eventName = remember { mutableStateOf("") }
+    val eventDescription = remember { mutableStateOf("") }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8)) // fondo gris claro
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(Color(0xFFA181FA)) // lila claro
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "¡Únete a nosotros!",
+                    fontSize = 36.sp,
+                    fontFamily = SaralaFont,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFFFFFFFB),
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 40.dp, top = 100.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .offset(y = (-42).dp)
+                    .shadow(
+                        elevation = 32.dp,
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
+                        clip = true
+                    )
+                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
+            ){
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Crea un evento",
+                        color = Color(0xFFA181FA),
+                        fontFamily = SaralaFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 24.sp,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(bottom = 24.dp)
+                    )
+                    TextField(
+                        value = eventName.value,
+                        onValueChange = {eventName.value = it},
+                        placeholder = {
+                            Text("Nombre",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Event, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    TextField(
+                        value = eventDescription.value,
+                        onValueChange = {eventDescription.value = it},
+                        placeholder = {
+                            Text("Descripcion",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7))},
+                        leadingIcon = {
+                            Icon(Icons.Default.Description, contentDescription = null)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(40.dp),
+
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color(0xFFFFFFFB),
+                            unfocusedContainerColor = Color(0xFFFFFFFB),
+                            disabledContainerColor = Color(0xFFFFFFFB)
+                        )
+
+                    )
+
+                    Button(
+                        onClick = {
+                            viewModel.createEvent(
+                                eventName.value,
+                                eventDescription.value
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                        shape = RoundedCornerShape(50)
+                    ){
+                        Text(
+                            text = "Registrarse",
+                            fontFamily = SaralaFont,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFFFFFB),
+                        )
+                    }
+                    Button(
+                        onClick = {navController.navigate("listEvents")},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                        shape = RoundedCornerShape(50)
+                    ){
+                        Text(
+                            text = "Ver eventos!",
+                            fontFamily = SaralaFont,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFFFFFB),
+                        )
+                    }
+
+
+                }
+            }
+        }
+
+    }}
+
+@Composable
+fun ListEventsScreen(navController: NavController) {
+    val viewModel: AuthViewModel = viewModel()
+    val events by viewModel.events
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllEvents()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(
+                text = "Eventos disponibles",
+                fontFamily = SaralaFont,
+                fontSize = 28.sp,
+                color = Color(0xFFA181FA),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(events) { event ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate("editEvent/${event.id_evento}")
+                            },
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = event.nombre,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = event.descripcion ?: "Sin descripción",
+                                fontSize = 14.sp,
+                                color = Color.DarkGray
+                            )
+                            Text(
+                                text = "Código: ${event.codigo_union}",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun SplashScreen(navController: NavHostController) {
@@ -508,7 +742,7 @@ fun LoginScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState.state) {
-        if (authState.state == AUTH_STATE) {
+        if (authState.state == AUTH_STATE){
             onLoginSuccess()
         }
     }
@@ -824,6 +1058,72 @@ fun RecoverPassword(){
 
 
 }
+
+@Composable
+fun EditEventScreen(eventId: Int) {
+    val viewModel: AuthViewModel = viewModel()
+    val event by viewModel.currentEvent
+    val context = LocalContext.current
+
+    // Llama automáticamente al cargar
+    LaunchedEffect(eventId) {
+        viewModel.getEventById(eventId)
+    }
+
+    val nombreState = remember { mutableStateOf("") }
+    val descripcionState = remember { mutableStateOf("") }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F3F8))
+            .padding(24.dp)
+    ) {
+        Column {
+            Text(
+                text = "Editar Evento",
+                fontSize = 24.sp,
+                fontFamily = SaralaFont,
+                color = Color(0xFFA181FA),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            TextField(
+                value = nombreState.value,
+                onValueChange = { nombreState.value = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = descripcionState.value,
+                onValueChange = { descripcionState.value = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    viewModel.editEvent(
+                        eventId,
+                        nombreState.value,
+                        descripcionState.value
+                    )
+                    Toast.makeText(context, "Evento actualizado", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA))
+            ) {
+                Text("Guardar cambios", color = Color.White)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun HomeScreen() {

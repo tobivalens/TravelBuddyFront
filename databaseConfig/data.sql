@@ -85,6 +85,57 @@ CREATE TABLE Notificacion (
 );
 
 
+INSERT INTO directus_roles(id, name, icon, description)
+VALUES('9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'Usuario', 'user', 'Rol para usuarios autenticados');
+
+INSERT INTO directus_policies (id, name, icon)
+VALUES (
+  'd2b33d94-2f31-4d49-bc62-2afea76fc59e',
+  'Manage events',
+  'badge'
+);
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation)
+VALUES (
+  'evento',
+  'create',
+  '*',
+  'd2b33d94-2f31-4d49-bc62-2afea76fc59e',
+  '{}',
+  '{}'
+);
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation)
+VALUES (
+  'evento',
+  'read',
+  '*',
+  'd2b33d94-2f31-4d49-bc62-2afea76fc59e',
+  '{}',
+  '{}'
+);
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation)
+VALUES (
+  'evento',
+  'update',
+  '*',
+  'd2b33d94-2f31-4d49-bc62-2afea76fc59e',
+  '{}',
+  '{}'
+);
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation)
+VALUES (
+  'evento',
+  'delete',
+  '*',
+  'd2b33d94-2f31-4d49-bc62-2afea76fc59e',
+  '{}',
+  '{}'
+);
+
+
 INSERT INTO directus_permissions (
   collection,
   action,

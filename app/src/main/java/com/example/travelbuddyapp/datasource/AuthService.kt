@@ -3,7 +3,9 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 import java.sql.Date
 
 interface AuthService {
@@ -19,6 +21,18 @@ interface AuthService {
 
     @POST("/items/travel_buddy_user")
     suspend fun registerAppUser(@Body registerDataExtra: RegisterDataExtra): RegisterExtraResponse
+
+    @POST("/items/evento")
+    suspend fun createEvent(@Header("Authorization") authorization: String, @Body eventData: EventData): EventResponse
+
+    @GET("/items/evento")
+    suspend fun getAllEvents(@Header("Authorization") authorization: String): Response<GetEventData>
+
+    @GET("items/evento/{id}")
+    suspend fun getEventById(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<SingleEventData>
+
+    @PATCH("/items/evento/{id}")
+    suspend fun editEvent(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editEventData: EditEventData)
 }
 
 data class RegisterData(
@@ -26,7 +40,8 @@ data class RegisterData(
     val first_name: String,
     val last_name: String,
     val email: String,
-    val password: String
+    val password: String,
+    val role: String
 
 )
 
@@ -41,7 +56,13 @@ data class RegisterDataExtra(
 
 data class RegisterExtraResponse(
 
-    val id_usuario: Int
+    val data: RegisterExtraResponseData
+)
+
+data class RegisterExtraResponseData(
+
+    val id_usuario: Int,
+    val directus_user_id: String
 )
 
 data class RegisterResponse(
@@ -55,7 +76,8 @@ data class DirectusUserData(
     val id: String,
     val first_name: String,
     val last_name: String,
-    val email: String
+    val email: String,
+
 
 )
 
@@ -70,7 +92,7 @@ data class LoginResponseData(
 
 data class LoginData(
     val email:String,
-    val password:String
+    val password:String,
 )
 
 data class UserResponse(
@@ -81,4 +103,35 @@ data class UserDTO(
     val first_name:String,
     val last_name:String,
     val email: String
+)
+
+data class GetEventData(
+    val data: List<EventResponse>
+)
+
+data class SingleEventData(
+    val data: EventResponse
+)
+
+data class EventData(
+
+    val nombre: String,
+    val descripcion: String,
+    val codigo_union: String,
+    val id_administrador: Int
+)
+
+data class EventResponse(
+
+    val id_evento: String,
+    val nombre: String,
+    val descripcion: String,
+    val codigo_union: String
+
+)
+
+data class EditEventData(
+
+    val nombre: String,
+    val descripcion: String
 )
