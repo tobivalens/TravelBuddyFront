@@ -119,3 +119,11 @@ data class Activity(
     val location: String,
     val imageUrl: String
 )
+
+
+data class Activities(
+    val id: String,
+    val title: String,
+    val date: String,
+    val imageUrl: String? = null
+)
