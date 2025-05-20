@@ -53,6 +53,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -170,7 +171,7 @@ fun CreateEvent(
 @Composable
 fun CreateEventScreen() {
 
-    val viewModel: AuthViewModel = viewModel()
+    val viewModel: EventViewModel = viewModel()
     val eventName = remember { mutableStateOf("") }
     val eventDescription = remember { mutableStateOf("") }
 

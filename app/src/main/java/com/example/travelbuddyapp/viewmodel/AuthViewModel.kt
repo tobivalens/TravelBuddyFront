@@ -1,16 +1,16 @@
 package com.example.travelbuddyapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.travelbuddyapp.datasource.EventData
-import com.example.travelbuddyapp.datasource.LoginData
-import com.example.travelbuddyapp.datasource.RegisterData
+import com.example.travelbuddyapp.datasource.DTOS.*
 import com.example.travelbuddyapp.repository.AuthRepository
+import com.example.travelbuddyapp.repository.AuxRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    val authRepository: AuthRepository = AuthRepository()
+    val authRepository: AuthRepository = AuthRepository(),
+    val auxRepository: AuxRepository = AuxRepository()
 ) : ViewModel(){
 
     var authState: MutableStateFlow<AuthState> = MutableStateFlow<AuthState>( AuthState() )
@@ -39,18 +39,9 @@ class AuthViewModel(
         }
     }
 
-    fun createEvent(eventName:String, description:String){
-        viewModelScope.launch(Dispatchers.IO){
-            authRepository.createEvent(
-                eventName,
-                description
-            )
-        }
-    }
-
     fun getAuthStatus() {
         viewModelScope.launch (Dispatchers.IO){
-            var accessToken = authRepository.getAccessToken()
+            var accessToken = auxRepository.getAccessToken()
             accessToken?.let {
                 if(it.isEmpty()){
                     authState.value = AuthState(state = NO_AUTH_STATE)
@@ -63,10 +54,9 @@ class AuthViewModel(
 
     fun getAllUsers() {
         viewModelScope.launch (Dispatchers.IO){
-            authRepository.getAllUsers()
+            auxRepository.getAllUsers()
         }
     }
-
 }
 
 data class AuthState(

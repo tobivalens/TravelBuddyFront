@@ -30,10 +30,8 @@ import androidx.datastore.core.DataStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.example.travelbuddyapp.datasource.Activities
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
-import com.example.travelbuddyapp.datasource.Activity
 import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
@@ -71,19 +69,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
-    var activity by remember{
-        mutableStateOf(
-            Activity(
-                id = "1",
-                title = "Cabaña de skiing",
-                description = "Reserva confirmada en nuestra acogedora cabaña con acceso directo a las pistas de ski.",
-                date = "27 de julio de 2025",
-                time = "10:00 AM",
-                location = "El Albergue de las Nieves Skiing Chalet",
-                imageUrl = "https://images.unsplash.com/photo-1586378742040-2e4c89f5ef7e"
-            )
-        )
-    }
+    // Insertar Actividad - Antes aca habia uno creada para ver que tal
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
