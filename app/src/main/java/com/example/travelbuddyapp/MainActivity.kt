@@ -30,6 +30,8 @@ import androidx.datastore.core.DataStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
@@ -83,16 +85,29 @@ fun AppNavigator() {
         }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
-        composable("editEvent"){ EditEventScreen(navController)}
+        composable("editEvent/{eventId}",
+            arguments = listOf(navArgument("eventId"){type = NavType.IntType})
+        ){ backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            EditEventScreen(eventId, navController)}
+        /*
         composable("gastos"){}
-        composable("ViSualizeActivities"){ ActivitiesScreen(navController)}
+
+        composable("VisualizeActivities"){ ActivitiesScreen(navController)}
         composable("VisualizeActivity"){
 
         }
-        composable("VisualizeEvent"){
+         */
+
+        composable("VisualizeEvent/{eventId}",
+            arguments = listOf(
+                navArgument("eventId"){type = NavType.IntType})
+        ){ backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             VisualizeEventScreenAdmin(
+                eventId = eventId,
                 onBackClick = {navController.navigate("home")},
-                onEditEvent = {navController.navigate("editEvent")},
+                onEditEvent = {navController.navigate("editEvent/$eventId")},
                 navController = navController
             )}
         composable("profile"){ UserProfile(
@@ -107,9 +122,11 @@ fun AppNavigator() {
             onProfileClick = {navController.navigate("userProfile") }
         ) }
 
+        /*
         composable("activities") {
             ActivitiesScreen(navController = navController)
         }
+
 
         composable("createActivity") {
             CreateActivityScreen(
@@ -122,7 +139,10 @@ fun AppNavigator() {
             )
         }
 
+         */
+
         composable("home"){ HomeScreen(
+            navController,
             userName = "Juan David Reyes",
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
             travels = listOf(
@@ -138,11 +158,9 @@ fun AppNavigator() {
                 var selectedTab = idx
             },
             onSearchClick = {
-                navController.navigate("splash")
+                //navController.navigate("splash")
             },
-            onTravelClick = { item ->
-                navController.navigate("VisualizeEvent")
-            },
+            onTravelClick = {},
             onHomeClick = {
                 navController.navigate("home") {
                     popUpTo("home") { inclusive = true }
@@ -166,8 +184,8 @@ fun AppNavigator() {
 
             onProfileClick = {navController.navigate("userProfile") }
         )}
-        composable("editEvent") { EditEventScreen(navController) }
 
+        /*
         composable("detail") {
             ActivityDetailScreen(
                 activity = activity,
@@ -175,6 +193,7 @@ fun AppNavigator() {
                 onBackClick = { navController.popBackStack() }
             )
         }
+
 
         composable("edit") {
             EditActivityScreen(
@@ -186,7 +205,9 @@ fun AppNavigator() {
                 onBack = { navController.popBackStack() }
             )
         }
-        composable("optionalAdd"){ OptionAddScreen( navController,onHomeClick = {
+         */
+
+        composable("optionalAdd"){ OptionAddScreen( navController, onHomeClick = {
             navController.navigate("home")
         },
 

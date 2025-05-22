@@ -19,9 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.travelbuddyapp.datasource.DTOS.EventResponse
 import com.example.travelbuddyapp.resources.icons.AppIcons
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight   = Color(0xFFB085F5)
@@ -35,17 +39,25 @@ data class TravelItem(
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     userName: String,
     tabs: List<String> = listOf("Todos", "Mis Viajes", "Otros"),
     travels: List<TravelItem>,
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     onSearchClick: () -> Unit,
-    onTravelClick: (TravelItem) -> Unit,
+    onTravelClick: (EventResponse) -> Unit,
     onHomeClick: () -> Unit,
     onAddClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
+
+    val viewModel: EventViewModel = viewModel()
+    val events by viewModel.events
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllEvents()
+    }
 
     Scaffold(
         topBar    = { HomeTopBar(userName, onSearchClick) },
@@ -65,8 +77,10 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             TravelList(
-                items       = travels,
-                onItemClick = onTravelClick
+                items       = events,
+                onItemClick = {event ->
+                    navController.navigate("VisualizeEvent/${event.id_evento}")
+                }
             )
         }
     }
@@ -139,8 +153,8 @@ fun HomeTabRow(
 
 @Composable
 fun TravelList(
-    items: List<TravelItem>,
-    onItemClick: (TravelItem) -> Unit
+    items: List<EventResponse>,
+    onItemClick: (EventResponse) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -169,7 +183,7 @@ fun TravelList(
 
 @Composable
 fun TravelItemCard(
-    item: TravelItem,
+    item: EventResponse,
     onClick: () -> Unit
 ) {
     Card(
@@ -188,8 +202,8 @@ fun TravelItemCard(
                 .padding(8.dp)
         ) {
             AsyncImage(
-                model           = item.imageUrl,
-                contentDescription = item.title,
+                model           = "https://raw.githubusercontet.com/tomoewinds/devasc-study-team/blob/master/resumen-superficie-y-texturas-de-muro-de-piedra-de-hormigon-blanco.jpg",
+                contentDescription = item.nombre,
                 contentScale    = ContentScale.Crop,
                 modifier = Modifier
                     .size(84.dp)
@@ -203,7 +217,7 @@ fun TravelItemCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = item.title,
+                    text = item.nombre,
                     style = MaterialTheme.typography.titleMedium,
                     color = PurplePrimary,
                     fontFamily = SaralaFont
@@ -211,7 +225,7 @@ fun TravelItemCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = item.description,
+                    text = item.descripcion,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

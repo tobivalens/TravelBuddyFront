@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.travelbuddyapp.datasource.Activities
+import com.example.travelbuddyapp.datasource.DTOS.Activities
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 private val PurplePrimary = Color(0xFF9B69E7)

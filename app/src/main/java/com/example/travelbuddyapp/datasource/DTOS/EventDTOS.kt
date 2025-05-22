@@ -8,9 +8,26 @@ data class EventData(
     val id_administrador: Int
 )
 
-data class CreateEventResponse(
+data class GetEventData(
+    val data: List<EventResponse>
+)
+
+data class SingleEventData(
+    val data: EventResponse
+)
+
+
+data class EventResponse(
 
     val id_evento: String,
+    val nombre: String,
+    val descripcion: String,
     val codigo_union: String
 
+)
+
+data class EditEventData(
+
+    val nombre: String,
+    val descripcion: String
 )

@@ -64,7 +64,7 @@ fun CreateEvent(
     onAddClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    val viewModel: AuthViewModel = viewModel()
+    val viewModel: EventViewModel = viewModel()
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -133,7 +133,9 @@ fun CreateEvent(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { /* navController.navigate("saveSuccess") */ },
+                        onClick = { viewModel.createEvent(
+                            title,
+                            description)},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),

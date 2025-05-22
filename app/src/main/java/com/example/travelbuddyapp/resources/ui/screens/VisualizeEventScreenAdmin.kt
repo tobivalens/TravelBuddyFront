@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,14 +44,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.R
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisualizeEventScreenAdmin(
-    eventTitle: String = "Viaje a la montaña",
+    eventId: Int,
     onBackClick: () -> Unit = {},
     onEditEvent: () -> Unit = {},
     navController: NavController
@@ -60,6 +63,15 @@ fun VisualizeEventScreenAdmin(
     val scrollState = rememberScrollState()
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
+    val viewModel: EventViewModel = viewModel()
+    val event by viewModel.currentEvent
+
+    LaunchedEffect(eventId) {
+        viewModel.getEventById(eventId)
+    }
+
+    val eventTitle = event?.nombre?: "Sin nombre"
+    val description = event?.descripcion?: "Sin descripcion"
 
     Scaffold(
         topBar = {
@@ -135,7 +147,7 @@ fun VisualizeEventScreenAdmin(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "Disfruta de una experiencia única entre paisajes imponentes, aire puro y tranquilidad absoluta. Este viaje a las montañas te lleva a explorar senderos escondidos, miradores panorámicos y cascadas cristalinas...",
+                text = description,
                 color = Color(0xFFCBC7C7),
                 fontSize = 12.sp,
                 fontFamily = SaralaFont

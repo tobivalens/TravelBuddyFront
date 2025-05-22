@@ -36,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,24 +49,39 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun EditEventScreen(navController: NavController) {
-    var title by remember { mutableStateOf("Viaje a la montaña") }
-    var description by remember { mutableStateOf("Disfruta de una experiencia única entre paisajes...") }
-    var startDate by remember { mutableStateOf("Julio 04, 2025") }
-    var endDate by remember { mutableStateOf("Julio 30, 2025") }
-    var photo by remember { mutableStateOf("Montaña.jpg") }
+fun EditEventScreen(eventId: Int, navController: NavController) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf(" ") }
+    var startDate by remember { mutableStateOf("") }
+    var endDate by remember { mutableStateOf("") }
+    var photo by remember { mutableStateOf("") }
 
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
 
     val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale("es", "ES"))
 
+    val viewModel: EventViewModel = viewModel()
+    val event by viewModel.currentEvent
+
+    LaunchedEffect(eventId) {
+        viewModel.getEventById(eventId)
+    }
+
+    LaunchedEffect(event) {
+        event?.let{
+            title = it.nombre
+            description = it.descripcion
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -114,7 +130,10 @@ fun EditEventScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* navController.navigate("saveSuccess") */ },
+                    onClick = { viewModel.editEvent(
+                        eventId,
+                        title,
+                        description)},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

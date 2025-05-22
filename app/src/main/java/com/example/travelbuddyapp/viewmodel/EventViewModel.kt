@@ -1,7 +1,10 @@
 package com.example.travelbuddyapp.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.travelbuddyapp.datasource.DTOS.EventResponse
 import com.example.travelbuddyapp.repository.EventsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,12 +13,42 @@ class EventViewModel(
     val eventRepository: EventsRepository = EventsRepository()
 ) : ViewModel(){
 
+    private val _events = mutableStateOf<List<EventResponse>>(emptyList())
+    val events: State<List<EventResponse>> = _events
+    private val _currentEvent = mutableStateOf<EventResponse?>(null)
+    val currentEvent: State<EventResponse?> = _currentEvent
+
     fun createEvent(eventName:String, description:String){
         viewModelScope.launch(Dispatchers.IO){
             eventRepository.createEvent(
                 eventName,
                 description
             )
+        }
+    }
+
+    fun editEvent(id: Int, newName: String, newDesc: String){
+
+        viewModelScope.launch(Dispatchers.IO){
+            eventRepository.editEvent(
+                id,
+                newName,
+                newDesc
+            )
+        }
+    }
+
+    fun getAllEvents(){
+        viewModelScope.launch(Dispatchers.IO){
+            val response = eventRepository.getAllEvents()
+            _events.value = response!!
+        }
+    }
+
+    fun getEventById(id: Int){
+        viewModelScope.launch {
+            val event = eventRepository.getEventById(id)
+            _currentEvent.value = event
         }
     }
 }
