@@ -23,3 +23,23 @@ data class UserDTO(
     val last_name:String,
     val email: String
 )
+
+data class CurrentUserData(
+    val data: UserID
+)
+
+data class UserID(
+    val id: String
+)
+
+data class TravelBuddyUserResponse(
+    val data: List<TravelBudUserId>
+)
+
+data class TravelBudUserId(
+    val id_usuario: Int,
+    val directus_user_id: String,
+    val telefono: String,
+    val fecha_nacimiento: String,
+    val ubicacion: String
+)

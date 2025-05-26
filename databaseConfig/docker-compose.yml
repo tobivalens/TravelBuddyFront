@@ -27,8 +27,8 @@ services:
       - directus_extensions:/directus/extensions
     environment:
       SECRET: "alfabeta"
-      ADMIN_EMAIL: "andres.bueno1909@gmail.com"
-      ADMIN_PASSWORD: "elpepe19"
+      ADMIN_EMAIL: "atkinsonvi2@gmail.com"
+      ADMIN_PASSWORD: "apps2025"
       DB_CLIENT: "pg"
       DB_HOST: "db"
       DB_PORT: "5432"

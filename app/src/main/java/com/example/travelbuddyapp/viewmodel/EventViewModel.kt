@@ -40,8 +40,10 @@ class EventViewModel(
 
     fun getAllEvents(){
         viewModelScope.launch(Dispatchers.IO){
+
             val response = eventRepository.getAllEvents()
             _events.value = response!!
+
         }
     }
 

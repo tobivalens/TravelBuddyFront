@@ -22,7 +22,8 @@ data class EventResponse(
     val id_evento: String,
     val nombre: String,
     val descripcion: String,
-    val codigo_union: String
+    val codigo_union: String,
+    val id_administrador: Int
 
 )
 

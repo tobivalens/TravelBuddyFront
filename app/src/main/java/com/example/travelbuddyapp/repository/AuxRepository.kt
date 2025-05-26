@@ -18,7 +18,7 @@ class AuxRepository(
     }
 
     suspend fun getUserId() : String?{
-        var id = LocalDataSourceProvider.get().load("userid").firstOrNull()
+        var id = LocalDataSourceProvider.get().load("userId").firstOrNull()
         return id
     }
 
@@ -30,4 +30,18 @@ class AuxRepository(
             Log.e(">>>", user.email)
         }
     }
+
+    suspend fun storeCurrentUserId(){
+
+        var token = getAccessToken()
+        val currentUserData = auxService.getDirectusUserID("Bearer $token")
+        val directusUserId = currentUserData.body()?.data?.id!!
+
+        val travelBudData = auxService.getTravelBudId("Bearer $token", directusUserId)
+        val userId = travelBudData.body()?.data?.firstOrNull()?.id_usuario
+
+        LocalDataSourceProvider.get().save("userId", userId.toString())
+
+    }
+
 }

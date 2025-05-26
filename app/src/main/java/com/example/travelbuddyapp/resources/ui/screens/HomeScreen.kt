@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.datasource.DTOS.EventResponse
 import com.example.travelbuddyapp.resources.icons.AppIcons
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 private val PurplePrimary = Color(0xFF9B69E7)

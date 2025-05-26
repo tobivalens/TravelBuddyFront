@@ -48,7 +48,9 @@ class EventsRepository(
         val response = eventService.getAllEvents("Bearer $token")
 
         return if(response.isSuccessful){
-            response.body()?.data
+            val events = response.body()?.data ?: emptyList()
+            val userId = auxRepository.getUserId()!!.toIntOrNull()
+            events.filter  {it.id_administrador == userId}
         }
         else{
             null

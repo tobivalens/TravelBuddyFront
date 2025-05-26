@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.repository.AuxRepository
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
@@ -61,6 +62,7 @@ fun LoginScreen(
     LaunchedEffect(authState.state) {
         if (authState.state == AUTH_STATE) {
             onLoginSuccess()
+            viewModel.storeUserId()
         }
     }
 

@@ -57,6 +57,13 @@ class AuthViewModel(
             auxRepository.getAllUsers()
         }
     }
+
+    fun storeUserId(){
+
+        viewModelScope.launch(Dispatchers.IO){
+            auxRepository.storeCurrentUserId()
+        }
+    }
 }
 
 data class AuthState(
