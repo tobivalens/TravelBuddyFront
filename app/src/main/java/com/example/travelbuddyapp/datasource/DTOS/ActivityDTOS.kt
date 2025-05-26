@@ -13,7 +13,7 @@ data class EditActivityData(
 )
 
 data class ActivityDTO(
-    val id_actividad: String,
+    val id_actividad: Int,
     val nombre: String,
     val descripcion: String,
     val fecha_actividad: String,

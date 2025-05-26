@@ -112,7 +112,8 @@ fun ActivityDetailScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { /* Eliminar actividad */ },
+                onClick = { viewModel.deleteActivity(activity!!.id_actividad)
+                          navController.popBackStack()},
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
                 modifier = Modifier
                     .fillMaxWidth()

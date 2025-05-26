@@ -24,7 +24,7 @@ interface ActivitiesService {
     @GET("/items/actividad/{id}")
     suspend fun getActivity(@Header("Authorization") authorization: String, @Path("id") id:Int): Response<SingleActivityData>
 
-    @DELETE
+    @DELETE("/items/actividad/{id}")
     suspend fun deleteActivities(@Header("Authorization") authorization: String, @Path("id") id:Int)
 
 

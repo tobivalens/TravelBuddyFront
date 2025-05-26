@@ -52,4 +52,10 @@ class ActivityViewModel(
             )
         }
     }
+
+    fun deleteActivity(id:Int){
+        viewModelScope.launch(Dispatchers.IO){
+            activityRepository.deleteActivity(id)
+        }
+    }
 }
