@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.travelbuddyapp.config.RetrofitConfig
 import com.example.travelbuddyapp.datasource.AuthService
 import com.example.travelbuddyapp.datasource.AuxService
+import com.example.travelbuddyapp.datasource.DTOS.UserDTO
 import com.example.travelbuddyapp.datasource.local.LocalDataSourceProvider
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -31,11 +32,21 @@ class AuxRepository(
         }
     }
 
+    suspend fun getUsername(): String?{
+
+        var name = LocalDataSourceProvider.get().load("username").firstOrNull()
+
+        return name
+    }
+
     suspend fun storeCurrentUserId(){
 
         var token = getAccessToken()
         val currentUserData = auxService.getDirectusUserID("Bearer $token")
         val directusUserId = currentUserData.body()?.data?.id!!
+        val userName = currentUserData.body()?.data?.first_name!!
+
+        LocalDataSourceProvider.get().save("username", userName)
 
         val travelBudData = auxService.getTravelBudId("Bearer $token", directusUserId)
         val userId = travelBudData.body()?.data?.firstOrNull()?.id_usuario

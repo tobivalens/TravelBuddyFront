@@ -34,5 +34,7 @@ data class EventResponse(
 data class EditEventData(
 
     val nombre: String,
-    val descripcion: String
+    val descripcion: String,
+    val fecha_inicio: String,
+    val fecha_fin: String
 )

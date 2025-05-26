@@ -29,13 +29,15 @@ class EventViewModel(
         }
     }
 
-    fun editEvent(id: Int, newName: String, newDesc: String){
+    fun editEvent(id: Int, newName: String, newDesc: String, newStartDate: String, newEndDate:String){
 
         viewModelScope.launch(Dispatchers.IO){
             eventRepository.editEvent(
                 id,
                 newName,
-                newDesc
+                newDesc,
+                newStartDate,
+                newEndDate
             )
         }
     }

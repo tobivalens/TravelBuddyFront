@@ -25,11 +25,13 @@ data class UserDTO(
 )
 
 data class CurrentUserData(
-    val data: UserID
+    val data: UserData
 )
 
-data class UserID(
-    val id: String
+data class UserData(
+    val id: String,
+    val first_name: String,
+    val last_name: String
 )
 
 data class TravelBuddyUserResponse(

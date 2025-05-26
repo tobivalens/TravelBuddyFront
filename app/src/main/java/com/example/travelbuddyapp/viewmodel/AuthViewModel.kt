@@ -1,4 +1,6 @@
 package com.example.travelbuddyapp.viewmodel
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.travelbuddyapp.datasource.DTOS.*
@@ -14,6 +16,8 @@ class AuthViewModel(
 ) : ViewModel(){
 
     var authState: MutableStateFlow<AuthState> = MutableStateFlow<AuthState>( AuthState() )
+    private val _currentUser = mutableStateOf<String?>(null)
+    val currentUser: State<String?> = _currentUser
 
     fun login(email:String, pass:String) {
 
@@ -24,6 +28,13 @@ class AuthViewModel(
             )
             )
             authState.value = AuthState(state = AUTH_STATE)
+        }
+    }
+
+    fun getUser(){
+        viewModelScope.launch {
+            val username = auxRepository.getUsername()
+            _currentUser.value = username
         }
     }
 

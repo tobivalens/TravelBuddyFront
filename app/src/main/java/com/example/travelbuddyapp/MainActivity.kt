@@ -72,8 +72,14 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
+
     val viewModel: AuthViewModel = viewModel()
-    
+    val username by viewModel.currentUser
+
+    LaunchedEffect(Unit) {
+        viewModel.getUser()
+    }
+
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {
@@ -155,7 +161,7 @@ fun AppNavigator() {
 
         composable("home"){ HomeScreen(
             navController,
-            userName = "Juan David Reyes",
+            userName = username!!,
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
             travels = listOf(
                 TravelItem(

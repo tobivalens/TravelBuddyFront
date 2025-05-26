@@ -67,7 +67,7 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
 
-    val formatter = SimpleDateFormat("MMMM dd, yyyy", Locale("es", "ES"))
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
 
     val viewModel: EventViewModel = viewModel()
     val event by viewModel.currentEvent
@@ -133,7 +133,9 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
                     onClick = { viewModel.editEvent(
                         eventId,
                         title,
-                        description)},
+                        description,
+                        startDate,
+                        endDate)},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

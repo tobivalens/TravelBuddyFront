@@ -35,12 +35,16 @@ class EventsRepository(
         )
     }
 
-    suspend fun editEvent(id: Int, newName: String, newDesc: String){
+    suspend fun editEvent(id: Int, newName: String, newDesc: String, newStart: String, newEnd:String){
 
         val token = auxRepository.getAccessToken()
         eventService.editEvent(
             "Bearer $token", id,
-            EditEventData(newName, newDesc)
+            EditEventData(
+                newName,
+                newDesc,
+                newStart,
+                newEnd)
         )
 
     }
