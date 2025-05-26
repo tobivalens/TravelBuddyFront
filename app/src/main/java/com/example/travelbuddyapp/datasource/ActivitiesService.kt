@@ -2,6 +2,7 @@ package com.example.travelbuddyapp.datasource
 import com.example.travelbuddyapp.datasource.DTOS.*
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -17,6 +18,8 @@ interface ActivitiesService {
     suspend fun editActivity(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editActivityData: EditActivityData)
     @GET("/items/actividad")
     suspend fun getActivities(@Header("Authorization") authorization: String,@Query("filter[id_evento][_eq]") idEvento: Int): Response<GetActivitiesData>
+    @DELETE
+    suspend fun deleteActivities(@Header("Authorization") authorization: String, @Path("id") id:Int)
 
 
 }

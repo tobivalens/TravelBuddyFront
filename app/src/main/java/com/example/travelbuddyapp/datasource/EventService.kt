@@ -3,6 +3,7 @@ package com.example.travelbuddyapp.datasource
 import com.example.travelbuddyapp.datasource.DTOS.*
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -22,5 +23,8 @@ interface EventService {
 
     @PATCH("/items/evento/{id}")
     suspend fun editEvent(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editEventData: EditEventData)
+
+    @DELETE("/items/evento/{id}")
+    suspend fun deleteEvent(@Header("Authorization") authorization: String, @Path("id") id:Int)
 
 }

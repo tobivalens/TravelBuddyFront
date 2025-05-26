@@ -17,6 +17,7 @@ class EventsRepository(
 ) {
 
 
+
     suspend fun createEvent(eventName: String, eventDescription: String){
 
         var id = auxRepository.getUserId()
@@ -62,6 +63,12 @@ class EventsRepository(
         val token = auxRepository.getAccessToken()
         val response = eventService.getEventById("Bearer $token", id)
         return response.body()?.data
+    }
+
+    suspend fun deleteEvent(id: Int){
+
+        val token = auxRepository.getAccessToken()
+        eventService.deleteEvent("Bearer $token", id)
     }
 
 

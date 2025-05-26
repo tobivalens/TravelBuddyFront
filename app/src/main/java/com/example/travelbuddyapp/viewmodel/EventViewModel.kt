@@ -53,4 +53,11 @@ class EventViewModel(
             _currentEvent.value = event
         }
     }
+
+    fun deleteEvent(id: Int){
+
+        viewModelScope.launch {
+            eventRepository.deleteEvent(id)
+        }
+    }
 }

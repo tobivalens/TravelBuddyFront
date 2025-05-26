@@ -248,6 +248,17 @@ fun VisualizeEventScreenAdmin(
             ) {
                 Text(text = "Subir", color = Color.White)
             }
+            Button(
+                onClick = {
+                    viewModel.deleteEvent(eventId)
+                    navController.popBackStack()
+                          },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8C69FF)),
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.align(Alignment.Start)
+            ) {
+                Text(text = "Eliminar Evento", color = Color.White)
+            }
         }
     }
 }
