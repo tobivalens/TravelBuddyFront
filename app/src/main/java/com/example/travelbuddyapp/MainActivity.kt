@@ -30,6 +30,7 @@ import androidx.datastore.core.DataStore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
@@ -47,6 +48,7 @@ import com.example.travelbuddyapp.resources.ui.screens.RecoverPassword
 import com.example.travelbuddyapp.resources.ui.screens.RegisterUserScreen
 import com.example.travelbuddyapp.resources.ui.screens.UserProfile
 import com.example.travelbuddyapp.resources.ui.screens.VisualizeEventScreenAdmin
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
 
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "AppVariables")
@@ -70,7 +72,8 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
-
+    val viewModel: AuthViewModel = viewModel()
+    
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("loginScreen") {

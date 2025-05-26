@@ -29,20 +29,23 @@ class ActivitiesRepository(
 
     }
 
-    suspend fun createActivity(activityName: String, activityDescription: String, id_Evento: Int){
+    suspend fun createActivity(id_evento: Int, activityName: String, activityDescription: String, startDate: String, time: String, location: String){
         val token = auxRepository.getAccessToken()
         activitiesService.createActivity("Bearer $token", ActivityData(
+            id_evento,
             activityName,
             activityDescription,
-            id_Evento
+            startDate,
+            time,
+            location
         )
         )
     }
-    suspend fun editActivity(id: Int, newName: String, newDesc: String){
+    suspend fun editActivity(id: Int, newName: String, newDesc: String, newDate:String, newTime:String, newLoc:String){
         val token = auxRepository.getAccessToken()
         activitiesService.editActivity("Bearer $token",
             id,
-            EditActivityData(newName, newDesc)
+            EditActivityData(newName, newDesc, newDate, newTime, newLoc)
         )
     }
 

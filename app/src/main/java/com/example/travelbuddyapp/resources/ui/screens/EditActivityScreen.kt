@@ -76,7 +76,7 @@ fun EditActivityScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
     val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
 
     LaunchedEffect(activity) {
@@ -147,7 +147,10 @@ fun EditActivityScreen(
                     onClick = {viewModel.editActivity(
                         actId,
                         title,
-                        description)},
+                        description,
+                        date,
+                        time,
+                        location)},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

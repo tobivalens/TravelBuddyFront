@@ -68,7 +68,7 @@ fun CreateActivityScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
     val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
 
     Box(
@@ -161,7 +161,14 @@ fun CreateActivityScreen(
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(
-                onClick = {viewModel.createActivity(title, description, eventId)},
+                onClick = {viewModel.createActivity(
+                    eventId,
+                    title,
+                    description,
+                    date,
+                    time,
+                    location
+                    )},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),

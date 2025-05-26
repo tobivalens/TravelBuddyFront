@@ -34,21 +34,27 @@ class ActivityViewModel(
         }
     }
 
-    fun createActivity(activityName:String, description:String, eventId: Int){
+    fun createActivity(eventId: Int, activityName:String, description:String, startDate: String, time: String, location: String ){
         viewModelScope.launch(Dispatchers.IO){
             activityRepository.createActivity(
+                eventId,
                 activityName,
                 description,
-                eventId
+                startDate,
+                time,
+                location
             )
         }
     }
-    fun editActivity(id: Int, newName: String, newDesc: String){
+    fun editActivity(id: Int, newName: String, newDesc: String, newDate: String, newTime:String, newLoc:String){
         viewModelScope.launch(Dispatchers.IO){
             activityRepository.editActivity(
                 id,
                 newName,
-                newDesc
+                newDesc,
+                newDate,
+                newTime,
+                newLoc
             )
         }
     }
