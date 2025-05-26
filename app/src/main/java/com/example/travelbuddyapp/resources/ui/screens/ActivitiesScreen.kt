@@ -22,8 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.travelbuddyapp.datasource.DTOS.Activities
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.ActivityViewModel
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight = Color(0xFFB085F5)
@@ -32,31 +35,27 @@ private val PurpleLight = Color(0xFFB085F5)
 @Composable
 fun ActivitiesScreen(
     navController: NavController,
-    tripName: String = "Viaje a la montaña"
+    eventId: Int
+    // Insertar nombre del viaje actual
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
+    val viewModel: ActivityViewModel = viewModel()
+    val eventViewModel: EventViewModel = viewModel()
+    var selectedTab by remember { mutableStateOf(2) }
+    val activities by viewModel.activities
+    val event = eventViewModel.currentEvent.value
+    LaunchedEffect(eventId) {
+        eventViewModel.getEventById(eventId)
+        viewModel.loadActivities(eventId)
+    }
+    val eventName = event?.nombre ?: "Evento sin nombre"
+
+
     val tabs = listOf("Eventos", "Gastos", "Actividades")
-
-    val activities = listOf(
-        Activities(
-            id = "1",
-            title = "Cabaña de skiing",
-            date = "25 Julio 2025"
-        ),
-        Activities(
-            id = "2",
-            title = "Avistamiento de águilas",
-            date = "26 Julio 2025"
-        )
-    )
-
-    val currentMonth = "Julio 2025"
 
     Scaffold(
         topBar = {
             ActivitiesTopBar(
-
-                tripName = tripName,
+                tripName = eventName,
                 onBackClick = { navController.popBackStack() }
             )
         },
@@ -91,7 +90,7 @@ fun ActivitiesScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            MonthCalendar(currentMonth)
+            MonthCalendar("Fecha de prueba")// En esta funcion debe de ir el mes actual
 
             Spacer(Modifier.height(12.dp))
 
@@ -104,12 +103,12 @@ fun ActivitiesScreen(
                 fontFamily = SaralaFont
             )
 
-            // Lista de actividades
+            // Esta lista necesita de la anterior que se va a crear para asi activar,
+            // La funcion de que al darle click se muestren los detalles
             ActivitiesList(
-                activities = activities,
+                items = activities,
                 onActivityClick = { activities ->
                     navController.navigate("detail")
-
                 }
             )
         }
@@ -219,18 +218,18 @@ fun MonthCalendar(month: String) {
 
 @Composable
 fun ActivitiesList(
-    activities: List<Activities>,
-    onActivityClick: (Activities) -> Unit
+    items: List<ActivityDTO>,
+    onActivityClick: (ActivityDTO) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        items(activities) { activity ->
+        items(items) { item ->
             ActivityItem(
-                activity = activity,
-                onClick = { onActivityClick(activity) }
+                item = item,
+                onClick = { onActivityClick(item) }
             )
         }
     }
@@ -238,7 +237,7 @@ fun ActivitiesList(
 
 @Composable
 fun ActivityItem(
-    activity: Activities,
+    item: ActivityDTO,
     onClick: () -> Unit
 ) {
     Card(
@@ -271,14 +270,14 @@ fun ActivityItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = activity.title,
+                    text = item.nombre,
                     style = MaterialTheme.typography.titleMedium,
                     color = PurplePrimary,
                     fontFamily = SaralaFont
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = activity.date,
+                    text = "Fecha de prueba",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )

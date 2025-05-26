@@ -1,4 +1,42 @@
+-- ============================
+-- Roles
+-- ============================
 
+INSERT INTO directus_roles (id, name, icon, description, parent) VALUES
+  ('9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'Usuario', 'user', 'Rol para usuarios autenticados', NULL);
+
+-- ============================
+-- Usuarios de Directus
+-- (Ejemplo con hash de contraseña, modificar según tu entorno)
+-- ============================
+
+INSERT INTO directus_users (id, first_name, email, password, role, status) VALUES
+  (gen_random_uuid(), 'Usuario Prueba 1', 'usuario1@ejemplo.com', '$argon2i$v=19$m=16,t=2,p=1$Qk4zb1RuWDJCcVRpb2JoSw$SzyC3tGEP6swGBt0TvBkiw',
+    '9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'active'),
+  (gen_random_uuid(), 'Usuario Prueba 2', 'usuario2@ejemplo.com', '$argon2i$v=19$m=16,t=2,p=1$Qk4zb1RuWDJCcVRpb2JoSw$SzyC3tGEP6swGBt0TvBkiw',
+    '9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'active');
+
+-- ============================
+-- Perfil de usuario (travel_buddy_user equivalente)
+-- ============================
+
+CREATE TABLE travel_buddy_user (
+    id_usuario SERIAL PRIMARY KEY,
+    directus_user_id UUID UNIQUE NOT NULL REFERENCES directus_users(id) ON DELETE CASCADE,
+    telefono VARCHAR(20),
+    fecha_nacimiento DATE,
+    ubicacion VARCHAR(255)
+);
+
+-- Insertar perfiles para usuarios creados arriba
+
+INSERT INTO travel_buddy_user (directus_user_id, telefono, fecha_nacimiento, ubicacion) VALUES
+  ((SELECT id FROM directus_users WHERE email = 'usuario1@ejemplo.com'), '3001234567', '1990-01-01', 'Ciudad A'),
+  ((SELECT id FROM directus_users WHERE email = 'usuario2@ejemplo.com'), '3007654321', '1985-05-15', 'Ciudad B');
+
+-- ============================
+-- Tabla Imagen
+-- ============================
 
 CREATE TABLE Imagen (
     id_imagen SERIAL PRIMARY KEY,
@@ -6,16 +44,9 @@ CREATE TABLE Imagen (
     url_imagen VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE travel_buddy_user (
-    id_usuario SERIAL PRIMARY KEY,
-    directus_user_id UUID UNIQUE NOT NULL,
-    telefono VARCHAR(20),
-    fecha_nacimiento DATE,
-    id_imagen INTEGER,
-    ubicacion VARCHAR(255),
-    FOREIGN KEY (directus_user_id) REFERENCES directus_users(id),
-    FOREIGN KEY (id_imagen) REFERENCES Imagen(id_imagen)
-);
+-- ============================
+-- Tabla Evento
+-- ============================
 
 CREATE TABLE Evento (
     id_evento SERIAL PRIMARY KEY,
@@ -23,133 +54,112 @@ CREATE TABLE Evento (
     descripcion TEXT,
     codigo_union VARCHAR(20) UNIQUE NOT NULL,
     id_imagen INTEGER,
-    id_administrador INTEGER NOT NULL,
-    FOREIGN KEY (id_administrador) REFERENCES travel_buddy_user(id_usuario),
+    id_administrador INTEGER NOT NULL REFERENCES travel_buddy_user(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_imagen) REFERENCES Imagen(id_imagen)
 );
 
-CREATE TABLE ParticipanteEvento (
-    id_participacion SERIAL PRIMARY KEY,
-    id_usuario INTEGER NOT NULL,
-    id_evento INTEGER NOT NULL,
-    rol VARCHAR(20) CHECK (rol IN ('coordinador', 'participante')) DEFAULT 'participante',
-    CONSTRAINT fk_usuario_participa FOREIGN KEY (id_usuario) REFERENCES travel_buddy_user(id_usuario),
-    CONSTRAINT fk_evento_participa FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
-    CONSTRAINT uq_usuario_evento UNIQUE (id_usuario, id_evento)
-);
+-- ============================
+-- Tabla Actividad
+-- ============================
 
 CREATE TABLE Actividad (
     id_actividad SERIAL PRIMARY KEY,
-    id_evento INTEGER NOT NULL,
+    id_evento INTEGER NOT NULL REFERENCES Evento(id_evento) ON DELETE CASCADE,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     fecha_actividad DATE,
     hora_actividad VARCHAR(10),
     ubicacion VARCHAR(255),
     id_imagen INTEGER,
-    FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
     FOREIGN KEY (id_imagen) REFERENCES Imagen(id_imagen)
 );
 
-CREATE TABLE ArchivoAdjunto (
-    id_archivo SERIAL PRIMARY KEY,
-    id_actividad INTEGER NOT NULL,
-    nombre_archivo VARCHAR(255),
-    url_archivo VARCHAR(255),
-    FOREIGN KEY (id_actividad) REFERENCES Actividad(id_actividad)
+-- ============================
+-- Tabla ParticipanteEvento
+-- ============================
+
+CREATE TABLE ParticipanteEvento (
+    id_participacion SERIAL PRIMARY KEY,
+    id_usuario INTEGER NOT NULL REFERENCES travel_buddy_user(id_usuario) ON DELETE CASCADE,
+    id_evento INTEGER NOT NULL REFERENCES Evento(id_evento) ON DELETE CASCADE,
+    rol VARCHAR(20) CHECK (rol IN ('coordinador', 'participante')) DEFAULT 'participante',
+    CONSTRAINT uq_usuario_evento UNIQUE (id_usuario, id_evento)
 );
 
-CREATE TABLE Gasto (
-    id_gasto SERIAL PRIMARY KEY,
-    id_evento INTEGER NOT NULL,
-    deudor_id INTEGER NOT NULL,
-    acreedor_id INTEGER NOT NULL,
-    monto NUMERIC(10, 2) NOT NULL,
-    descripcion VARCHAR(255),
-    fecha DATE DEFAULT CURRENT_DATE,
-    creado_por INTEGER NOT NULL,
-    FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
-    FOREIGN KEY (deudor_id) REFERENCES travel_buddy_user(id_usuario),
-    FOREIGN KEY (acreedor_id) REFERENCES travel_buddy_user(id_usuario),
-    FOREIGN KEY (creado_por) REFERENCES travel_buddy_user(id_usuario)
-);
+-- ============================
+-- Insertar datos de prueba para Evento y Actividad
+-- ============================
 
-CREATE TABLE Notificacion (
-    id_notificacion SERIAL PRIMARY KEY,
-    id_usuario_destino INTEGER NOT NULL,
-    titulo VARCHAR(100),
-    mensaje VARCHAR(500),
-    fecha_creacion DATE DEFAULT CURRENT_DATE,
-    leida BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id_usuario_destino) REFERENCES travel_buddy_user(id_usuario)
-);
+INSERT INTO Evento (nombre, descripcion, codigo_union, id_administrador) VALUES
+('Evento Prueba 1', 'Descripción del evento 1', 'EVT123', 1),
+('Evento Prueba 2', 'Descripción del evento 2', 'EVT456', 2);
 
+INSERT INTO Actividad (id_evento, nombre, descripcion) VALUES
+(1, 'Actividad 1 Evento 1', 'Descripción actividad 1'),
+(1, 'Actividad 2 Evento 1', 'Descripción actividad 2'),
+(2, 'Actividad 1 Evento 2', 'Descripción actividad 3');
 
-INSERT INTO directus_roles(id, name, icon, description)
-VALUES('9e957475-6ab1-4bf8-9acc-2abae37cf58d', 'Usuario', 'user', 'Rol para usuarios autenticados');
+-- ============================
+-- Asociar usuarios a eventos en ParticipanteEvento
+-- ============================
+
+INSERT INTO ParticipanteEvento (id_usuario, id_evento, rol) VALUES
+(1, 1, 'coordinador'),
+(2, 2, 'coordinador');
+
+-- ============================
+-- Permisos para directus_users (crear y leer)
+-- ============================
 
 INSERT INTO directus_permissions (
-  collection,
-  action,
-  fields,
-  policy,
-  permissions,
-  validation
-) VALUES (
-  'directus_users',
-  'create',
-  '*',
-  (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'),
-  '{}',
-  '{}'
-);
+    collection,
+    action,
+    fields,
+    policy,
+    permissions,
+    validation
+) VALUES
+('directus_users', 'create', '*', (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'), '{}', '{}'),
+('directus_users', 'read', '*', (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'), '{}', '{}');
+
+-- ============================
+-- Permisos para travel_buddy_user (crear y leer)
+-- ============================
 
 INSERT INTO directus_permissions (
-  collection,
-  action,
-  fields,
-  policy,
-  permissions,
-  validation
-) VALUES (
-  'directus_users',
-  'read',
-  '*',
-  (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'),
-  '{}',
-  '{}'
-);
+    collection,
+    action,
+    fields,
+    policy,
+    permissions,
+    validation
+) VALUES
+('travel_buddy_user', 'create', '*', (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'), '{}', '{}'),
+('travel_buddy_user', 'read', '*', (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'), '{}', '{}');
 
-INSERT INTO directus_permissions (
-  collection,
-  action,
-  fields,
-  policy,
-  permissions,
-  validation
-) VALUES (
-  'travel_buddy_user',
-  'create',
-  '*',
-  (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'),
-  '{}',
-  '{}'
-);
+-- ============================
+-- Política para manejar eventos y actividades
+-- ============================
 
+INSERT INTO directus_policies(id, name, icon) VALUES
+('d2b33d94-2f31-4d49-bc62-2afea76fc59e', 'Manage events', 'badge');
 
-INSERT INTO directus_permissions (
-  collection,
-  action,
-  fields,
-  policy,
-  permissions,
-  validation
-) VALUES (
-  'travel_buddy_user',
-  'read',
-  '*',
-  (SELECT id FROM directus_policies WHERE name LIKE '%public_label%'),
-  '{}',
-  '{}'
-);
+-- ============================
+-- Permisos CRUD para Evento
+-- ============================
 
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('evento', 'create', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('evento', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('evento', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('evento', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
+
+-- ============================
+-- Permisos CRUD para Actividad
+-- ============================
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('actividad', 'create', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('actividad', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('actividad', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('actividad', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');

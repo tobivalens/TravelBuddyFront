@@ -71,7 +71,6 @@ class MainActivity : ComponentActivity() {
 fun AppNavigator() {
     val context = LocalContext.current
     val navController = rememberNavController()
-    // Insertar Actividad - Antes aca habia uno creada para ver que tal
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
@@ -85,19 +84,31 @@ fun AppNavigator() {
         }
         composable("registerUser"){RegisterUserScreen()}
         composable("recoverPassword"){ RecoverPassword() }
+
+
         composable("editEvent/{eventId}",
             arguments = listOf(navArgument("eventId"){type = NavType.IntType})
         ){ backStackEntry ->
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             EditEventScreen(eventId, navController)}
-        /*
-        composable("gastos"){}
 
-        composable("VisualizeActivities"){ ActivitiesScreen(navController)}
-        composable("VisualizeActivity"){
 
+        //composable("gastos"){}
+        composable(
+            "VisualizeActivities/{eventId}",
+                    arguments = listOf(
+                        navArgument("eventId")
+                        {type = NavType.IntType}
+                    )
+            ){
+                backStackEntry ->
+                val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+                ActivitiesScreen(
+                    navController = navController,
+                    eventId = eventId
+                )
         }
-         */
+
 
         composable("VisualizeEvent/{eventId}",
             arguments = listOf(
@@ -110,6 +121,8 @@ fun AppNavigator() {
                 onEditEvent = {navController.navigate("editEvent/$eventId")},
                 navController = navController
             )}
+
+
         composable("profile"){ UserProfile(
             onHomeClick = {
                 navController.navigate("home")
@@ -126,8 +139,6 @@ fun AppNavigator() {
         composable("activities") {
             ActivitiesScreen(navController = navController)
         }
-
-
         composable("createActivity") {
             CreateActivityScreen(
                 activity = activity, // Actividad vacía para crear nueva
@@ -260,38 +271,4 @@ fun SplashScreen(navController: NavHostController) {
 }
 
 
-/**
-@Composable
-fun HomeEventScreen() {
-
-    val bottomController= rememberNavController()
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            AppBottomNavigationBar(bottomController, selectedItem = 0, onOptionClick = {})
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = bottomController,
-            startDestination = "visualizeEvent",
-            modifier = Modifier.padding(innerPadding) 
-        ) {
-            composable("visualizeEvent") {
-                VisualizeEventScreen()
-            }
-            //esto era para pruebas
-            composable("recoverPassword") {
-                VisualizeEventScreenAdmin(navController)
-            }
-
-            composable("1") {
-                // arreglar las rutas cuando esten completas
-
-            }
-        }
-    }
-}
-
-**/
 

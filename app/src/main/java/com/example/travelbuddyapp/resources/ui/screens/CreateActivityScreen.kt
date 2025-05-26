@@ -44,25 +44,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelbuddyapp.datasource.DTOS.Activity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun CreateActivityScreen(
-    activity: Activity,
-    onSave: (Activity) -> Unit,
     onBack: () -> Unit
 ) {
 
     val scrollState = rememberScrollState()
-    var title by remember { mutableStateOf(activity.title) }
-    var description by remember { mutableStateOf(activity.description) }
-    var date by remember { mutableStateOf(activity.date) }
-    var time by remember { mutableStateOf(activity.time) }
-    var location by remember { mutableStateOf(activity.location) }
-    var photo by remember { mutableStateOf(activity.imageUrl) }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
+    var photo by remember { mutableStateOf("") }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -161,15 +158,7 @@ fun CreateActivityScreen(
 
             Button(
                 onClick = {
-                    onSave(
-                        activity.copy(
-                            title = title,
-                            description = description,
-                            date = date,
-                            time = time,
-                            location = location
-                        )
-                    )
+                    // Aca va el atributo que va a crear la actividad como tal.
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -286,7 +275,8 @@ fun DateField(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding
+    (vertical = 8.dp)
     ) {
         Text(
             text = label,

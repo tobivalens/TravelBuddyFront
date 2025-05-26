@@ -60,6 +60,7 @@ fun VisualizeEventScreenAdmin(
 
 
 ) {
+
     val scrollState = rememberScrollState()
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
@@ -127,7 +128,10 @@ fun VisualizeEventScreenAdmin(
                     when (index) {
                         0 -> navController.navigate("VisualizeEvent")
                         1 -> navController.navigate("gastos")
-                        2 -> navController.navigate("ViSualizeActivities")
+                        2 -> navController.navigate("VisualizeActivities/$eventId"){
+                            launchSingleTop = true
+                            popUpTo("VisualizeEvent/$eventId") { inclusive = false }
+                        }
                     }
                 }
             )

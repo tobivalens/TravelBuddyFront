@@ -31,11 +31,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.example.travelbuddyapp.datasource.DTOS.Activity
+
 
 @Composable
 fun ActivityDetailScreen(
-    activity: Activity,
+    //Aaca deberia de haber un parametro diciente de la actividad seleccionada,
     onEditClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -61,12 +61,14 @@ fun ActivityDetailScreen(
                     modifier = Modifier.size(28.dp)
                 )
             }
-
-
+        }
+    }
+}
+        /*
         }
 
         AsyncImage(
-            model = activity.imageUrl,
+            model = // Atributo de la url asociada a la actividad. ,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -83,7 +85,7 @@ fun ActivityDetailScreen(
         ) {
 
             Text(
-                text = activity.title,
+                text = //atributo asociado al nombre de la Actividad como tal,
                 color = Color(0xCC52545B),
                 fontSize = 26.sp,
                 modifier = Modifier.weight(1f)
@@ -96,10 +98,10 @@ fun ActivityDetailScreen(
 
 
 
-        DetailBlock("Descripción", activity.description)
-        DetailBlock("Fecha", activity.date)
-        DetailBlock("Hora", activity.time)
-        DetailBlock("Ubicación", activity.location)
+        DetailBlock("Descripción",  // Campo relacionado a la descripcion de la actividad)
+        DetailBlock("Fecha", // Atributo relacionado a la fecha de la actividad)
+        DetailBlock("Hora", // Atributo relacionado a la hora que se va a hacer la actividad)
+        DetailBlock("Ubicación", // Atributo relacionado a la ubicacion)
         DetailBlock("Archivos adjuntos", "No hay archivos aún")
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -137,3 +139,5 @@ fun DetailBlock(label: String, value: String) {
         Text(text = value, fontSize = 15.sp, color = Color.White)
     }
 }
+         */
+

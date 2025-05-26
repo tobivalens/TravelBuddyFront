@@ -1,19 +1,33 @@
 package com.example.travelbuddyapp.datasource.DTOS
 
-data class Activity(
-    val id: String,
-    val title: String,
-    val description: String,
-    val date: String,
-    val time: String,
-    val location: String,
-    val imageUrl: String
+
+data class ActivityData(
+    val nombre: String,
+    val descripcion: String,
+    val id_evento: Int
+)
+
+data class EditActivityData(
+    val name: String,
+    val description: String
+)
+
+data class ActivityDTO(
+    val id_Actividad: String,
+    val nombre: String,
+    val descripcion: String
+)
+data class GetActivitiesData(
+    val data: List<ActivityDTO>
+)
+
+data class ActivityResponse(
+    val data: ActivityDTO
+)
+
+data class SingleActivityData(
+    val data: ActivityDTO
 )
 
 
-data class Activities(
-    val id: String,
-    val title: String,
-    val date: String,
-    val imageUrl: String? = null
-)
+

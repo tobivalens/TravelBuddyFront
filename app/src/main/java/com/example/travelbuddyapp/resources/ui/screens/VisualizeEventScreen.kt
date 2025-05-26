@@ -152,7 +152,6 @@ fun VisualizeEventScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            //
             OutlinedButton(
                 onClick = { },
                 modifier = Modifier.fillMaxWidth(),

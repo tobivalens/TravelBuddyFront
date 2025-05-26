@@ -45,24 +45,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelbuddyapp.datasource.DTOS.Activity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun EditActivityScreen(
-    activity: Activity,
-    onSave: (Activity) -> Unit,
+    //Recibir actividad
     onBack: () -> Unit
 ) {
 
     val scrollState = rememberScrollState()
-    var title by remember { mutableStateOf(activity.title) }
-    var description by remember { mutableStateOf(activity.description) }
-    var date by remember { mutableStateOf(activity.date) }
-    var time by remember { mutableStateOf(activity.time) }
-    var location by remember { mutableStateOf(activity.location) }
+    var title by remember { mutableStateOf("atributo relacionado al nombre actual") }
+    var description by remember { mutableStateOf("atributo relacionado a la description actual") }
+    var date by remember { mutableStateOf("atributo relacionado a la fecha actual") }
+    var time by remember { mutableStateOf("atributo relacionado al tiempo actual") }
+    var location by remember { mutableStateOf("atributo relacionado a la localizacion actual") }
     var photo by remember { mutableStateOf("foto.jpg") }
 
     var showDatePicker by remember { mutableStateOf(false) }
@@ -130,15 +128,7 @@ fun EditActivityScreen(
 
                 Button(
                     onClick = {
-                        onSave(
-                            activity.copy(
-                                title = title,
-                                description = description,
-                                date = date,
-                                time = time,
-                                location = location
-                            )
-                        )
+                        // Aca va a el metodo de edicion que va a recibir los cambios
                     },
                     modifier = Modifier
                         .fillMaxWidth()

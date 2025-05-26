@@ -17,7 +17,6 @@ interface AuthService {
     @POST("/items/travel_buddy_user")
     suspend fun registerAppUser(@Body registerDataExtra: RegisterDataExtra): RegisterExtraResponse
 
-
 }
 
 
