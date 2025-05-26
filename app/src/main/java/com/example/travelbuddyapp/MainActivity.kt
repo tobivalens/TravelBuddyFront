@@ -38,7 +38,6 @@ import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
-import com.example.travelbuddyapp.resources.ui.screens.CreateEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
@@ -94,6 +93,7 @@ fun AppNavigator() {
 
 
         //composable("gastos"){}
+
         composable(
             "VisualizeActivities/{eventId}",
                     arguments = listOf(
@@ -139,18 +139,16 @@ fun AppNavigator() {
         composable("activities") {
             ActivitiesScreen(navController = navController)
         }
-        composable("createActivity") {
-            CreateActivityScreen(
-                activity = activity, // Actividad vacía para crear nueva
-                onSave = { updatedActivity ->
-                    // Aquí podrías guardar la actividad
-                    navController.popBackStack()
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
 
-         */
+        */
+        composable("createActivity/{eventId}",
+            arguments = listOf(navArgument("eventId"){type = NavType.IntType}))
+        { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId")?: return@composable
+
+            CreateActivityScreen(eventId = eventId,
+                onBack = { navController.popBackStack()})
+        }
 
         composable("home"){ HomeScreen(
             navController,
@@ -196,27 +194,29 @@ fun AppNavigator() {
             onProfileClick = {navController.navigate("userProfile") }
         )}
 
-        /*
-        composable("detail") {
+
+        composable("actDetail/{actId}",
+            arguments = listOf(navArgument("actId"){type =NavType.IntType})
+        ) { backStackEntry ->
+            val actId = backStackEntry.arguments?.getInt("actId")?: return@composable
+
             ActivityDetailScreen(
-                activity = activity,
-                onEditClick = { navController.navigate("edit") },
+                actId,
+                navController,
                 onBackClick = { navController.popBackStack() }
             )
         }
 
+        composable("editAct/{actId}",
+            arguments = listOf(navArgument("actId"){type = NavType.IntType})
+        ) {backStackEntry ->
+            val actId = backStackEntry.arguments?.getInt("actId")?: return@composable
 
-        composable("edit") {
             EditActivityScreen(
-                activity = activity,
-                onSave = {
-                    activity = it
-                    navController.popBackStack()
-                },
+                actId,
                 onBack = { navController.popBackStack() }
             )
         }
-         */
 
         composable("optionalAdd"){ OptionAddScreen( navController, onHomeClick = {
             navController.navigate("home")

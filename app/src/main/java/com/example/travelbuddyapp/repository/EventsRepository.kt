@@ -18,7 +18,7 @@ class EventsRepository(
 
 
 
-    suspend fun createEvent(eventName: String, eventDescription: String){
+    suspend fun createEvent(eventName: String, eventDescription: String, startDate: String,endDate: String ){
 
         var id = auxRepository.getUserId()
         var adminId: Int = id!!.toInt()
@@ -27,6 +27,8 @@ class EventsRepository(
         eventService.createEvent("Bearer $token", EventData(
             eventName,
             eventDescription,
+            startDate,
+            endDate,
             joinCode,
             adminId
         )

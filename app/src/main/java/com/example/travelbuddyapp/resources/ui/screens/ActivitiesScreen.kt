@@ -42,13 +42,14 @@ fun ActivitiesScreen(
     val eventViewModel: EventViewModel = viewModel()
     var selectedTab by remember { mutableStateOf(2) }
     val activities by viewModel.activities
-    val event = eventViewModel.currentEvent.value
+    val event by eventViewModel.currentEvent
+
     LaunchedEffect(eventId) {
         eventViewModel.getEventById(eventId)
         viewModel.loadActivities(eventId)
     }
-    val eventName = event?.nombre ?: "Evento sin nombre"
 
+    val eventName = event?.nombre ?: "Evento sin nombre"
 
     val tabs = listOf("Eventos", "Gastos", "Actividades")
 
@@ -61,7 +62,7 @@ fun ActivitiesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("createActivity") },
+                onClick = { navController.navigate("createActivity/${eventId}") },
                 containerColor = PurplePrimary,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
@@ -103,12 +104,11 @@ fun ActivitiesScreen(
                 fontFamily = SaralaFont
             )
 
-            // Esta lista necesita de la anterior que se va a crear para asi activar,
-            // La funcion de que al darle click se muestren los detalles
+
             ActivitiesList(
                 items = activities,
-                onActivityClick = { activities ->
-                    navController.navigate("detail")
+                onActivityClick = { activity ->
+                    navController.navigate("actDetail/${activity.id_actividad}")
                 }
             )
         }

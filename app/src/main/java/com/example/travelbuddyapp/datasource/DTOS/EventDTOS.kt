@@ -4,6 +4,8 @@ data class EventData(
 
     val nombre: String,
     val descripcion: String,
+    val fecha_inicio: String,
+    val fecha_fin: String,
     val codigo_union: String,
     val id_administrador: Int
 )
@@ -22,6 +24,8 @@ data class EventResponse(
     val id_evento: String,
     val nombre: String,
     val descripcion: String,
+    val fecha_inicio: String,
+    val fecha_fin: String,
     val codigo_union: String,
     val id_administrador: Int
 

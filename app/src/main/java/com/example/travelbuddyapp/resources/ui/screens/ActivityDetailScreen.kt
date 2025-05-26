@@ -19,10 +19,16 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,97 +36,97 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActivityDetailScreen(
-    //Aaca deberia de haber un parametro diciente de la actividad seleccionada,
-    onEditClick: () -> Unit,
+    actId: Int,
+    navController: NavController,
     onBackClick: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF7F7F7))
-            .verticalScroll(rememberScrollState())
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFA181FA))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "Volver",
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-        }
+    val viewModel: ActivityViewModel = viewModel()
+    val activity by viewModel.currentActivity
+
+    LaunchedEffect(actId) {
+        viewModel.loadActivity(actId)
     }
-}
-        /*
-        }
 
-        AsyncImage(
-            model = // Atributo de la url asociada a la actividad. ,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+    val scrollState = rememberScrollState()
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(
-                text = //atributo asociado al nombre de la Actividad como tal,
-                color = Color(0xCC52545B),
-                fontSize = 26.sp,
-                modifier = Modifier.weight(1f)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = activity?.nombre ?: "Detalle Actividad",
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                    }
+                },
+                actions = {
+                    if (activity != null) {
+                        IconButton(onClick = {
+                            navController.navigate("editAct/${activity!!.id_actividad}")
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color.White)
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFFA181FA))
             )
-            IconButton(onClick = onEditClick) {
-                Icon(Icons.Default.Edit, contentDescription = null, tint = Color(0xCC52545B), modifier = Modifier.size(28.dp))
-            }
         }
-
-
-
-
-        DetailBlock("Descripción",  // Campo relacionado a la descripcion de la actividad)
-        DetailBlock("Fecha", // Atributo relacionado a la fecha de la actividad)
-        DetailBlock("Hora", // Atributo relacionado a la hora que se va a hacer la actividad)
-        DetailBlock("Ubicación", // Atributo relacionado a la ubicacion)
-        DetailBlock("Archivos adjuntos", "No hay archivos aún")
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {},
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(40.dp)
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(Color(0xFFF7F7F7))
+                .verticalScroll(scrollState)
         ) {
-            Text("Eliminar actividad")
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Default.Delete, contentDescription = null)
+            AsyncImage(
+                model = activity?.id_imagen ?: "https://via.placeholder.com/600x220.png?text=Imagen+actividad",
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+            )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            DetailBlock("Descripción", activity?.descripcion ?: "Sin descripción")
+            DetailBlock("Fecha", activity?.fecha_actividad?: "Sin fecha")
+            DetailBlock("Hora", activity?.hora_actividad ?: "Sin hora")
+            DetailBlock("Ubicación", activity?.ubicacion ?: "Sin ubicación")
+            DetailBlock("Archivos adjuntos", "No hay archivos aún")
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { /* Eliminar actividad */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .height(48.dp),
+                shape = RoundedCornerShape(40.dp)
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Eliminar actividad")
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -129,15 +135,16 @@ fun DetailBlock(label: String, value: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 14.dp)
+            .padding(horizontal = 14.dp, vertical = 10.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(Color(0xFFB085F5))
             .padding(20.dp)
     ) {
         Text(text = label, fontSize = 12.sp, color = Color.White)
-        Spacer(modifier = Modifier.height(17 .dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = value, fontSize = 15.sp, color = Color.White)
     }
 }
-         */
+
+
 

@@ -52,6 +52,8 @@ CREATE TABLE Evento (
     id_evento SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
+    fecha_inicio DATE,
+    fecha_fin DATE,
     codigo_union VARCHAR(20) UNIQUE NOT NULL,
     id_imagen INTEGER,
     id_administrador INTEGER NOT NULL REFERENCES travel_buddy_user(id_usuario) ON DELETE CASCADE,
@@ -83,7 +85,7 @@ CREATE TABLE ParticipanteEvento (
     id_usuario INTEGER NOT NULL REFERENCES travel_buddy_user(id_usuario) ON DELETE CASCADE,
     id_evento INTEGER NOT NULL REFERENCES Evento(id_evento) ON DELETE CASCADE,
     rol VARCHAR(20) CHECK (rol IN ('coordinador', 'participante')) DEFAULT 'participante',
-    CONSTRAINT uq_usuario_evento UNIQUE (id_usuario, id_evento)
+    CONSTRAINT uq_usuario_evento UNIQUE (id_usuario, id_evento) 
 );
 
 -- ============================
@@ -163,3 +165,6 @@ INSERT INTO directus_permissions (collection, action, fields, policy, permission
 ('actividad', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
 ('actividad', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
 ('actividad', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}')

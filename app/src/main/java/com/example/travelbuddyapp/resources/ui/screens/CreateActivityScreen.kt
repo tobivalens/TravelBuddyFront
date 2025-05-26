@@ -44,15 +44,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun CreateActivityScreen(
+    eventId: Int,
     onBack: () -> Unit
 ) {
 
+    val viewModel: ActivityViewModel = viewModel()
     val scrollState = rememberScrollState()
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -157,9 +161,7 @@ fun CreateActivityScreen(
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(
-                onClick = {
-                    // Aca va el atributo que va a crear la actividad como tal.
-                },
+                onClick = {viewModel.createActivity(title, description, eventId)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),

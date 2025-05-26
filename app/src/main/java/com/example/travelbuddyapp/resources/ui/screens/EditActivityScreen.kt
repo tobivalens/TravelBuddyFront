@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,29 +46,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun EditActivityScreen(
-    //Recibir actividad
+    actId: Int,
     onBack: () -> Unit
 ) {
 
+    val viewModel: ActivityViewModel = viewModel()
+    val activity by viewModel.currentActivity
+
+    LaunchedEffect(actId) {
+        viewModel.loadActivity(actId)
+    }
+
     val scrollState = rememberScrollState()
-    var title by remember { mutableStateOf("atributo relacionado al nombre actual") }
-    var description by remember { mutableStateOf("atributo relacionado a la description actual") }
-    var date by remember { mutableStateOf("atributo relacionado a la fecha actual") }
-    var time by remember { mutableStateOf("atributo relacionado al tiempo actual") }
-    var location by remember { mutableStateOf("atributo relacionado a la localizacion actual") }
-    var photo by remember { mutableStateOf("foto.jpg") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
+    var photo by remember { mutableStateOf("") }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
     val dateFormatter = SimpleDateFormat("dd MMMM yyyy", Locale("es", "ES"))
     val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+
+    LaunchedEffect(activity) {
+        activity?.let{
+            title = it.nombre
+            description = it.descripcion
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -127,9 +144,10 @@ fun EditActivityScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = {
-                        // Aca va a el metodo de edicion que va a recibir los cambios
-                    },
+                    onClick = {viewModel.editActivity(
+                        actId,
+                        title,
+                        description)},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

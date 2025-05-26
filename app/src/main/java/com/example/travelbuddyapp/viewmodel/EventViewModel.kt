@@ -18,11 +18,13 @@ class EventViewModel(
     private val _currentEvent = mutableStateOf<EventResponse?>(null)
     val currentEvent: State<EventResponse?> = _currentEvent
 
-    fun createEvent(eventName:String, description:String){
+    fun createEvent(eventName:String, description:String, startDate: String, endDate: String){
         viewModelScope.launch(Dispatchers.IO){
             eventRepository.createEvent(
                 eventName,
-                description
+                description,
+                startDate,
+                endDate
             )
         }
     }

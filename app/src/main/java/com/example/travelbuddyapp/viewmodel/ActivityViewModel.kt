@@ -26,6 +26,14 @@ class ActivityViewModel(
         }
     }
 
+    fun loadActivity(actId:Int){
+
+        viewModelScope.launch(Dispatchers.IO){
+            val act = activityRepository.loadActivity(actId)
+            _currentActivity.value = act
+        }
+    }
+
     fun createActivity(activityName:String, description:String, eventId: Int){
         viewModelScope.launch(Dispatchers.IO){
             activityRepository.createActivity(

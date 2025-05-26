@@ -20,6 +20,15 @@ class ActivitiesRepository(
         throw Exception("Error cargando evento: ${response.code()} ${response.message()}")
     }
 
+    suspend fun loadActivity(actId: Int): ActivityDTO?{
+
+        val token = auxRepository.getAccessToken()
+        val response = activitiesService.getActivity("Bearer $token", actId)
+
+        return response.body()?.data
+
+    }
+
     suspend fun createActivity(activityName: String, activityDescription: String, id_Evento: Int){
         val token = auxRepository.getAccessToken()
         activitiesService.createActivity("Bearer $token", ActivityData(
@@ -31,9 +40,14 @@ class ActivitiesRepository(
     }
     suspend fun editActivity(id: Int, newName: String, newDesc: String){
         val token = auxRepository.getAccessToken()
-        activitiesService.editActivity(
-            "Bearer $token", id,
+        activitiesService.editActivity("Bearer $token",
+            id,
             EditActivityData(newName, newDesc)
         )
+    }
+
+    suspend fun deleteActivity(id: Int){
+        val token = auxRepository.getAccessToken()
+        activitiesService.deleteActivities("Bearer $token", id)
     }
 }

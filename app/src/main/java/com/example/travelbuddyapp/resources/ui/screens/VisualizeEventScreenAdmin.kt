@@ -73,6 +73,8 @@ fun VisualizeEventScreenAdmin(
 
     val eventTitle = event?.nombre?: "Sin nombre"
     val description = event?.descripcion?: "Sin descripcion"
+    val startDate = event?.fecha_inicio?: "Sin fecha"
+    val endDate = event?.fecha_fin?: "Sin fecha"
 
     Scaffold(
         topBar = {
@@ -165,11 +167,11 @@ fun VisualizeEventScreenAdmin(
             ) {
                 Column {
                     Text("Fecha de inicio", color = Color(0xFFA38AFB), fontWeight = FontWeight.Bold)
-                    Text("Julio 04, 2025", color = Color.Gray)
+                    Text(startDate, color = Color.Gray)
                 }
                 Column {
                     Text("Fecha de finalización", color = Color(0xFFA38AFB), fontWeight = FontWeight.Bold)
-                    Text("Julio 30, 2025", color = Color.Gray)
+                    Text(endDate, color = Color.Gray)
                 }
             }
 

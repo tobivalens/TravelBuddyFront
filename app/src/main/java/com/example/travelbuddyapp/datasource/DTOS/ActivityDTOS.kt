@@ -8,14 +8,19 @@ data class ActivityData(
 )
 
 data class EditActivityData(
-    val name: String,
-    val description: String
+    val nombre: String,
+    val descripcion: String
 )
 
 data class ActivityDTO(
-    val id_Actividad: String,
+    val id_actividad: String,
     val nombre: String,
-    val descripcion: String
+    val descripcion: String,
+    val fecha_actividad: String,
+    val hora_actividad: String,
+    val ubicacion: String,
+    val id_imagen: String
+
 )
 data class GetActivitiesData(
     val data: List<ActivityDTO>
