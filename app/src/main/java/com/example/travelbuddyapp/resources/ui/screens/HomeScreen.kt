@@ -15,11 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.travelbuddyapp.datasource.DTOS.EventResponse
 import com.example.travelbuddyapp.resources.icons.AppIcons
+import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight   = Color(0xFFB085F5)
@@ -33,17 +40,25 @@ data class TravelItem(
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     userName: String,
     tabs: List<String> = listOf("Todos", "Mis Viajes", "Otros"),
     travels: List<TravelItem>,
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     onSearchClick: () -> Unit,
-    onTravelClick: (TravelItem) -> Unit,
+    onTravelClick: (EventResponse) -> Unit,
     onHomeClick: () -> Unit,
     onAddClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
+
+    val viewModel: EventViewModel = viewModel()
+    val events by viewModel.events
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllEvents()
+    }
 
     Scaffold(
         topBar    = { HomeTopBar(userName, onSearchClick) },
@@ -63,8 +78,10 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             TravelList(
-                items       = travels,
-                onItemClick = onTravelClick
+                items       = events,
+                onItemClick = {event ->
+                    navController.navigate("VisualizeEvent/${event.id_evento}")
+                }
             )
         }
     }
@@ -76,13 +93,19 @@ fun HomeTopBar(userName: String, onSearchClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(PurplePrimary)
+            .background(PurpleLight)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
+
         Text(
             text  = "¡Hola $userName!",
             color = Color.White,
-            style = MaterialTheme.typography.headlineMedium
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 25.sp,
+            fontFamily = SaralaFont
+
         )
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = onSearchClick) {
@@ -104,7 +127,7 @@ fun HomeTabRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 20.dp)
     ) {
         tabs.forEachIndexed { index, label ->
             val isSelected = index == selectedIndex
@@ -121,7 +144,8 @@ fun HomeTabRow(
                 Text(
                     text  = label,
                     color = if (isSelected) PurplePrimary else Color.White,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    fontFamily = SaralaFont
                 )
             }
         }
@@ -130,20 +154,22 @@ fun HomeTabRow(
 
 @Composable
 fun TravelList(
-    items: List<TravelItem>,
-    onItemClick: (TravelItem) -> Unit
+    items: List<EventResponse>,
+    onItemClick: (EventResponse) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White, shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .padding(top = 16.dp)
+            .background(Color.White, shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp))
+            .padding(top = 10.dp)
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Viajes",
             style = MaterialTheme.typography.titleLarge,
             color = PurplePrimary,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+            modifier = Modifier.padding(horizontal = 35.dp, vertical = 7.dp),
+            fontFamily = SaralaFont
         )
 
         LazyColumn(
@@ -158,13 +184,13 @@ fun TravelList(
 
 @Composable
 fun TravelItemCard(
-    item: TravelItem,
+    item: EventResponse,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 35.dp, vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -177,8 +203,8 @@ fun TravelItemCard(
                 .padding(8.dp)
         ) {
             AsyncImage(
-                model           = item.imageUrl,
-                contentDescription = item.title,
+                model           = "https://raw.githubusercontet.com/tomoewinds/devasc-study-team/blob/master/resumen-superficie-y-texturas-de-muro-de-piedra-de-hormigon-blanco.jpg",
+                contentDescription = item.nombre,
                 contentScale    = ContentScale.Crop,
                 modifier = Modifier
                     .size(84.dp)
@@ -192,46 +218,21 @@ fun TravelItemCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = item.title,
+                    text = item.nombre,
                     style = MaterialTheme.typography.titleMedium,
-                    color = PurplePrimary
+                    color = PurplePrimary,
+                    fontFamily = SaralaFont
+
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = item.description,
+                    text = item.descripcion,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    fontFamily = SaralaFont
                 )
             }
         }
-    }
-}
-
-@Composable
-fun HomeBottomBar(
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit
-) {
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 8.dp
-    ) {
-        NavigationBarItem(
-            icon = { Icon(AppIcons.HomeSelected(), contentDescription = "Inicio") },
-            selected = true,
-            onClick = onHomeClick
-        )
-        NavigationBarItem(
-            icon = { Icon(AppIcons.add(), contentDescription = "Nuevo") },
-            selected = false,
-            onClick = onAddClick
-        )
-        NavigationBarItem(
-            icon = { Icon(AppIcons.profile(), contentDescription = "Perfil") },
-            selected = false,
-            onClick = onProfileClick
-        )
     }
 }
