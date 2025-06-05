@@ -27,7 +27,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
-// import com.example.travelbuddyapp.resources.ui.screens.TopAppBarComponent
+import com.example.travelbuddyapp.resources.ui.screens.TopAppBarComponent
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +48,7 @@ fun AddExpenseScreen(onBackClick: () -> Unit) {
 
     Scaffold(
         topBar = {
-            // TopAppBarComponent(eventTitle = "Añadir un gasto", onBackClick)
+            TopAppBarComponent(eventTitle = "Añadir un gasto", onBackClick)
         },
         containerColor = backgroundColor
     ) { paddingValues ->
