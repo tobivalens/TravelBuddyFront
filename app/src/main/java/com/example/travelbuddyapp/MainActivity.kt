@@ -82,7 +82,8 @@ fun AppNavigator() {
     }
 
     NavHost(navController = navController, startDestination = "splash") {
-        composable("splash") { PantallaGastosUsuario(navController) }
+        composable("splash") { SplashScreen(navController) }
+
         composable("loginScreen") {
             LoginScreen(
                 context = context,
@@ -249,8 +250,12 @@ fun AppNavigator() {
                 onProfileClick = {navController.navigate("userProfile") }
             )
         }
+
         composable("userExpenses") {
-            PantallaGastosUsuario(navController)
+            PantallaGastosUsuario(
+                navController = navController,
+                onBack = { navController.navigate("home") }
+            )
         }
 
     }
