@@ -1,7 +1,11 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +17,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.navigation.NavController
+import com.example.travelbuddyapp.resources.ui.components.BottomBar
+import com.example.travelbuddyapp.resources.utils.formatMoney
+import com.example.travelbuddyapp.ui.theme.CardBackground
+import com.example.travelbuddyapp.ui.theme.PurpleHeader
+import com.example.travelbuddyapp.ui.theme.Sarala
+import com.example.travelbuddyapp.ui.theme.SoftText
+
 
 data class Gasto(
     val categoria: String,
@@ -28,119 +39,159 @@ data class Viaje(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaGastosUsuario(
-    navController: NavController,
+    navController: NavController
 ) {
-    val viajes = listOf(
-        Viaje(
-            "Viaje a la Montaña", listOf(
-                Gasto("Hospedaje", 4000),
-                Gasto("Comida", 2606),
-                Gasto("Pasajes", 1154),
-                Gasto("Recuerdos", 200),
-                Gasto("Boletos museo", 40),
-            )
-        ),
-        Viaje(
-            "Viaje a la Playa", listOf(
-                Gasto("Hospedaje", 3500),
-                Gasto("Comida", 1800)
-            )
-        )
+    val viajes = listOf("Viaje a la Montaña", "Viaje a la Playa")
+    var viajeSeleccionado by remember { mutableStateOf<String?>(null) }
+
+    val gastosTotales = 46097
+    val gastosViaje = 8000
+    val detallesGastos = listOf(
+        "Hospedaje" to 4000,
+        "Comida" to 2606,
+        "Pasajes" to 1154,
+        "Recuerdos" to 200,
+        "Boletos museo" to 40
     )
-
-    var viajeSeleccionado by remember { mutableStateOf<Viaje?>(null) }
-    var expanded by remember { mutableStateOf(false) }
-
-    val totalGeneral = viajes.sumOf { it.gastos.sumOf { gasto -> gasto.monto } }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(Color.White)
     ) {
-        // Header
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Mis Gastos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        // Header morado
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(PurpleHeader)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            Text(
+                text = "Mis Gastos",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Sarala
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Tarjeta de gastos totales
+        // Card de gastos totales
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFB38BFF)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Sus gastos totales son:", color = Color.White)
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
                 Text(
-                    "$ ${"%d".format(totalGeneral)}",
+                    text = "Sus gastos totales son:",
+                    color = Color.White,
+                    fontFamily = Sarala
+                )
+                Text(
+                    text = "$ ${gastosTotales.toString().formatMoney()}",
+                    color = Color.White,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp,
-                    color = Color.White
+                    fontFamily = Sarala
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Dropdown de selección de viaje
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+        // Dropdown
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .background(Color.White, shape = RoundedCornerShape(12.dp))
+                .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                .fillMaxWidth()
+                .clickable { /* mostrar dropdown si no usas ExposedDropdownMenuBox */ }
+                .padding(12.dp)
         ) {
-            TextField(
-                value = viajeSeleccionado?.nombre ?: "Selecciona un viaje para ver sus gastos",
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
-                colors = ExposedDropdownMenuDefaults.textFieldColors()
-            )
-
-            ExposedDropdownMenu(
+            var expanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded }
             ) {
-                viajes.forEach { viaje ->
-                    DropdownMenuItem(
-                        text = { Text(viaje.nombre) },
-                        onClick = {
-                            viajeSeleccionado = viaje
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
+                TextField(
+                    value = viajeSeleccionado ?: "Selecciona un viaje para ver sus gastos",
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    modifier = Modifier.menuAnchor()
+                )
 
-        // Lista de gastos si hay selección
-        viajeSeleccionado?.let { viaje ->
-            val totalViaje = viaje.gastos.sumOf { it.monto }
-
-            Text("Total de gastos del viaje: $${totalViaje}", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Listado de Gastos", color = Color(0xFF7C4DFF), fontWeight = FontWeight.SemiBold)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            viaje.gastos.forEach { gasto ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
                 ) {
-                    Text(gasto.categoria)
-                    Text("$ ${gasto.monto}")
+                    viajes.forEach { viaje ->
+                        DropdownMenuItem(
+                            text = { Text(viaje, fontFamily = Sarala) },
+                            onClick = {
+                                viajeSeleccionado = viaje
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
+
+        // Si se selecciona un viaje
+        if (viajeSeleccionado != null) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Total de gastos del viaje:",
+                    fontFamily = Sarala,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "$ ${gastosViaje.toString().formatMoney()}",
+                    fontFamily = Sarala,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Listado de Gastos",
+                    fontFamily = Sarala,
+                    color = PurpleHeader,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                detallesGastos.forEach { (categoria, valor) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = categoria,
+                            fontFamily = Sarala,
+                            color = SoftText
+                        )
+                        Text(
+                            text = "$ ${valor.toString().formatMoney()}",
+                            fontFamily = Sarala,
+                            color = SoftText
+                        )
+                    }
+                }
+            }
+        }
+
+        // Bottom Navigation (opcional)
+        Spacer(modifier = Modifier.weight(1f))
+        BottomBar()
     }
 }
+

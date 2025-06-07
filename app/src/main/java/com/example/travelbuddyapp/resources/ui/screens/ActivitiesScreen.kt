@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import com.example.travelbuddyapp.viewmodel.EventViewModel
 
