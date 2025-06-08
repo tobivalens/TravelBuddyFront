@@ -66,9 +66,11 @@ fun VisualizeEventScreenAdmin(
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val viewModel: EventViewModel = viewModel()
     val event by viewModel.currentEvent
+    val participants by viewModel.participants
 
     LaunchedEffect(eventId) {
         viewModel.getEventById(eventId)
+        viewModel.loadParticipants(eventId)
     }
 
     val eventTitle = event?.nombre?: "Sin nombre"
@@ -181,8 +183,7 @@ fun VisualizeEventScreenAdmin(
 
             Spacer(Modifier.height(8.dp))
 
-            val participantes = listOf("Jairo Vélez", "Sofía Puente", "Jordi Arroyo")
-            participantes.forEach {
+            participants.forEach {
                 ParticipantItem(name = it)
             }
 

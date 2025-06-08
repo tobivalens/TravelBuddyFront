@@ -27,6 +27,7 @@ import com.example.travelbuddyapp.resources.icons.AppIcons
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import com.example.travelbuddyapp.viewmodel.EventViewModel
+import kotlinx.coroutines.launch
 
 private val PurplePrimary = Color(0xFF9B69E7)
 private val PurpleLight   = Color(0xFFB085F5)
@@ -53,11 +54,15 @@ fun HomeScreen(
     onProfileClick: () -> Unit
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
     val viewModel: EventViewModel = viewModel()
     val events by viewModel.events
+    val authViewModel: AuthViewModel = viewModel()
+    val userId by authViewModel.currentUserId
 
     LaunchedEffect(Unit) {
         viewModel.getAllEvents()
+        authViewModel.getUserId()
     }
 
     Scaffold(
@@ -79,8 +84,16 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
             TravelList(
                 items       = events,
-                onItemClick = {event ->
-                    navController.navigate("VisualizeEvent/${event.id_evento}")
+                onItemClick = { event ->
+                    coroutineScope.launch {
+
+                        if(event.id_administrador == userId) {
+                            navController.navigate("VisualizeEventAdmin/${event.id_evento}")
+                        }
+                        else{
+                            navController.navigate("VisualizeEvent/${event.id_evento}")
+                        }
+                    }
                 }
             )
         }

@@ -50,8 +50,7 @@ fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: St
 
     Scaffold(
         topBar = {
-
-            TopAppBarComponent(eventTitle = travelName,onBackClick)
+            //TopAppBarComponent(eventTitle = travelName,onBackClick)
 
         },
         bottomBar = {

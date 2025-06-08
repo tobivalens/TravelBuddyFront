@@ -47,6 +47,7 @@ import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
 import com.example.travelbuddyapp.resources.ui.screens.RecoverPassword
 import com.example.travelbuddyapp.resources.ui.screens.RegisterUserScreen
 import com.example.travelbuddyapp.resources.ui.screens.UserProfile
+import com.example.travelbuddyapp.resources.ui.screens.VisualizeEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.VisualizeEventScreenAdmin
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
 
@@ -119,7 +120,7 @@ fun AppNavigator() {
         }
 
 
-        composable("VisualizeEvent/{eventId}",
+        composable("VisualizeEventAdmin/{eventId}",
             arguments = listOf(
                 navArgument("eventId"){type = NavType.IntType})
         ){ backStackEntry ->
@@ -130,6 +131,19 @@ fun AppNavigator() {
                 onEditEvent = {navController.navigate("editEvent/$eventId")},
                 navController = navController
             )}
+
+        composable("VisualizeEvent/{eventId}",
+            arguments = listOf(
+                navArgument("eventId"){type = NavType.IntType})
+        ){ backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            VisualizeEventScreen(
+                eventId = eventId,
+                onBackClick = {navController.navigate("home")},
+                navController = navController
+
+            )
+        }
 
 
         composable("profile"){ UserProfile(

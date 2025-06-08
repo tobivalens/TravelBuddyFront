@@ -26,8 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 
 @Composable
@@ -38,7 +40,7 @@ fun JoinEventScreen(
     onProfileClick: () -> Unit
 ) {
     val codeEvent = remember { mutableStateOf("") }
-
+    val eventViewModel: EventViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -136,7 +138,7 @@ fun JoinEventScreen(
 
                         Button(
                             onClick = {
-                                navController.navigate("joinEvent")
+                                eventViewModel.joinEvent(codeEvent.value)
 
                             },
                             modifier = Modifier

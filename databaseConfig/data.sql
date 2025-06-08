@@ -167,7 +167,7 @@ INSERT INTO directus_permissions (collection, action, fields, policy, permission
 ('actividad', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
 
 INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
-('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}')
+('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
 
 INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
-('directus_users', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}')
+('directus_users', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');

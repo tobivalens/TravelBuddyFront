@@ -18,6 +18,8 @@ class AuthViewModel(
     var authState: MutableStateFlow<AuthState> = MutableStateFlow<AuthState>( AuthState() )
     private val _currentUser = mutableStateOf<String?>(null)
     val currentUser: State<String?> = _currentUser
+    private val _userId = mutableStateOf<Int?>(null)
+    val currentUserId: State<Int?> = _userId
 
     fun login(email:String, pass:String) {
 
@@ -74,6 +76,16 @@ class AuthViewModel(
         viewModelScope.launch(Dispatchers.IO){
             auxRepository.storeCurrentUserId()
         }
+    }
+
+    fun getUserId(){
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val userIdStr = auxRepository.getUserId()
+            val userId = userIdStr?.toIntOrNull()
+            _userId.value = userId
+        }
+
     }
 }
 

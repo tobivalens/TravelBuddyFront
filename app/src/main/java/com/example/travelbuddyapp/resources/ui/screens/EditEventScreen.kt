@@ -115,7 +115,7 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
 
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Text("¡Editemos:", fontSize = 26.sp, fontFamily = SaralaFont)
-                Text("Viaje a la montaña!", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
+                Text(title, fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
