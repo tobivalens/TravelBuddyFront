@@ -39,10 +39,12 @@ import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
 import com.example.travelbuddyapp.resources.ui.screens.AddExpenseScreen
 import com.example.travelbuddyapp.resources.ui.screens.BalanceScreen
+import com.example.travelbuddyapp.resources.ui.screens.BalanceScreenUser
 import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
+import com.example.travelbuddyapp.resources.ui.screens.EditExpensesScreen
 import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
 import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
@@ -84,7 +86,7 @@ fun AppNavigator() {
         viewModel.getUser()
     }
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "editExpense") {
         composable("splash") { SplashScreen(navController) }
 
         composable("loginScreen") {
@@ -113,7 +115,16 @@ fun AppNavigator() {
                 8.9, 8.9, "NAME", {},
                 { navController.navigate("home") },
                 { navController.navigate("") },
-                onProfileClick = TODO()
+                { navController.navigate("profile") }
+            )
+        }
+
+        composable("gastosUser") {
+            BalanceScreenUser(
+                8.9, 8.9, "NAME", {},
+                { navController.navigate("home") },
+                { navController.navigate("") },
+                { navController.navigate("profile") }
             )
         }
 
@@ -136,6 +147,13 @@ fun AppNavigator() {
             AddExpenseScreen(
                 eventId = eventId,
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("editExpense") {
+            EditExpensesScreen(
+                eventId = -1,
+                onBackClick = { }
             )
         }
 
@@ -171,7 +189,8 @@ fun AppNavigator() {
 
         composable("profile") { UserProfile(navController) }
 
-        composable("createActivity/{eventId}",
+        composable(
+            "createActivity/{eventId}",
             arguments = listOf(navArgument("eventId") { type = NavType.IntType })
         )
         { backStackEntry ->
