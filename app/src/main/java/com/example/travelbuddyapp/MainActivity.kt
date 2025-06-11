@@ -37,6 +37,8 @@ import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
+import com.example.travelbuddyapp.resources.ui.screens.AddExpenseScreen
+import com.example.travelbuddyapp.resources.ui.screens.BalanceScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
@@ -104,7 +106,12 @@ fun AppNavigator() {
             EditEventScreen(eventId, navController)}
 
 
-        //composable("gastos"){}
+        composable("gastos"){ BalanceScreen(
+            8.9, 8.9, "NAME", {},
+            { navController.navigate("home") },
+            { navController.navigate("") },
+            onProfileClick = TODO()
+        )}
 
         composable(
             "VisualizeActivities/{eventId}",
@@ -120,6 +127,15 @@ fun AppNavigator() {
                     eventId = eventId
                 )
         }
+
+        composable("addExpense/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+            AddExpenseScreen(
+                eventId = eventId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
 
 
         composable("VisualizeEventAdmin/{eventId}",

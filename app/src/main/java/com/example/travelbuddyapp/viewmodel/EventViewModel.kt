@@ -49,6 +49,7 @@ class EventViewModel(
         viewModelScope.launch(Dispatchers.IO){
 
             val response = eventRepository.getAllEvents()
+            Log.e("events succes", response.toString())
             _events.value = response!!
 
         }

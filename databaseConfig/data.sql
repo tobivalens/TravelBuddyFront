@@ -89,12 +89,32 @@ CREATE TABLE ParticipanteEvento (
 );
 
 -- ============================
+-- Tabla gastos
+-- ============================
+
+CREATE TABLE Gasto (
+    id_gasto SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES Evento(id_evento) ON DELETE CASCADE,
+    nombre VARCHAR(100) NOT NULL,
+    valor NUMERIC(10,2) NOT NULL
+);
+
+
+
+-- ============================
 -- Insertar datos de prueba para Evento y Actividad
 -- ============================
 
 INSERT INTO Evento (nombre, descripcion, codigo_union, id_administrador) VALUES
 ('Evento Prueba 1', 'Descripción del evento 1', 'EVT123', 1),
 ('Evento Prueba 2', 'Descripción del evento 2', 'EVT456', 2);
+
+-- ============================
+-- Insertar datos de prueba para gastos
+-- ============================
+
+INSERT INTO Gasto (id_gasto, id_evento, nombre, valor) VALUES
+(111, 1,'name gasto 1',  1);
 
 INSERT INTO Actividad (id_evento, nombre, descripcion) VALUES
 (1, 'Actividad 1 Evento 1', 'Descripción actividad 1'),
