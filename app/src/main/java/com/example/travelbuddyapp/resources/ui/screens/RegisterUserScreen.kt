@@ -59,14 +59,14 @@ fun RegisterUserScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF2F3F8)) // fondo gris claro
+            .background(Color(0xFFF2F3F8))
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
-                    .background(Color(0xFFA181FA)) // lila claro
+                    .background(Color(0xFFA181FA))
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,19 +85,18 @@ fun RegisterUserScreen() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .offset(y = (-42).dp)
-                    .shadow(
-                        elevation = 32.dp,
-                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
-                        clip = true
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+            ) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(40.dp).verticalScroll(scrollState),
+                        .padding(40.dp)
+                        .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -112,9 +111,10 @@ fun RegisterUserScreen() {
                     )
                     TextField(
                         value = firstName.value,
-                        onValueChange = {firstName.value = it},
+                        onValueChange = { firstName.value = it },
                         placeholder = {
-                            Text("Nombre",
+                            Text(
+                                "Nombre",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -141,9 +141,10 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = lastName.value,
-                        onValueChange = {lastName.value = it},
+                        onValueChange = { lastName.value = it },
                         placeholder = {
-                            Text("Apellido",
+                            Text(
+                                "Apellido",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -170,9 +171,10 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = phone.value,
-                        onValueChange = {phone.value = it},
+                        onValueChange = { phone.value = it },
                         placeholder = {
-                            Text("Telefono",
+                            Text(
+                                "Telefono",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -199,9 +201,10 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = location.value,
-                        onValueChange = {location.value = it},
+                        onValueChange = { location.value = it },
                         placeholder = {
-                            Text("Ubicacion",
+                            Text(
+                                "Ubicacion",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -228,9 +231,10 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = birthDate.value,
-                        onValueChange = {birthDate.value = it},
+                        onValueChange = { birthDate.value = it },
                         placeholder = {
-                            Text("Fecha de nacimiento (YYYY-MM-DD)",
+                            Text(
+                                "Nacimiento (YYYY-MM-DD)",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -257,9 +261,10 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = email.value,
-                        onValueChange = {email.value = it},
+                        onValueChange = { email.value = it },
                         placeholder = {
-                            Text("Email",
+                            Text(
+                                "Email",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
@@ -286,12 +291,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = password.value,
-                        onValueChange = {password.value = it},
-                        placeholder = { Text("Contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)
-                        ) },
+                        onValueChange = { password.value = it },
+                        placeholder = {
+                            Text(
+                                "Contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
@@ -316,12 +324,15 @@ fun RegisterUserScreen() {
 
                     TextField(
                         value = confirmPassword.value,
-                        onValueChange = {confirmPassword.value = it},
-                        placeholder = { Text("Confirmar contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)
-                        ) },
+                        onValueChange = { confirmPassword.value = it },
+                        placeholder = {
+                            Text(
+                                "Confirmar contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
@@ -342,7 +353,6 @@ fun RegisterUserScreen() {
                         )
 
                     )
-
 
                     Button(
                         onClick = {
@@ -373,6 +383,5 @@ fun RegisterUserScreen() {
                 }
             }
         }
-
     }
 }
