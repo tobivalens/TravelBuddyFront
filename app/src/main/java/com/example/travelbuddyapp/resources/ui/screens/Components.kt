@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
@@ -38,6 +39,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -153,6 +156,9 @@ fun CustomTabBar(
     onTabSelected: (Int) -> Unit
 ) {
     Row(
+
+
+
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -259,4 +265,35 @@ fun HomeBottomBar(
             )
         )
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBarComponent(eventTitle:String, onBackClick: () -> Unit = {}){
+
+    TopAppBar(
+        title = {
+            Text(
+                text = eventTitle,
+                color = Color.White,
+                fontSize = 28.sp,
+                fontFamily = SaralaFont,
+                maxLines = 1
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = Color(0xFFA181FA)
+        )
+    )
+
 }
