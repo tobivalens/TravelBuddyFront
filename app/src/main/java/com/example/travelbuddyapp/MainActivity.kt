@@ -95,8 +95,8 @@ fun AppNavigator() {
                 onLoginSuccess = { navController.navigate("home") }
             )
         }
-        composable("registerUser"){RegisterUserScreen()}
-        composable("recoverPassword"){ RecoverPassword() }
+        composable("registerUser"){RegisterUserScreen(navController)}
+        composable("recoverPassword"){ RecoverPassword(navController) }
 
 
         composable("editEvent/{eventId}",

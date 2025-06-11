@@ -1,6 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,10 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 
 @Composable
-fun RecoverPassword(){
+fun RecoverPassword(navController: NavController) {
 
     Box(
         modifier = Modifier
@@ -43,6 +46,18 @@ fun RecoverPassword(){
                     .height(300.dp)
                     .background(Color(0xFFA181FA)) // lila claro
             ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp, top = 32.dp)
+                        .clickable {
+                            navController.popBackStack() // ← Acción de volver atrás
+                        }
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
             }
@@ -57,8 +72,12 @@ fun RecoverPassword(){
                         shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
                         clip = true
                     )
-                    .background(Color(0xFFF2F3F8), shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-            ){
+                    .background(
+                        Color(0xFFF2F3F8),
+                        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp)
+                    )
+            ) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -67,13 +86,12 @@ fun RecoverPassword(){
                 ) {
 
 
-
                     Text(
                         text = " Recuperar contraseña     ",
                         fontSize = 28.sp,
                         fontFamily = SaralaFont,
                         fontWeight = FontWeight.Normal,
-                        color =  Color(0xFFA181FA),
+                        color = Color(0xFFA181FA),
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.Start)
@@ -98,7 +116,8 @@ fun RecoverPassword(){
                         value = "",
                         onValueChange = {},
                         placeholder = {
-                            Text("Email",
+                            Text(
+                                "Email",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
