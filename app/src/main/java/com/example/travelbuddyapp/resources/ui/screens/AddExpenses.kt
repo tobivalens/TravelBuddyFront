@@ -1,6 +1,5 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -40,7 +39,6 @@ fun AddExpenseScreen(eventId: Int,
                      onBackClick: () -> Unit,
 ) {
     val viewModel: ExpenseViewModel = viewModel()
-
     val purpleColor = Color(0xFFA181FA)
     val backgroundColor = Color(0xFFFFFFFB)
     val fieldColor = Color.White

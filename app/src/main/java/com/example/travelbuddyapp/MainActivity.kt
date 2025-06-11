@@ -46,6 +46,7 @@ import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
 import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
+import com.example.travelbuddyapp.resources.ui.screens.PantallaGastosUsuario
 import com.example.travelbuddyapp.resources.ui.screens.RecoverPassword
 import com.example.travelbuddyapp.resources.ui.screens.RegisterUserScreen
 import com.example.travelbuddyapp.resources.ui.screens.UserProfile
@@ -85,6 +86,7 @@ fun AppNavigator() {
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
+
         composable("loginScreen") {
             LoginScreen(
                 context = context,
@@ -276,6 +278,13 @@ fun AppNavigator() {
                 },
 
                 onProfileClick = {navController.navigate("userProfile") }
+            )
+        }
+
+        composable("userExpenses") {
+            PantallaGastosUsuario(
+                navController = navController,
+                onBack = { navController.navigate("home") }
             )
         }
 

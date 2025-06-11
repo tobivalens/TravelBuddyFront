@@ -1,5 +1,6 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
