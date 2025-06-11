@@ -28,12 +28,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.resources.ui.screens.TopAppBarComponent
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.ActivityViewModel
+import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(onBackClick: () -> Unit) {
+fun AddExpenseScreen(eventId: Int,
+                     onBackClick: () -> Unit,
+) {
+    val viewModel: ExpenseViewModel = viewModel()
+
     val purpleColor = Color(0xFFA181FA)
     val backgroundColor = Color(0xFFFFFFFB)
     val fieldColor = Color.White
@@ -134,7 +141,12 @@ fun AddExpenseScreen(onBackClick: () -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = {},
+                onClick = {val amountDouble = amount.toDoubleOrNull() ?: 0.0
+                    if (name.isNotBlank() && amountDouble > 0) {
+                        viewModel.addExpense(eventId, name, amountDouble) {
+                            onBackClick()
+                        }
+                    } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

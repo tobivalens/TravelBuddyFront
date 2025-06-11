@@ -37,6 +37,7 @@ import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
+import com.example.travelbuddyapp.resources.ui.screens.AddExpenseScreen
 import com.example.travelbuddyapp.resources.ui.screens.BalanceScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
@@ -124,6 +125,15 @@ fun AppNavigator() {
                     eventId = eventId
                 )
         }
+
+        composable("addExpense/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+            AddExpenseScreen(
+                eventId = eventId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
 
 
         composable("VisualizeEventAdmin/{eventId}",
