@@ -84,7 +84,7 @@ fun AppNavigator() {
         viewModel.getUser()
     }
 
-    NavHost(navController = navController, startDestination = "splash") {
+    NavHost(navController = navController, startDestination = "home") {
         composable("splash") { SplashScreen(navController) }
 
         composable("loginScreen") {
@@ -193,7 +193,7 @@ fun AppNavigator() {
 
         composable("home"){ HomeScreen(
             navController,
-            userName = username!!,
+            userName = username ?: "Invitado",
             tabs = listOf("Todos", "Mis Viajes", "Otros"),
             travels = listOf(
                 TravelItem(
@@ -211,17 +211,6 @@ fun AppNavigator() {
                 //navController.navigate("splash")
             },
             onTravelClick = {},
-            onHomeClick = {
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = true }
-                }
-            },
-            onAddClick = {
-                navController.navigate("optionalAdd")
-            },
-            onProfileClick = {
-                navController.navigate("profile")
-            }
         )}
         composable("createEvent"){CreateEvent(
             navController,

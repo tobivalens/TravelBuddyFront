@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.travelbuddyapp.datasource.DTOS.EventResponse
 import com.example.travelbuddyapp.resources.icons.AppIcons
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import com.example.travelbuddyapp.viewmodel.EventViewModel
@@ -49,9 +50,6 @@ fun HomeScreen(
     onTabSelected: (Int) -> Unit,
     onSearchClick: () -> Unit,
     onTravelClick: (EventResponse) -> Unit,
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -67,7 +65,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar    = { HomeTopBar(userName, onSearchClick) },
-        bottomBar = { HomeBottomBar(onHomeClick, onAddClick, onProfileClick) },
+        bottomBar = { BottomNavigationBar(navController) },
         modifier   = Modifier.fillMaxSize()
     ) { padding ->
         Column(

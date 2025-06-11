@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AUTH_STATE
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
@@ -56,11 +57,7 @@ fun OptionAddScreen(
 
     Scaffold(
         bottomBar = {
-            HomeBottomBar(
-                onHomeClick = onHomeClick,
-                onAddClick = onAddClick,
-                onProfileClick = onProfileClick
-            )
+            BottomNavigationBar(navController)
         }
     ) {innerPadding->
 

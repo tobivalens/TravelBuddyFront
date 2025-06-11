@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.travelbuddyapp.resources.ui.components.BottomBar
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.resources.utils.formatMoney
 import com.example.travelbuddyapp.ui.theme.CardBackground
 import com.example.travelbuddyapp.ui.theme.PurpleHeader
@@ -223,6 +223,6 @@ fun PantallaGastosUsuario(
         Spacer(modifier = Modifier.weight(1f))
 
         // 5) BOTTOM BAR
-        BottomBar()
+        BottomNavigationBar(navController)
     }
 }
