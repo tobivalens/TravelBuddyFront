@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
@@ -56,15 +57,36 @@ fun OptionAddScreen(
 ) {
 
     Scaffold(
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .background(Color(0xFFA181FA))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp, top = 32.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        }
+                )
+            }
+        },
         bottomBar = {
             BottomNavigationBar(navController)
         }
-    ) {innerPadding->
+    ) { innerPadding ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF2F3F8)).padding(innerPadding)
+                .background(Color(0xFFF2F3F8))
+                .padding(innerPadding)
         ) {
             Column {
                 Box(

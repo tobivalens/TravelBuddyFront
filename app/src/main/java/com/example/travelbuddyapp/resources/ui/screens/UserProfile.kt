@@ -38,20 +38,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 @Composable
 fun UserProfile(
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit
+    navController: NavController,
 ) {
     Scaffold(
         bottomBar = {
-            HomeBottomBar(
-                onHomeClick = onHomeClick,
-                onAddClick = onAddClick,
-                onProfileClick = onProfileClick
-            )
+            BottomNavigationBar(navController)
         }
     ) { innerPadding ->
         Box(

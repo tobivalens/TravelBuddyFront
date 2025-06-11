@@ -1,6 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,6 +47,26 @@ fun JoinEventScreen(
     val eventViewModel: EventViewModel = viewModel()
 
     Scaffold(
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .background(Color(0xFFA181FA))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp, top = 32.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        }
+                )
+            }
+        },
         bottomBar = {
             HomeBottomBar(
                 onHomeClick = onHomeClick,
@@ -50,12 +74,13 @@ fun JoinEventScreen(
                 onProfileClick = onProfileClick
             )
         }
-    ) {innerPadding->
+    ) { innerPadding ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF2F3F8)).padding(innerPadding)
+                .background(Color(0xFFF2F3F8))
+                .padding(innerPadding)
         ) {
             Column {
 
@@ -108,9 +133,10 @@ fun JoinEventScreen(
 
                         TextField(
                             value = codeEvent.value,
-                            onValueChange = {codeEvent.value = it},
+                            onValueChange = { codeEvent.value = it },
                             placeholder = {
-                                Text("Código",
+                                Text(
+                                    "Código",
                                     fontFamily = SaralaFont,
                                     fontWeight = FontWeight.Normal,
                                     color = Color(0xFFCBC7C7)

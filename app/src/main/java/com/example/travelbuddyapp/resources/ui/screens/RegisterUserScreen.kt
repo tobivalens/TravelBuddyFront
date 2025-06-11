@@ -79,7 +79,7 @@ fun RegisterUserScreen(navController: NavController) {
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp, top = 32.dp)
                         .clickable {
-                            navController.popBackStack() // ← Acción de volver atrás
+                            navController.popBackStack()
                         }
                 )
 
