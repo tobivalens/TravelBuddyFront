@@ -23,9 +23,9 @@ class ExpenseViewModel(
     fun loadExpenses(eventId: Int) {
         viewModelScope.launch {
             try {
-                val loadedExpenses = expensesRepository.loadExpenses(eventId)
-                expenses = loadedExpenses
-                total = loadedExpenses.sumOf { it.GeneralValue }
+                //val loadedExpenses = expensesRepository.loadExpenses(eventId)
+                //expenses = loadedExpenses
+                //total = loadedExpenses.sumOf { it.GeneralValue }
             } catch (e: Exception) {
                 println("Error al cargar gastos: ${e.message}")
             }
@@ -35,7 +35,7 @@ class ExpenseViewModel(
     fun addExpense(eventId: Int, name: String, amount: Double, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                expensesRepository.createExpense(eventId, name, amount)
+                //expensesRepository.createExpense(eventId, name, amount)
                 loadExpenses(eventId)
                 onSuccess()
             } catch (e: Exception) {
