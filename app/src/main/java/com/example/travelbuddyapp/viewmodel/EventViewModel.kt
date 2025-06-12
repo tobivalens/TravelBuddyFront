@@ -68,7 +68,7 @@ class EventViewModel(
 
             val response = eventRepository.getAllEvents()
             if(response.isNullOrEmpty()){
-                Log.e("Error: ", response.toString())
+                println("Error obteniendo todos los eventos.")
             }else{
                 _events.value = response
             }
@@ -82,7 +82,7 @@ class EventViewModel(
 
             val response = eventRepository.getOwnedEvents()
             if(response.isNullOrEmpty()){
-                Log.e("Error: ", response.toString())
+              println("Error obteniendo eventos administrados.")
             }else{
                 _ownedEvents.value = response
             }
@@ -94,7 +94,7 @@ class EventViewModel(
 
             val response = eventRepository.getParticipatedEvents()
             if(response.isNullOrEmpty()){
-                Log.e("Error: ", response.toString())
+                println("Error obteniendo participantes.")
             }else{
                 _partEvents.value = response
             }
@@ -107,6 +107,9 @@ class EventViewModel(
     fun getEventById(id: Int) {
         viewModelScope.launch {
             val event = eventRepository.getEventById(id)
+            if(event == null){
+                println("Eror obteniendo evento por ID.")
+            }
             _currentEvent.value = event
         }
     }
@@ -142,7 +145,7 @@ class EventViewModel(
             try {
                 _participants.value = eventRepository.getParticipantsNames(eventId)
             } catch (e: Exception) {
-                Log.e("ViewModel", "Error: ${e.message}")
+                Log.e("Error", "Error: ${e.message}")
             }
         }
     }

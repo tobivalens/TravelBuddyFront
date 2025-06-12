@@ -81,14 +81,14 @@ class EventsRepository(
 
         val allEvents = eventResponse.body()?.data ?: emptyList()
 
-        // Eventos donde el usuario es admin
+
         val adminEvents = allEvents.filter { it.id_administrador == userId }
 
-        // Eventos donde el usuario participa
+
         val participantEventIds = participationData.map { it.idEvento }
         val participantEvents = allEvents.filter { it.id_evento in participantEventIds }
 
-        // Combinar y eliminar duplicados por si el usuario es admin y también participante
+
         return (adminEvents + participantEvents).distinctBy { it.id_evento }
     }
 
@@ -133,7 +133,14 @@ class EventsRepository(
     suspend fun getEventById(id: Int): EventResponse? {
         val token = auxRepository.getAccessToken()
         val response = eventService.getEventById("Bearer $token", id)
-        return response.body()?.data
+
+
+        return if(response.isSuccessful){
+            response.body()?.data
+        }
+        else{
+            return null
+        }
     }
 
     suspend fun deleteEvent(id: Int) {
@@ -178,12 +185,6 @@ class EventsRepository(
         val response = eventService.getParticipants("Bearer $token", eventId)
 
         if (response.isSuccessful) {
-            val debugBody = response.body()
-            Log.e("RAW JSON", response.errorBody()?.string() ?: "Sin error.")
-            val json = Gson().toJson(response.body())
-            Log.d("DEBUG_JSON", json)
-            Log.e("BODY", "Body: ${debugBody.toString()}")
-
             return response.body()?.data?.map {
                 val user = it.usuario!!.directusUser!!
                 val userId = it.usuario.id

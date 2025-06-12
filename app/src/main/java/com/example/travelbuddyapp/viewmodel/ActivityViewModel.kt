@@ -26,6 +26,9 @@ class ActivityViewModel(
     fun loadActivities(eventId:Int){
         viewModelScope.launch(Dispatchers.IO){
             val list = activityRepository.loadActivities(eventId)
+            if(list.isEmpty()){
+                println("Error cargando actividades por id")
+            }
             _activities.value = list
         }
     }
@@ -34,6 +37,9 @@ class ActivityViewModel(
 
         viewModelScope.launch(Dispatchers.IO){
             val act = activityRepository.loadActivity(actId)
+            if(act == null){
+                println("Error cargando actividad por id")
+            }
             _currentActivity.value = act
         }
     }

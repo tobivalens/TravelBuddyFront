@@ -1,4 +1,5 @@
 package com.example.travelbuddyapp.viewmodel
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -39,7 +40,13 @@ class AuthViewModel(
     fun getUser(){
         viewModelScope.launch {
             val username = auxRepository.getUsername()
-            _currentUser.value = username
+            if(username.isNullOrEmpty()){
+                println("Error obteniendo username.")
+            }
+            else{
+                _currentUser.value = username
+            }
+
         }
     }
 
@@ -80,7 +87,6 @@ class AuthViewModel(
     }
 
     fun storeUserId(){
-
         viewModelScope.launch(Dispatchers.IO){
             auxRepository.storeCurrentUserId()
         }
@@ -90,6 +96,9 @@ class AuthViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             val userIdStr = auxRepository.getUserId()
+            if(userIdStr.isNullOrEmpty()){
+                println("Error obteniendo userId")
+            }
             val userId = userIdStr?.toIntOrNull()
             _userId.value = userId
         }

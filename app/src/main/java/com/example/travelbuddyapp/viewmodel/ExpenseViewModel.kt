@@ -49,8 +49,12 @@ class ExpenseViewModel(
     fun loadUserExpenses(userId: Int){
         viewModelScope.launch {
             val loadedExpenses = expensesRepository.loadUserExpenses(userId)
+            if(loadedExpenses.isEmpty()){
+                println("Error al cargar gastos.")
+            }else{
             _userExpenses.value = loadedExpenses
             _userTotal.value = loadedExpenses.sumOf{it.monto}
+            }
         }
 
     }
@@ -59,7 +63,13 @@ class ExpenseViewModel(
 
         viewModelScope.launch{
                 val loadedExpense = expensesRepository.getExpenseById(expId)
-                _currentExpense.value = loadedExpense
+                if(loadedExpense == null) {
+                    println("Error al cargar gasto.")
+                }
+            else{
+                    _currentExpense.value = loadedExpense
+                }
+
         }
     }
 
