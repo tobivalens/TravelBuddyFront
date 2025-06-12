@@ -89,12 +89,34 @@ CREATE TABLE ParticipanteEvento (
 );
 
 -- ============================
+-- Tabla gastos
+-- ============================
+
+CREATE TABLE Gasto (
+    id_gasto SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL,
+    deudor_id INTEGER NOT NULL,
+    acreedor_id INTEGER NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL,
+    descripcion VARCHAR(255),
+    FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
+    FOREIGN KEY (deudor_id) REFERENCES travel_buddy_user(id_usuario),
+    FOREIGN KEY (acreedor_id) REFERENCES travel_buddy_user(id_usuario)
+);
+
+
+
+-- ============================
 -- Insertar datos de prueba para Evento y Actividad
 -- ============================
 
 INSERT INTO Evento (nombre, descripcion, codigo_union, id_administrador) VALUES
 ('Evento Prueba 1', 'Descripción del evento 1', 'EVT123', 1),
 ('Evento Prueba 2', 'Descripción del evento 2', 'EVT456', 2);
+
+-- ============================
+-- Insertar datos de prueba para gastos
+-- ============================
 
 INSERT INTO Actividad (id_evento, nombre, descripcion) VALUES
 (1, 'Actividad 1 Evento 1', 'Descripción actividad 1'),
@@ -167,7 +189,19 @@ INSERT INTO directus_permissions (collection, action, fields, policy, permission
 ('actividad', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
 
 INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
-('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}')
+('participanteevento', 'create', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('participanteevento', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('participanteevento', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('participanteevento', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
 
 INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
-('directus_users', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}')
+('gasto', 'create', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('directus_users', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');

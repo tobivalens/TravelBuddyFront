@@ -23,8 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import com.example.travelbuddyapp.viewmodel.EventViewModel
 
@@ -36,11 +39,10 @@ private val PurpleLight = Color(0xFFB085F5)
 fun ActivitiesScreen(
     navController: NavController,
     eventId: Int
-    // Insertar nombre del viaje actual
+
 ) {
     val viewModel: ActivityViewModel = viewModel()
     val eventViewModel: EventViewModel = viewModel()
-    var selectedTab by remember { mutableStateOf(2) }
     val activities by viewModel.activities
     val event by eventViewModel.currentEvent
 
@@ -52,6 +54,16 @@ fun ActivitiesScreen(
     val eventName = event?.nombre ?: "Evento sin nombre"
 
     val tabs = listOf("Eventos", "Gastos", "Actividades")
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEvent") == true -> 0
+        currentRoute == "gastosUser" -> 1
+        currentRoute?.startsWith("VisualizeActivities") == true -> 2
+        else -> 0 // default
+    }
 
     Scaffold(
         topBar = {
@@ -68,6 +80,9 @@ fun ActivitiesScreen(
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir actividad")
             }
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
         }
     ) { padding ->
         Column(
@@ -76,22 +91,24 @@ fun ActivitiesScreen(
                 .background(Color.White)
                 .padding(padding)
         ) {
-            Spacer(Modifier.height(10.dp))
-            CustomTabBar (
+            Spacer(Modifier.height(12.dp))
+
+            // Tabs
+            CustomTabBar(
                 tabs = tabs,
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
-                    selectedTab = index
-                    when (index) {
-                        0 -> navController.navigate("VisualizeEvent")
-                        1 -> navController.navigate("gastos")
-                        2 -> navController.navigate("VisualizeActivity")
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEventAdmin/${eventId}")
+                        "Gastos" -> navController.navigate("gastos/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivitiesAdmin/${eventId}")
                     }
                 }
             )
+
             Spacer(Modifier.height(12.dp))
 
-            MonthCalendar("Fecha de prueba")// En esta funcion debe de ir el mes actual
+            MonthCalendar("Fecha")
 
             Spacer(Modifier.height(12.dp))
 
@@ -138,7 +155,7 @@ fun ActivitiesTopBar(
             text = tripName,
             color = Color.White,
             fontSize = 26.sp,
-            modifier = Modifier.padding( horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             fontFamily = SaralaFont
         )
     }
@@ -161,7 +178,6 @@ fun MonthCalendar(month: String) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Días de la semana
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -277,7 +293,7 @@ fun ActivityItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Fecha de prueba",
+                    text = " ${item.fecha_actividad} | ${item.hora_actividad}" ,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )

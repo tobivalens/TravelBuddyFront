@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,18 +43,47 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.R
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisualizeEventScreen(
-    eventTitle: String = "Viaje a la montaña",
-    onBackClick: () -> Unit = {}
+    eventId: Int,
+    onBackClick: () -> Unit = {},
+    navController: NavController
 ) {
     val scrollState = rememberScrollState()
-    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
+    val viewModel: EventViewModel = viewModel()
+    val event by viewModel.currentEvent
+    val participants by viewModel.participants
+
+    LaunchedEffect(eventId) {
+        viewModel.getEventById(eventId)
+        viewModel.loadParticipants(eventId)
+    }
+
+    val eventTitle = event?.nombre?: "Sin nombre"
+    val description = event?.descripcion?: "Sin descripcion"
+    val startDate = event?.fecha_inicio?: "Sin fecha"
+    val endDate = event?.fecha_fin?: "Sin fecha"
+    val unionCode = event?.codigo_union?: "Sin codigo"
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEvent") == true -> 0
+        currentRoute == "gastosUser" -> 1
+        currentRoute?.startsWith("VisualizeActivities") == true -> 2
+        else -> 0 // default
+    }
+
 
     Scaffold(
         topBar = {
@@ -96,8 +126,15 @@ fun VisualizeEventScreen(
             CustomTabBar(
                 tabs = tabs,
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { index ->
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Gastos" -> navController.navigate("gastosUser/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
+                    }
+                }
             )
+
 
             Spacer(Modifier.height(16.dp))
 
@@ -115,7 +152,7 @@ fun VisualizeEventScreen(
 
             // la descripcion
             Text(
-                text = "Disfruta de una experiencia única entre paisajes imponentes, aire puro y tranquilidad absoluta. Este viaje a las montañas te lleva a explorar senderos escondidos, miradores panorámicos y cascadas cristalinas...",
+                text = description,
                 color = Color(0xFFCBC7C7),
                 fontSize = 12.sp,
                 fontFamily = SaralaFont
@@ -130,11 +167,11 @@ fun VisualizeEventScreen(
             ) {
                 Column {
                     Text("Fecha de inicio", color = Color(0xFFA38AFB), fontWeight = FontWeight.Bold)
-                    Text("Julio 04, 2025", color = Color.Gray)
+                    Text(startDate, color = Color.Gray)
                 }
                 Column {
                     Text("Fecha de finalización", color = Color(0xFFA38AFB), fontWeight = FontWeight.Bold)
-                    Text("Julio 30, 2025", color = Color.Gray)
+                    Text(endDate, color = Color.Gray)
                 }
             }
 
@@ -145,8 +182,7 @@ fun VisualizeEventScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            val participantes = listOf("Jairo Vélez", "Sofía Puente", "Jordi Arroyo")
-            participantes.forEach {
+            participants.forEach {
                 ParticipantItem(name = it)
             }
 
@@ -157,7 +193,7 @@ fun VisualizeEventScreen(
                 modifier = Modifier.fillMaxWidth(),
                 border = BorderStroke(1.dp, Color(0xFFA38AFB))
             ) {
-                Text("+ Código de Evento", color = Color(0xFFA38AFB))
+                Text("Código de Evento: $unionCode", color = Color(0xFFA38AFB))
             }
 
             Spacer(Modifier.height(24.dp))

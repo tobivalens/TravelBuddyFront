@@ -1,6 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,11 +26,14 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -38,20 +42,28 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
+
 @Composable
 fun UserProfile(
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit
+    navController: NavController,
+    userName: String
 ) {
+
+    val viewModel: AuthViewModel = viewModel()
+    val userId by viewModel.currentUserId
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserId()
+    }
+
     Scaffold(
         bottomBar = {
-            HomeBottomBar(
-                onHomeClick = onHomeClick,
-                onAddClick = onAddClick,
-                onProfileClick = onProfileClick
-            )
+            BottomNavigationBar(navController)
         }
     ) { innerPadding ->
         Box(
@@ -80,7 +92,7 @@ fun UserProfile(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Daniel Escobar",
+                            text = userName,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = SaralaFont,
@@ -89,7 +101,7 @@ fun UserProfile(
                     }
                 }
 
-                // Caja de opciones
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -105,31 +117,38 @@ fun UserProfile(
                     Column(
                         modifier = Modifier.padding(vertical = 12.dp)
                     ) {
-                        // Opción 1: Editar perfil
+
                         OptionRow(
                             icon = Icons.Default.Edit,
-                            text = "Editar Perfil"
+                            text = "Editar Perfil",
+                            onClick = { navController.navigate("editProfile") }
                         )
                         Divider(color = Color(0xFFA181FA))
 
-                        // Opción 2: Mis Gastos
+
                         OptionRow(
                             icon = Icons.Default.AttachMoney,
-                            text = "Mis Gastos"
+                            text = "Mis Gastos",
+                            onClick = { navController.navigate("userExpenses/${userId}") }
                         )
                         Divider(color = Color(0xFFA181FA))
 
-                        // Opción 3: Configuración
+
                         OptionRow(
                             icon = Icons.Default.Settings,
-                            text = "Configuración"
+                            text = "Configuración",
+                            onClick = { navController.navigate("profile") }
                         )
-                        Divider(color = Color(0xFFA181FA))
 
-                        // Opción 4: Cerrar sesión
+                        HorizontalDivider(color = Color(0xFFA181FA))
+
                         OptionRow(
                             icon = Icons.Default.ExitToApp,
-                            text = "Cerrar Sesión"
+                            text = "Cerrar Sesión",
+                            onClick = {
+                                viewModel.logout()
+                                navController.navigate("loginScreen")
+                            }
                         )
                     }
                 }
@@ -139,13 +158,15 @@ fun UserProfile(
 }
 
 @Composable
-fun OptionRow(icon: ImageVector, text: String) {
+fun OptionRow(icon: ImageVector, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

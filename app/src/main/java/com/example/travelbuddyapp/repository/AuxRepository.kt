@@ -44,12 +44,16 @@ class AuxRepository(
         var token = getAccessToken()
         val currentUserData = auxService.getDirectusUserID("Bearer $token")
         val directusUserId = currentUserData.body()?.data?.id!!
-        val userName = currentUserData.body()?.data?.first_name!!
+        Log.e("directusUserId", directusUserId)
+        val userName = "${currentUserData.body()?.data?.first_name!!} ${currentUserData.body()?.data?.last_name!!}"
 
         LocalDataSourceProvider.get().save("username", userName)
 
         val travelBudData = auxService.getTravelBudId("Bearer $token", directusUserId)
+        Log.e("DATA", travelBudData.body().toString())
+
         val userId = travelBudData.body()?.data?.firstOrNull()?.id_usuario
+        Log.e("user id", userId.toString())
 
         LocalDataSourceProvider.get().save("userId", userId.toString())
 

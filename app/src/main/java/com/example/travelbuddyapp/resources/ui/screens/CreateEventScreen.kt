@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -74,6 +75,23 @@ fun CreateEvent(
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
+    val createFlag by viewModel.createFlag
+
+    if(createFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setCreateFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("El evento fue creado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setCreateFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
 
     Scaffold(
         bottomBar = {

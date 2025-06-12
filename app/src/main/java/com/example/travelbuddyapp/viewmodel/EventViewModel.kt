@@ -1,5 +1,6 @@
 package com.example.travelbuddyapp.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,16 +12,29 @@ import kotlinx.coroutines.launch
 
 class EventViewModel(
     val eventRepository: EventsRepository = EventsRepository()
-) : ViewModel(){
+) : ViewModel() {
 
     private val _events = mutableStateOf<List<EventResponse>>(emptyList())
     val events: State<List<EventResponse>> = _events
+    private val _ownedEvents = mutableStateOf<List<EventResponse>>(emptyList())
+    val ownedEvents: State<List<EventResponse>> = _ownedEvents
+    private val _partEvents = mutableStateOf<List<EventResponse>>(emptyList())
+    val partEvents: State<List<EventResponse>> = _partEvents
     private val _currentEvent = mutableStateOf<EventResponse?>(null)
     val currentEvent: State<EventResponse?> = _currentEvent
+    private val _participants = mutableStateOf<List<String>>(emptyList())
+    val participants: State<List<String>> = _participants
+    private val _createFlag = mutableStateOf<Boolean>(false)
+    val createFlag: State<Boolean> = _createFlag
+    private val _editFlag = mutableStateOf<Boolean>(false)
+    val editFlag: State<Boolean> = _editFlag
+    private val _joinFlag = mutableStateOf<Boolean>(false)
+    val joinFlag: State<Boolean> = _joinFlag
 
-    fun createEvent(eventName:String, description:String, startDate: String, endDate: String){
-        viewModelScope.launch(Dispatchers.IO){
-            eventRepository.createEvent(
+    fun createEvent(eventName: String, description: String, startDate: String, endDate: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _createFlag.value =
+                eventRepository.createEvent(
                 eventName,
                 description,
                 startDate,
@@ -29,10 +43,17 @@ class EventViewModel(
         }
     }
 
-    fun editEvent(id: Int, newName: String, newDesc: String, newStartDate: String, newEndDate:String){
+    fun editEvent(
+        id: Int,
+        newName: String,
+        newDesc: String,
+        newStartDate: String,
+        newEndDate: String
+    ) {
 
-        viewModelScope.launch(Dispatchers.IO){
-            eventRepository.editEvent(
+        viewModelScope.launch(Dispatchers.IO) {
+            _editFlag.value =
+                eventRepository.editEvent(
                 id,
                 newName,
                 newDesc,
@@ -42,26 +63,87 @@ class EventViewModel(
         }
     }
 
-    fun getAllEvents(){
-        viewModelScope.launch(Dispatchers.IO){
+    fun getAllEvents() {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val response = eventRepository.getAllEvents()
-            _events.value = response!!
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _events.value = response
+            }
+
 
         }
     }
 
-    fun getEventById(id: Int){
+    fun getOwnedEvents(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val response = eventRepository.getOwnedEvents()
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _ownedEvents.value = response
+            }
+        }
+    }
+
+    fun getParticipatedEvents(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val response = eventRepository.getParticipatedEvents()
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _partEvents.value = response
+            }
+
+
+        }
+    }
+
+
+    fun getEventById(id: Int) {
         viewModelScope.launch {
             val event = eventRepository.getEventById(id)
             _currentEvent.value = event
         }
     }
 
-    fun deleteEvent(id: Int){
+    fun deleteEvent(id: Int) {
 
         viewModelScope.launch {
             eventRepository.deleteEvent(id)
+        }
+    }
+
+    fun joinEvent(unionCode: String) {
+
+        viewModelScope.launch {
+            _joinFlag.value = eventRepository.joinEvent(unionCode)
+        }
+    }
+
+    fun setCreateFlag(status: Boolean) {
+        _createFlag.value = status
+    }
+
+    fun setEditFlag(status: Boolean) {
+        _editFlag.value = status
+    }
+
+    fun setJoinFlag(status: Boolean) {
+        _joinFlag.value = status
+    }
+
+    fun loadParticipants(eventId: Int) {
+        viewModelScope.launch {
+            try {
+                _participants.value = eventRepository.getParticipantsNames(eventId)
+            } catch (e: Exception) {
+                Log.e("ViewModel", "Error: ${e.message}")
+            }
         }
     }
 }

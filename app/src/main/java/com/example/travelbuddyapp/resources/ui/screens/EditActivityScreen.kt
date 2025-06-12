@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,7 +56,8 @@ import java.util.Locale
 @Composable
 fun EditActivityScreen(
     actId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navController: NavController
 ) {
 
     val viewModel: ActivityViewModel = viewModel()
@@ -78,12 +80,29 @@ fun EditActivityScreen(
 
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
     val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+    val editFlag by viewModel.editFlag
 
     LaunchedEffect(activity) {
         activity?.let{
             title = it.nombre
             description = it.descripcion
         }
+    }
+
+    if(editFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setEditFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("La actividad se ha editado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setEditFlag(false)
+                    navController.navigate("home")
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
     }
 
     Box(

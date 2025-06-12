@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -71,6 +72,7 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
 
     val viewModel: EventViewModel = viewModel()
     val event by viewModel.currentEvent
+    val editFlag by viewModel.editFlag
 
     LaunchedEffect(eventId) {
         viewModel.getEventById(eventId)
@@ -82,6 +84,23 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
             description = it.descripcion
         }
     }
+
+    if(editFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setEditFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("El evento fue editado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setEditFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +134,7 @@ fun EditEventScreen(eventId: Int, navController: NavController) {
 
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Text("¡Editemos:", fontSize = 26.sp, fontFamily = SaralaFont)
-                Text("Viaje a la montaña!", fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
+                Text(title, fontSize = 30.sp, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
 
                 Spacer(modifier = Modifier.height(16.dp))
 

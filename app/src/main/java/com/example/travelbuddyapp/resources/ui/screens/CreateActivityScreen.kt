@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,7 +56,8 @@ import java.util.Locale
 @Composable
 fun CreateActivityScreen(
     eventId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navController: NavController
 ) {
 
     val viewModel: ActivityViewModel = viewModel()
@@ -70,6 +74,23 @@ fun CreateActivityScreen(
 
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale("es", "ES"))
     val timeFormatter = SimpleDateFormat("HH:mm", Locale("es", "ES"))
+    val createFlag by viewModel.createFlag
+
+    if(createFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setCreateFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("La actividad fue creada correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setCreateFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
 
     Box(
         modifier = Modifier

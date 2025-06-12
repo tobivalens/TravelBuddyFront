@@ -17,23 +17,27 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
-
-
 )
-val SaralaFont = FontFamily(
-    Font(R.font.sarala_regular, FontWeight.Normal),
+
+val Sarala = FontFamily(
+    Font(R.font.sarala_regular),
     Font(R.font.sarala_bold, FontWeight.Bold)
 )
 
 val AppTypography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = SaralaFont,
+        fontFamily = Sarala,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = SaralaFont,
+        fontFamily = Sarala,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp
     )
+)
+
+val SaralaFont = FontFamily(
+    Font(R.font.sarala_regular),
+    Font(R.font.sarala_bold, FontWeight.Bold)
 )

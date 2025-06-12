@@ -31,8 +31,7 @@ class AuthRepository(
             val directus_user_id = response.body()?.data?.id
             if (directus_user_id != null) {
                 val registerDataExtra = RegisterDataExtra(directus_user_id, phone, location, birthDate)
-                val extraResponse = authService.registerAppUser(registerDataExtra)
-                LocalDataSourceProvider.get().save("userid", (extraResponse.data.id_usuario).toString())
+                authService.registerAppUser(registerDataExtra)
                 true
             } else {
                 Log.e("REGISTER", "directus_user_id es null")
@@ -43,6 +42,12 @@ class AuthRepository(
             Log.e("REGISTER", "Error al registrar: $errorBody")
             false
         }
+    }
+
+    suspend fun clearDataStorage(){
+        LocalDataSourceProvider.get().clearKey("accesstoken")
+        LocalDataSourceProvider.get().clearKey("userId")
+        LocalDataSourceProvider.get().clearKey("username")
     }
 }
 
