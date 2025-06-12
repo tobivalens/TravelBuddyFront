@@ -1,9 +1,12 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+import androidx.benchmark.perfetto.Row
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,9 +44,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
 
 
@@ -133,16 +140,34 @@ fun RegisterUserScreen(navController: NavController) {
                         .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Registrate",
-                        color = Color(0xFFA181FA),
-                        fontFamily = SaralaFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 24.sp,
+
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(bottom = 24.dp)
-                    )
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Registrate",
+                            color = Color(0xFFA181FA),
+                            fontFamily = SaralaFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 24.sp,
+                        )
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = {
+                                // Acción al presionar la cámara
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.PhotoCamera,
+                                    contentDescription = "Tomar foto"
+                                )
+                            }
+                        }
+                    }
                     TextField(
                         value = firstName.value,
                         onValueChange = { firstName.value = it },
@@ -323,6 +348,8 @@ fun RegisterUserScreen(navController: NavController) {
 
                     )
 
+                    val passwordVisible = remember { mutableStateOf(false) }
+
                     TextField(
                         value = password.value,
                         onValueChange = { password.value = it },
@@ -338,13 +365,20 @@ fun RegisterUserScreen(navController: NavController) {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
                         trailingIcon = {
-                            Icon(Icons.Default.Visibility, contentDescription = null)
+                            IconButton(onClick = {
+                                passwordVisible.value = !passwordVisible.value
+                            }) {
+                                Icon(
+                                    imageVector = if (passwordVisible.value) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                )
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp),
                         shape = RoundedCornerShape(40.dp),
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -353,8 +387,10 @@ fun RegisterUserScreen(navController: NavController) {
                             unfocusedContainerColor = Color(0xFFFFFFFB),
                             disabledContainerColor = Color(0xFFFFFFFB)
                         )
-
                     )
+
+
+                    val confirmPasswordVisible = remember { mutableStateOf(false) }
 
                     TextField(
                         value = confirmPassword.value,
@@ -371,12 +407,19 @@ fun RegisterUserScreen(navController: NavController) {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
                         trailingIcon = {
-                            Icon(Icons.Default.Visibility, contentDescription = null)
+                            IconButton(onClick = {
+                                confirmPasswordVisible.value = !confirmPasswordVisible.value
+                            }) {
+                                Icon(
+                                    imageVector = if (confirmPasswordVisible.value) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (confirmPasswordVisible.value) "Ocultar contraseña" else "Mostrar contraseña"
+                                )
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(40.dp),
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (confirmPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -385,8 +428,8 @@ fun RegisterUserScreen(navController: NavController) {
                             unfocusedContainerColor = Color(0xFFFFFFFB),
                             disabledContainerColor = Color(0xFFFFFFFB)
                         )
-
                     )
+
 
                     Button(
                         onClick = {
