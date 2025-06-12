@@ -45,6 +45,7 @@ import com.example.travelbuddyapp.resources.ui.screens.CreateEvent
 import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditExpensesScreen
+import com.example.travelbuddyapp.resources.ui.screens.EditProfileScreen
 import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
 import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
@@ -189,6 +190,12 @@ fun AppNavigator() {
         }
 
         composable("profile") { UserProfile(navController) }
+
+        composable("editProfile") {
+            EditProfileScreen(
+                navController = navController
+            )
+        }
 
         composable(
             "createActivity/{eventId}",
