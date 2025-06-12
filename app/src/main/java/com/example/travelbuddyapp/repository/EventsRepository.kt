@@ -71,20 +71,29 @@ class EventsRepository(
 
     suspend fun getAllEvents(): List<EventResponse>? {
         val token = auxRepository.getAccessToken()
-        /**val userId = auxRepository.getUserId()?.toIntOrNull()
-            ?: throw IllegalStateException("User ID is null or invalid")**/
-        val userId = auxRepository.getUserId()?.toIntOrNull() ?: -1
-
+        val userId = auxRepository.getUserId()?.toIntOrNull() ?: return null
 
         val participationsResponse = eventService.getUserParticipations("Bearer $token", userId)
         val participationData = participationsResponse.body()?.data ?: emptyList()
+
         val eventResponse = eventService.getAllEvents("Bearer $token")
         if (!eventResponse.isSuccessful) return null
 
-        val events = eventResponse.body()?.data ?: emptyList()
+        val allEvents = eventResponse.body()?.data ?: emptyList()
 
-        return events.filter { event -> participationData.any { it.idEvento == event.id_evento || it.idUsuario == event.id_administrador } }
+        // Eventos donde el usuario es admin
+        val adminEvents = allEvents.filter { it.id_administrador == userId }
+
+        // Eventos donde el usuario participa
+        val participantEventIds = participationData.map { it.idEvento }
+        val participantEvents = allEvents.filter { it.id_evento in participantEventIds }
+
+        // Combinar y eliminar duplicados por si el usuario es admin y también participante
+        return (adminEvents + participantEvents).distinctBy { it.id_evento }
     }
+
+
+
 
     suspend fun getEventById(id: Int): EventResponse? {
         val token = auxRepository.getAccessToken()

@@ -216,7 +216,7 @@ fun AppNavigator() {
             )
         }
 
-        composable("profile") { UserProfile(navController) }
+        composable("profile") { UserProfile(navController, username!!) }
 
         composable("editProfile") {
             EditProfileScreen(
@@ -299,6 +299,16 @@ fun AppNavigator() {
             )
         }
 
+        composable("userExpenses/{userId}",
+        arguments = listOf(navArgument("userId"){type = NavType.IntType}))
+        { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: return@composable
+            PantallaGastosUsuario(
+                userId,
+                navController = navController
+            )
+        }
+
         composable(
             "editAct/{actId}",
             arguments = listOf(navArgument("actId") { type = NavType.IntType })
@@ -334,12 +344,6 @@ fun AppNavigator() {
                 },
 
                 onProfileClick = { navController.navigate("userProfile") }
-            )
-        }
-
-        composable("userExpenses") {
-            PantallaGastosUsuario(
-                navController = navController
             )
         }
 

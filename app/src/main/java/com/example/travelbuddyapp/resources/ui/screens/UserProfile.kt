@@ -51,10 +51,15 @@ import com.example.travelbuddyapp.viewmodel.AuthViewModel
 @Composable
 fun UserProfile(
     navController: NavController,
+    userName: String
 ) {
 
     val viewModel: AuthViewModel = viewModel()
-    val userName by viewModel.currentUser
+    val userId by viewModel.currentUserId
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserId()
+    }
 
     Scaffold(
         bottomBar = {
@@ -87,7 +92,7 @@ fun UserProfile(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = userName!!,
+                            text = userName,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = SaralaFont,
@@ -124,7 +129,7 @@ fun UserProfile(
                         OptionRow(
                             icon = Icons.Default.AttachMoney,
                             text = "Mis Gastos",
-                            onClick = { navController.navigate("userExpenses") }
+                            onClick = { navController.navigate("userExpenses/${userId}") }
                         )
                         Divider(color = Color(0xFFA181FA))
 

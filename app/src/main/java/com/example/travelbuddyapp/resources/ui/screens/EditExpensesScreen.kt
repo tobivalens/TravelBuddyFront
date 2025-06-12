@@ -226,7 +226,10 @@ fun EditExpensesScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {viewModel.deleteExpense(expenseId)},
+                onClick = {
+                    viewModel.deleteExpense(expenseId)
+                    navController.popBackStack()
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

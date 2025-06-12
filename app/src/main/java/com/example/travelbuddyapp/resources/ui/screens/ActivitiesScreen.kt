@@ -101,7 +101,7 @@ fun ActivitiesScreen(
                     when (tabs[index]) {
                         "Evento" -> navController.navigate("VisualizeEventAdmin/${eventId}")
                         "Gastos" -> navController.navigate("gastos/${eventId}")
-                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivitiesAdmin/${eventId}")
                     }
                 }
             )

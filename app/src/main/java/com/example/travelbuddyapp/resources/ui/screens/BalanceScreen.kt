@@ -111,9 +111,9 @@ fun BalanceScreen(eventId: Int,
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
                     when (tabs[index]) {
-                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Evento" -> navController.navigate("VisualizeEventAdmin/${eventId}")
                         "Gastos" -> navController.navigate("gastos/${eventId}")
-                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivitiesAdmin/${eventId}")
                     }
                 }
             )

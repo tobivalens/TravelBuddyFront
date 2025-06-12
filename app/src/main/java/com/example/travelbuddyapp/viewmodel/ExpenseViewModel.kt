@@ -29,6 +29,10 @@ class ExpenseViewModel(
     val createFlag: State<Boolean> = _createFlag
     private val _editFlag= mutableStateOf<Boolean>(false)
     val editFlag: State<Boolean> = _editFlag
+    private val _userExpenses = mutableStateOf<List<ExpenseDTO>>(emptyList())
+    val userExpenses: State<List<ExpenseDTO>> = _userExpenses
+    private val _userTotal = mutableStateOf<Double>(0.0)
+    val userTotal: State<Double> = _userTotal
 
     fun loadExpenses(eventId: Int) {
         viewModelScope.launch {
@@ -42,12 +46,17 @@ class ExpenseViewModel(
         }
     }
 
-    fun loadUserExpenses(){
+    fun loadUserExpenses(userId: Int){
+        viewModelScope.launch {
+            val loadedExpenses = expensesRepository.loadUserExpenses(userId)
+            _userExpenses.value = loadedExpenses
+            _userTotal.value = loadedExpenses.sumOf{it.monto}
+        }
 
     }
 
     fun loadExpenseById(expId: Int){
-        Log.e("expenseId - GetExpenseById - ViewModel", expId.toString())
+
         viewModelScope.launch{
                 val loadedExpense = expensesRepository.getExpenseById(expId)
                 _currentExpense.value = loadedExpense

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.resources.utils.formatMoney
@@ -21,13 +22,22 @@ import com.example.travelbuddyapp.ui.theme.CardBackground
 import com.example.travelbuddyapp.ui.theme.PurpleHeader
 import com.example.travelbuddyapp.ui.theme.Sarala
 import com.example.travelbuddyapp.ui.theme.SoftText
+import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaGastosUsuario(
+    userId: Int,
     navController: NavController,
 ) {
 
+    val viewModel: ExpenseViewModel = viewModel()
+    val userExpenses by viewModel.userExpenses
+    val totalExpenses by viewModel.userTotal
+
+    LaunchedEffect(userId) {
+        viewModel.loadUserExpenses(userId)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,13 +81,19 @@ fun PantallaGastosUsuario(
                     color = Color.White
                 )
                 Text(
-                    "$ 10",
+                    "$ $totalExpenses",
                     fontFamily = Sarala,
                     fontWeight = FontWeight.Bold,
                     fontSize = 32.sp,
                     color = Color.White
                 )
             }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        userExpenses.forEach { expense ->
+            ExpenseItemUser(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id)
         }
 
         Spacer(Modifier.height(16.dp))

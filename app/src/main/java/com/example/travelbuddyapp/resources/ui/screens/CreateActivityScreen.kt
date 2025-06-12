@@ -84,7 +84,7 @@ fun CreateActivityScreen(
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.setCreateFlag(false)
-                    navController.navigate("home")
+                    navController.popBackStack()
                 }) {
                     Text("Aceptar.")
                 }
