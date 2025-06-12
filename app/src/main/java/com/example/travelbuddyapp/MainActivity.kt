@@ -1,5 +1,6 @@
 package com.example.travelbuddyapp
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -68,6 +69,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "Ap
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MultipartProvider.init(applicationContext)
 
         LocalDataSourceProvider.init(applicationContext.dataStore)
         enableEdgeToEdge()
@@ -76,6 +78,7 @@ class MainActivity : ComponentActivity() {
                 AppNavigator()
             }
         }
+
     }
 }
 

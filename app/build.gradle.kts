@@ -40,14 +40,18 @@ android {
     buildFeatures {
         compose = true
     }
+
+
 }
 
 dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.datastore:datastore-preferences:1.1.4");
     implementation("com.google.code.gson:gson:2.12.1")
     implementation ("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.benchmark.macro)
+    implementation(libs.androidx.media3.datasource)
     val retrofitVersion = "2.11.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")

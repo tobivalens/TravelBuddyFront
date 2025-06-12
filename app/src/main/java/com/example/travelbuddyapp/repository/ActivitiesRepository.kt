@@ -6,6 +6,7 @@ import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
 import com.example.travelbuddyapp.datasource.DTOS.ActivityData
 import com.example.travelbuddyapp.datasource.DTOS.EditActivityData
 
+
 class ActivitiesRepository(
     val activitiesService: ActivitiesService = RetrofitConfig.directusRetrofit.create(ActivitiesService::class.java),
     val auxRepository: AuxRepository = AuxRepository()
