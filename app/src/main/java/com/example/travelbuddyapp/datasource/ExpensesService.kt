@@ -17,7 +17,14 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+
 interface ExpensesService {
+
+    @GET("expenses/event/{eventId}")
+    suspend fun getExpensesByEvent(
+        @Header("Authorization") authorization: String,
+        @Path("eventId") eventId: String
+    ): List<ExpenseDTO>
 
     @POST("/items/gasto")
     suspend fun createExpense(@Header("Authorization") authorization: String, @Body expenseData: ExpenseData): Response<ExpenseDTO>
@@ -36,6 +43,12 @@ interface ExpensesService {
 
     @GET("/items/gasto/{id}")
     suspend fun getExpense(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<SingleExpenseResponse>
+
+    @POST("expenses")
+    suspend fun addExpense(
+        @Header("Authorization") authorization: String,
+        @Body expense: ExpenseData
+    ): ExpenseDTO
 
     @DELETE("/items/gasto/{id}")
     suspend fun deleteExpense(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<Unit>

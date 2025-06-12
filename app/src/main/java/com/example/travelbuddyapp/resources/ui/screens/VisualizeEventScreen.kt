@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.R
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.EventViewModel
@@ -57,7 +58,6 @@ fun VisualizeEventScreen(
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
-    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val viewModel: EventViewModel = viewModel()
     val event by viewModel.currentEvent
@@ -73,6 +73,16 @@ fun VisualizeEventScreen(
     val startDate = event?.fecha_inicio?: "Sin fecha"
     val endDate = event?.fecha_fin?: "Sin fecha"
     val unionCode = event?.codigo_union?: "Sin codigo"
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEvent") == true -> 0
+        currentRoute == "gastosUser" -> 1
+        currentRoute?.startsWith("VisualizeActivities") == true -> 2
+        else -> 0 // default
+    }
 
 
     Scaffold(
@@ -117,17 +127,14 @@ fun VisualizeEventScreen(
                 tabs = tabs,
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
-                    selectedTab = index
-                    when(index){
-                        0  -> navController.navigate("VisualizeEvent/$eventId")
-                        1  -> navController.navigate("gastos/$eventId")
-                        2 -> navController.navigate("VisualizeActivities/$eventId"){
-                            launchSingleTop = true
-                            popUpTo("VisualizeEvent/$eventId") { inclusive = false }
-                        }
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEvent/1")
+                        "Gastos" -> navController.navigate("gastosUser")
+                        "Actividades" -> navController.navigate("VisualizeActivities/1")
                     }
                 }
             )
+
 
             Spacer(Modifier.height(16.dp))
 

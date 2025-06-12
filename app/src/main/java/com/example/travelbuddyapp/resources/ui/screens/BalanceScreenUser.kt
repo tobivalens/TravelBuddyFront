@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -34,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.EventViewModel
 import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceScreenUser(eventId: Int,
                       onBackClick: () -> Unit,
@@ -68,17 +75,46 @@ fun BalanceScreenUser(eventId: Int,
     val eventTitle = event?.nombre?: "Sin nombre"
 
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEvent") == true -> 0
+        currentRoute == "gastosUser" -> 1
+        currentRoute?.startsWith("VisualizeActivities") == true -> 2
+        else -> 0 // default
+    }
+
     Scaffold(
         topBar = {
-            TopAppBarComponent(eventTitle = eventTitle,onBackClick)
-
+            TopAppBar(
+                title = {
+                    Text(
+                        text = eventTitle,
+                        color = Color.White,
+                        fontSize = 28.sp,
+                        fontFamily = SaralaFont,
+                        maxLines = 1
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color(0xFFA181FA)
+                )
+            )
         },
         bottomBar = {
-            HomeBottomBar(
-                onHomeClick = onHomeClick,
-                onAddClick = onAddClick,
-                onProfileClick = onProfileClick,
-                )
+            BottomNavigationBar(
+                navController = navController
+            )
         },
         containerColor = whiteBackground
     ) { paddingValues ->
@@ -89,16 +125,24 @@ fun BalanceScreenUser(eventId: Int,
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top
         ) {
-            Spacer(Modifier.height(16.dp))
 
-            //barra superior
+            Spacer(Modifier.height(12.dp))
+
+            // Tabs
             CustomTabBar(
                 tabs = tabs,
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { index ->
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEvent/1")
+                        "Gastos" -> navController.navigate("gastosUser")
+                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                    }
+                }
             )
 
             Spacer(Modifier.height(32.dp))
+            
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -134,7 +178,7 @@ fun BalanceScreenUser(eventId: Int,
                 fontFamily = SaralaFont
             )
             Text("$ $totalUser", color = textColor, fontFamily = SaralaFont)
-
+            
             Spacer(Modifier.height(24.dp))
 
             Row(

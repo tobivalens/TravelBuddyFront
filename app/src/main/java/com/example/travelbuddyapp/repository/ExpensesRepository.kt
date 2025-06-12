@@ -9,18 +9,24 @@ import com.example.travelbuddyapp.datasource.ExpensesService
 import com.example.travelbuddyapp.repository.AuxRepository
 
 class ExpensesRepository(
-    private val expensesService: ExpensesService = RetrofitConfig.directusRetrofit.create(ExpensesService::class.java),
+    private val expensesService: ExpensesService = RetrofitConfig.directusRetrofit.create(
+        ExpensesService::class.java
+    ),
     private val auxRepository: AuxRepository = AuxRepository()
 ) {
+    class ExpensesRepository(
+        val expenseService: ExpensesService = RetrofitConfig.directusRetrofit.create(ExpensesService::class.java),
+        val auxRepository: AuxRepository = AuxRepository()
+    ) {
 
-    suspend fun loadExpenses(eventId: Int): List<ExpenseDTO> {
-        val token = auxRepository.getAccessToken()
-        val response = expensesService.getExpenses("Bearer $token", eventId)
-        if (response.isSuccessful) {
-            return response.body()?.data ?: emptyList()
+        suspend fun loadExpenses(eventId: Int): List<ExpenseDTO> {
+            val token = auxRepository.getAccessToken()
+            val response = ExpensesService.getExpenses("Bearer $token", eventId)
+            if (response.isSuccessful) {
+                return response.body()?.data ?: emptyList()
+            }
+            throw Exception("Error cargando gastos: ${response.code()} ${response.message()}")
         }
-        throw Exception("Error cargando gastos: ${response.code()} ${response.message()}")
-    }
 
     suspend fun createExpense(eventId: Int, debtorId: Int, description: String, value: Double): Boolean {
         val token = auxRepository.getAccessToken()
@@ -103,9 +109,10 @@ class ExpensesRepository(
         )
     }
 
-    suspend fun deleteExpense(id: Int) {
-        val token = auxRepository.getAccessToken()
-        expensesService.deleteExpense("Bearer $token", id)
+            suspend fun deleteExpense(id: Int) {
+                val token = auxRepository.getAccessToken()
+                ExpensesService.deleteExpense("Bearer $token", id)
+            }
+        }
     }
 }
-

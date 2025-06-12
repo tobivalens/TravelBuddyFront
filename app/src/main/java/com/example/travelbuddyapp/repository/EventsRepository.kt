@@ -20,25 +20,36 @@ class EventsRepository(
 ) {
 
 
-
-    suspend fun createEvent(eventName: String, eventDescription: String, startDate: String,endDate: String ){
+    suspend fun createEvent(
+        eventName: String,
+        eventDescription: String,
+        startDate: String,
+        endDate: String
+    ) {
 
         var id = auxRepository.getUserId()
         var adminId: Int = id!!.toInt()
         val token = auxRepository.getAccessToken()
         val joinCode = generateJoinCode()
-        eventService.createEvent("Bearer $token", EventData(
-            eventName,
-            eventDescription,
-            startDate,
-            endDate,
-            joinCode,
-            adminId
-        )
+        eventService.createEvent(
+            "Bearer $token", EventData(
+                eventName,
+                eventDescription,
+                startDate,
+                endDate,
+                joinCode,
+                adminId
+            )
         )
     }
 
-    suspend fun editEvent(id: Int, newName: String, newDesc: String, newStart: String, newEnd:String){
+    suspend fun editEvent(
+        id: Int,
+        newName: String,
+        newDesc: String,
+        newStart: String,
+        newEnd: String
+    ) {
 
         val token = auxRepository.getAccessToken()
         eventService.editEvent(
@@ -47,14 +58,18 @@ class EventsRepository(
                 newName,
                 newDesc,
                 newStart,
-                newEnd)
+                newEnd
+            )
         )
 
     }
 
     suspend fun getAllEvents(): List<EventResponse>? {
         val token = auxRepository.getAccessToken()
-        val userId = auxRepository.getUserId()!!.toInt()
+        /**val userId = auxRepository.getUserId()?.toIntOrNull()
+            ?: throw IllegalStateException("User ID is null or invalid")**/
+        val userId = auxRepository.getUserId()?.toIntOrNull() ?: -1
+
 
         val participationsResponse = eventService.getUserParticipations("Bearer $token", userId)
         val participationData = participationsResponse.body()?.data ?: emptyList()
@@ -63,22 +78,22 @@ class EventsRepository(
 
         val events = eventResponse.body()?.data ?: emptyList()
 
-        return events.filter {event -> participationData.any {it.idEvento == event.id_evento || it.idUsuario == event.id_administrador}}
+        return events.filter { event -> participationData.any { it.idEvento == event.id_evento || it.idUsuario == event.id_administrador } }
     }
 
-    suspend fun getEventById(id: Int): EventResponse?{
+    suspend fun getEventById(id: Int): EventResponse? {
         val token = auxRepository.getAccessToken()
         val response = eventService.getEventById("Bearer $token", id)
         return response.body()?.data
     }
 
-    suspend fun deleteEvent(id: Int){
+    suspend fun deleteEvent(id: Int) {
 
         val token = auxRepository.getAccessToken()
         eventService.deleteEvent("Bearer $token", id)
     }
 
-    suspend fun joinEvent(unionCode: String){
+    suspend fun joinEvent(unionCode: String) {
 
         val token = auxRepository.getAccessToken()
         val userId = auxRepository.getUserId()!!.toInt()
@@ -92,7 +107,8 @@ class EventsRepository(
             if (eventos.isNotEmpty()) {
                 val eventId = eventos.first().id_evento
                 Log.e("tag", "EVENT_ID >>>>: $eventId")
-                eventService.registerParticipation("Bearer $token",
+                eventService.registerParticipation(
+                    "Bearer $token",
                     JoinData(
                         userId,
                         eventId

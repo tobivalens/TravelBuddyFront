@@ -30,6 +30,10 @@ data class GetExpensesData(
     val data: List<ExpenseDTO>
 )
 
+data class SingleExpenseData(
+    val data: ActivityDTO
+)
+
 
 data class SingleExpenseResponse(
     val data: ExpenseDTO
