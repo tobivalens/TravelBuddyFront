@@ -131,11 +131,11 @@ fun VisualizeEventScreenAdmin(
                 onTabSelected = { index ->
                     selectedTab = index
                     when (index) {
-                        0 -> navController.navigate("VisualizeEvent/$eventId")
+                        0 -> navController.navigate("VisualizeEventAdmin/$eventId")
                         1 -> navController.navigate("gastos/$eventId")
-                        2 -> navController.navigate("VisualizeActivities/$eventId"){
+                        2 -> navController.navigate("VisualizeActivitiesAdmin/$eventId"){
                             launchSingleTop = true
-                            popUpTo("VisualizeEvent/$eventId") { inclusive = false }
+                            popUpTo("VisualizeEventAdmin/$eventId") { inclusive = false }
                         }
                     }
                 }

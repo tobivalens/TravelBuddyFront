@@ -3,6 +3,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.datasource.DTOS.*
 import com.example.travelbuddyapp.repository.AuthRepository
 import com.example.travelbuddyapp.repository.AuxRepository
@@ -20,6 +21,8 @@ class AuthViewModel(
     val currentUser: State<String?> = _currentUser
     private val _userId = mutableStateOf<Int?>(null)
     val currentUserId: State<Int?> = _userId
+    private val _registerFlag = mutableStateOf<Boolean>(false)
+    val registerFlag: State<Boolean> = _registerFlag
 
     fun login(email:String, pass:String) {
 
@@ -43,13 +46,18 @@ class AuthViewModel(
     fun register(first_name:String, last_name:String, email:String, password:String, phone:String, location:String, birthDate: String){
         val roleId = "9e957475-6ab1-4bf8-9acc-2abae37cf58d"
        viewModelScope.launch(Dispatchers.IO){
-            authRepository.register(
+            _registerFlag.value =
+                authRepository.register(
                 RegisterData(first_name, last_name, email, password, roleId),
                 phone,
                 birthDate,
                 location
             )
         }
+    }
+
+    fun setRegisterFlag(state: Boolean){
+        _registerFlag.value = state
     }
 
     fun getAuthStatus() {
@@ -86,6 +94,12 @@ class AuthViewModel(
             _userId.value = userId
         }
 
+    }
+
+    fun logout(){
+        viewModelScope.launch(Dispatchers.IO){
+            authRepository.clearDataStorage()
+        }
     }
 }
 

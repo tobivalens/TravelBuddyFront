@@ -37,6 +37,8 @@ import com.example.travelbuddyapp.datasource.DTOS.EditExpenseData
 import com.example.travelbuddyapp.resources.ui.screens.HomeScreen
 import com.example.travelbuddyapp.resources.ui.screens.TravelItem
 import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreen
+import com.example.travelbuddyapp.resources.ui.screens.ActivitiesScreenParticipant
+import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailParticipant
 import com.example.travelbuddyapp.resources.ui.screens.ActivityDetailScreen
 import com.example.travelbuddyapp.resources.ui.screens.AddExpenseScreen
 import com.example.travelbuddyapp.resources.ui.screens.BalanceScreen
@@ -88,7 +90,7 @@ fun AppNavigator() {
         viewModel.getUser()
     }
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
 
         composable("loginScreen") {
@@ -111,17 +113,35 @@ fun AppNavigator() {
             EditEventScreen(eventId, navController)
         }
 
-        composable("gastos/{eventId}",
+        composable("gastosUser/{eventId}",
             arguments = listOf(navArgument("eventId"){type = NavType.IntType})
         ){ backStackEntry ->
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
-            BalanceScreen(eventId, {navController.popBackStack()}, { navController.navigate("home") }, { navController.navigate("optionalAdd") },
+            BalanceScreenUser(
+                eventId,
+                {navController.popBackStack()},
+                { navController.navigate("home") },
+                { navController.navigate("optionalAdd") },
                 { navController.navigate("profile") },
                 navController
         )}
 
+        composable("gastos/{eventId}",
+            arguments = listOf(navArgument("eventId"){type = NavType.IntType})
+        ){ backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            BalanceScreen(
+                eventId,
+                {navController.popBackStack()},
+                { navController.navigate("home") },
+                { navController.navigate("optionalAdd") },
+                { navController.navigate("profile") },
+                navController
+            )}
+
+
         composable(
-            "VisualizeActivities/{eventId}",
+            "VisualizeActivitiesAdmin/{eventId}",
             arguments = listOf(
                 navArgument("eventId")
                 { type = NavType.IntType }
@@ -134,13 +154,28 @@ fun AppNavigator() {
             )
         }
 
+        composable(
+            "VisualizeActivities/{eventId}",
+            arguments = listOf(
+                navArgument("eventId")
+                { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            ActivitiesScreenParticipant(
+                navController = navController,
+                eventId = eventId
+            )
+        }
+
         composable("addExpense/{eventId}",
             arguments = listOf(navArgument("eventId"){type = NavType.IntType})) {
             backStackEntry ->
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             AddExpenseScreen(
                 eventId = eventId,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                navController
             )
         }
         composable("editExpense/{expId}",
@@ -149,7 +184,8 @@ fun AppNavigator() {
             val expId = backStackEntry.arguments?.getInt("expId") ?: return@composable
             EditExpensesScreen(
                 expenseId = expId,
-                onBackClick = {navController.popBackStack()}
+                onBackClick = {navController.popBackStack()},
+                navController
             )
 
         }
@@ -196,7 +232,8 @@ fun AppNavigator() {
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
 
             CreateActivityScreen(eventId = eventId,
-                onBack = { navController.popBackStack() })
+                onBack = { navController.popBackStack() },
+                navController)
         }
 
         composable("home") {
@@ -217,7 +254,7 @@ fun AppNavigator() {
                     var selectedTab = idx
                 },
                 onSearchClick = {
-                    //navController.navigate("splash")
+                    navController.navigate("home")
                 },
                 onTravelClick = {},
             )
@@ -252,6 +289,17 @@ fun AppNavigator() {
         }
 
         composable(
+            "actDetailUser/{actId}",
+            arguments = listOf(navArgument("actId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val actId = backStackEntry.arguments?.getInt("actId") ?: return@composable
+            ActivityDetailParticipant(
+                actId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
             "editAct/{actId}",
             arguments = listOf(navArgument("actId") { type = NavType.IntType })
         ) { backStackEntry ->
@@ -259,7 +307,8 @@ fun AppNavigator() {
 
             EditActivityScreen(
                 actId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                navController
             )
         }
 

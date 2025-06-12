@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
@@ -37,6 +38,7 @@ import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 fun EditExpensesScreen(
     expenseId: Int,
     onBackClick: () -> Unit,
+    navController: NavController
 ) {
 
     val viewModel: ExpenseViewModel = viewModel()
@@ -48,9 +50,9 @@ fun EditExpensesScreen(
     val buttonWhiteText = Color(0xFFFFFFFB)
     val innerGrayColor = Color(0xFFCBC7C7)
     val expense by viewModel.currentExpense
+    val editFlag by viewModel.editFlag
 
     LaunchedEffect(expenseId) {
-        Log.e("expenseId - EditExpenseScreen", expenseId.toString())
         viewModel.loadExpenseById(expenseId)
     }
 
@@ -65,6 +67,23 @@ fun EditExpensesScreen(
             debtorId = it.deudor_id.toString()
         }
     }
+
+    if(editFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setEditFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("El gasto fue editado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setEditFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
+
     val fieldShape = RoundedCornerShape(24.dp)
 
     Scaffold(

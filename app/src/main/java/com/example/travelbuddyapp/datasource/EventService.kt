@@ -23,7 +23,7 @@ interface EventService {
     suspend fun getEventById(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<SingleEventData>
 
     @PATCH("/items/evento/{id}")
-    suspend fun editEvent(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editEventData: EditEventData)
+    suspend fun editEvent(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editEventData: EditEventData): Response<EventResponse>
 
     @DELETE("/items/evento/{id}")
     suspend fun deleteEvent(@Header("Authorization") authorization: String, @Path("id") id:Int)

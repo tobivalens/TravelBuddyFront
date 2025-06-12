@@ -45,7 +45,7 @@ class AuxRepository(
         val currentUserData = auxService.getDirectusUserID("Bearer $token")
         val directusUserId = currentUserData.body()?.data?.id!!
         Log.e("directusUserId", directusUserId)
-        val userName = currentUserData.body()?.data?.first_name!!
+        val userName = "${currentUserData.body()?.data?.first_name!!} ${currentUserData.body()?.data?.last_name!!}"
 
         LocalDataSourceProvider.get().save("username", userName)
 

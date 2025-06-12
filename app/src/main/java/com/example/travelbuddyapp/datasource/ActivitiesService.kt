@@ -13,10 +13,10 @@ import retrofit2.http.Query
 
 interface ActivitiesService {
     @POST("/items/actividad")
-    suspend fun createActivity(@Header("Authorization") authorization: String, @Body activityData: ActivityData): Response<EventResponse>
+    suspend fun createActivity(@Header("Authorization") authorization: String, @Body activityData: ActivityData): Response<ActivityDTO>
 
     @PATCH("/items/actividad/{id}")
-    suspend fun editActivity(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editActivityData: EditActivityData)
+    suspend fun editActivity(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editActivityData: EditActivityData): Response<ActivityDTO>
 
     @GET("/items/actividad")
     suspend fun getActivities(@Header("Authorization") authorization: String,@Query("filter[id_evento][_eq]") idEvento: Int): Response<GetActivitiesData>

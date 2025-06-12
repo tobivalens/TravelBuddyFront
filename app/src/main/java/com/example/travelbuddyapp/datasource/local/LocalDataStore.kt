@@ -41,6 +41,12 @@ class LocalDataStore(val dataStore: DataStore<Preferences>) {
         prefs[stringPreferencesKey(key)] ?: ""
     }
 
+    suspend fun clearKey(key: String) {
+        dataStore.edit { prefs ->
+            prefs.remove(stringPreferencesKey(key))
+        }
+    }
+
 }
 
 //DataStore -> localstorage

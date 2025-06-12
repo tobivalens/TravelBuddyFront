@@ -128,9 +128,9 @@ fun VisualizeEventScreen(
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
                     when (tabs[index]) {
-                        "Evento" -> navController.navigate("VisualizeEvent/1")
-                        "Gastos" -> navController.navigate("gastosUser")
-                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Gastos" -> navController.navigate("gastosUser/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
                     }
                 }
             )

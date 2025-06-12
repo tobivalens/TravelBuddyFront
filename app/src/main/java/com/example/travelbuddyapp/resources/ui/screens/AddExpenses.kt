@@ -28,6 +28,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.resources.ui.screens.TopAppBarComponent
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
@@ -37,6 +38,7 @@ import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 @Composable
 fun AddExpenseScreen(eventId: Int,
                      onBackClick: () -> Unit,
+                     navController: NavController
 ) {
     val viewModel: ExpenseViewModel = viewModel()
     val purpleColor = Color(0xFFA181FA)
@@ -50,10 +52,25 @@ fun AddExpenseScreen(eventId: Int,
     var description by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     var deudorId by remember { mutableStateOf("") }
-
+    val createFlag by viewModel.createFlag
 
     val fieldShape = RoundedCornerShape(24.dp)
 
+    if(createFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setCreateFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("El gasto fue creado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setCreateFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
     Scaffold(
         topBar = {
             TopAppBarComponent(eventTitle = "Añadir un gasto", onBackClick)

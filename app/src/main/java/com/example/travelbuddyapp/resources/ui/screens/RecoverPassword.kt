@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -87,7 +88,7 @@ fun RecoverPassword(navController: NavController) {
 
 
                     Text(
-                        text = " Recuperar contraseña     ",
+                        text = " Recuperar contraseña",
                         fontSize = 28.sp,
                         fontFamily = SaralaFont,
                         fontWeight = FontWeight.Normal,
@@ -103,7 +104,7 @@ fun RecoverPassword(navController: NavController) {
 
 
                     Text(
-                        text = "Escribe el correo electrónico asociado a tu cuenta para que te enviemos un código de verificación",
+                        text = "Escribe la nueva contraseña",
                         fontSize = 12.sp,
                         fontFamily = SaralaFont,
                         fontWeight = FontWeight.Normal,
@@ -117,14 +118,14 @@ fun RecoverPassword(navController: NavController) {
                         onValueChange = {},
                         placeholder = {
                             Text(
-                                "Email",
+                                "Nueva Contraseña",
                                 fontFamily = SaralaFont,
                                 fontWeight = FontWeight.Normal,
                                 color = Color(0xFFCBC7C7)
                             )
                         },
                         leadingIcon = {
-                            Icon(Icons.Default.Email, contentDescription = null)
+                            Icon(Icons.Default.Lock, contentDescription = null)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -151,7 +152,7 @@ fun RecoverPassword(navController: NavController) {
                         shape = RoundedCornerShape(50)
                     ) {
                         Text(
-                            text = "Confirmar Correo",
+                            text = "Cambiar Contraseña",
                             fontFamily = SaralaFont,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFFFFFFB),

@@ -32,6 +32,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,13 +42,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
+
 @Composable
 fun UserProfile(
     navController: NavController,
 ) {
+
+    val viewModel: AuthViewModel = viewModel()
+    val userName by viewModel.currentUser
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
@@ -78,7 +87,7 @@ fun UserProfile(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Daniel Escobar",
+                            text = userName!!,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = SaralaFont,
@@ -87,7 +96,7 @@ fun UserProfile(
                     }
                 }
 
-                // Caja de opciones
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,7 +112,7 @@ fun UserProfile(
                     Column(
                         modifier = Modifier.padding(vertical = 12.dp)
                     ) {
-                        // Opción 1: Editar perfil
+
                         OptionRow(
                             icon = Icons.Default.Edit,
                             text = "Editar Perfil",
@@ -111,7 +120,7 @@ fun UserProfile(
                         )
                         Divider(color = Color(0xFFA181FA))
 
-                        // Opción 2: Mis Gastos
+
                         OptionRow(
                             icon = Icons.Default.AttachMoney,
                             text = "Mis Gastos",
@@ -119,19 +128,22 @@ fun UserProfile(
                         )
                         Divider(color = Color(0xFFA181FA))
 
-                        // Opción 3: Configuración
+
                         OptionRow(
                             icon = Icons.Default.Settings,
                             text = "Configuración",
-                            onClick = { navController.navigate("settings") }
+                            onClick = { navController.navigate("profile") }
                         )
+
                         HorizontalDivider(color = Color(0xFFA181FA))
 
-                        // Opción 4: Cerrar sesión
                         OptionRow(
                             icon = Icons.Default.ExitToApp,
                             text = "Cerrar Sesión",
-                            onClick = { navController.navigate("loginScreen") }
+                            onClick = {
+                                viewModel.logout()
+                                navController.navigate("loginScreen")
+                            }
                         )
                     }
                 }

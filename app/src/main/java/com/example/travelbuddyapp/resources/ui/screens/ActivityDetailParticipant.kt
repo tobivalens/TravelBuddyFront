@@ -45,7 +45,6 @@ import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 @Composable
 fun ActivityDetailParticipant(
     actId: Int,
-    navController: NavController,
     onBackClick: () -> Unit
 ) {
     val viewModel: ActivityViewModel = viewModel()
@@ -98,23 +97,6 @@ fun ActivityDetailParticipant(
             DetailBlock("Hora", activity?.hora_actividad ?: "Sin hora")
             DetailBlock("Ubicación", activity?.ubicacion ?: "Sin ubicación")
             DetailBlock("Archivos adjuntos", "No hay archivos aún")
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.deleteActivity(activity!!.id_actividad)
-                          navController.popBackStack()},
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(48.dp),
-                shape = RoundedCornerShape(40.dp)
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Eliminar actividad")
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }

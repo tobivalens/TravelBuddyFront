@@ -39,7 +39,7 @@ private val PurpleLight = Color(0xFFB085F5)
 fun ActivitiesScreen(
     navController: NavController,
     eventId: Int
-    // Insertar nombre del viaje actual
+
 ) {
     val viewModel: ActivityViewModel = viewModel()
     val eventViewModel: EventViewModel = viewModel()
@@ -99,16 +99,16 @@ fun ActivitiesScreen(
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
                     when (tabs[index]) {
-                        "Evento" -> navController.navigate("VisualizeEvent/1")
-                        "Gastos" -> navController.navigate("gastosUser")
-                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                        "Evento" -> navController.navigate("VisualizeEventAdmin/${eventId}")
+                        "Gastos" -> navController.navigate("gastos/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
                     }
                 }
             )
 
             Spacer(Modifier.height(12.dp))
 
-            MonthCalendar("Fecha de prueba")// En esta funcion debe de ir el mes actual
+            MonthCalendar("Fecha")
 
             Spacer(Modifier.height(12.dp))
 
@@ -178,7 +178,6 @@ fun MonthCalendar(month: String) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Días de la semana
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -294,7 +293,7 @@ fun ActivityItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Fecha de prueba",
+                    text = " ${item.fecha_actividad} | ${item.hora_actividad}" ,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )

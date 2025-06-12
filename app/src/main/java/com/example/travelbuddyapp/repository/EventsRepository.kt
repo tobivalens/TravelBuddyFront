@@ -25,13 +25,14 @@ class EventsRepository(
         eventDescription: String,
         startDate: String,
         endDate: String
-    ) {
+    ): Boolean{
 
         var id = auxRepository.getUserId()
         var adminId: Int = id!!.toInt()
         val token = auxRepository.getAccessToken()
         val joinCode = generateJoinCode()
-        eventService.createEvent(
+        val response =
+            eventService.createEvent(
             "Bearer $token", EventData(
                 eventName,
                 eventDescription,
@@ -41,6 +42,8 @@ class EventsRepository(
                 adminId
             )
         )
+
+        return response.isSuccessful
     }
 
     suspend fun editEvent(
@@ -49,10 +52,11 @@ class EventsRepository(
         newDesc: String,
         newStart: String,
         newEnd: String
-    ) {
+    ): Boolean {
 
         val token = auxRepository.getAccessToken()
-        eventService.editEvent(
+        val response =
+            eventService.editEvent(
             "Bearer $token", id,
             EditEventData(
                 newName,
@@ -62,6 +66,7 @@ class EventsRepository(
             )
         )
 
+        return response.isSuccessful
     }
 
     suspend fun getAllEvents(): List<EventResponse>? {
@@ -93,20 +98,16 @@ class EventsRepository(
         eventService.deleteEvent("Bearer $token", id)
     }
 
-    suspend fun joinEvent(unionCode: String) {
+    suspend fun joinEvent(unionCode: String): Boolean{
 
         val token = auxRepository.getAccessToken()
         val userId = auxRepository.getUserId()!!.toInt()
-
-        Log.e("UNIONCODE: ", unionCode)
-
         val response = eventService.getEventByCode("Bearer $token", unionCode)
 
         if (response.isSuccessful && response.body() != null) {
             val eventos = response.body()!!.data
             if (eventos.isNotEmpty()) {
                 val eventId = eventos.first().id_evento
-                Log.e("tag", "EVENT_ID >>>>: $eventId")
                 eventService.registerParticipation(
                     "Bearer $token",
                     JoinData(
@@ -114,12 +115,15 @@ class EventsRepository(
                         eventId
                     )
                 )
+                return true
             } else {
                 Log.e("tag", "No se encontraron eventos para el código: $unionCode")
+                return false
             }
         } else {
             Log.e("tag", "Error en la respuesta: ${response.code()} - ${response.message()}")
             Log.e("tag", "Response body: ${response.errorBody()?.string()}")
+            return false
         }
 
 

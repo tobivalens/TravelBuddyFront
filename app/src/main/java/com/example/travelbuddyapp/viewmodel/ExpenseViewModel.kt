@@ -25,7 +25,10 @@ class ExpenseViewModel(
     val userEventTotal: State<Double> = _userEventTotal
     private val _currentExpense = mutableStateOf<ExpenseDTO?>(null)
     val currentExpense: State<ExpenseDTO?> =  _currentExpense
-
+    private val _createFlag= mutableStateOf<Boolean>(false)
+    val createFlag: State<Boolean> = _createFlag
+    private val _editFlag= mutableStateOf<Boolean>(false)
+    val editFlag: State<Boolean> = _editFlag
 
     fun loadExpenses(eventId: Int) {
         viewModelScope.launch {
@@ -66,7 +69,7 @@ class ExpenseViewModel(
     fun addExpense(eventId: Int, debtorId: Int, value: Double, description: String) {
         viewModelScope.launch {
             try {
-                expensesRepository.createExpense(eventId, debtorId, description, value)
+                _createFlag.value = expensesRepository.createExpense(eventId, debtorId, description, value)
                 loadExpenses(eventId)
             } catch (e: Exception) {
                 println("Error al añadir gasto: ${e.message}")
@@ -77,12 +80,20 @@ class ExpenseViewModel(
     fun editExpense(expenseId: Int, debtorId: Int, value: Double, description: String) {
         viewModelScope.launch {
             try {
-                Log.e("ExpenseID - ViewModel: ", expenseId.toString())
-                expensesRepository.editExpense(expenseId, debtorId, value, description)
+                _editFlag.value = expensesRepository.editExpense(expenseId, debtorId, value, description)
+
             } catch (e: Exception) {
                 println("Error al añadir gasto: ${e.message}")
             }
         }
+    }
+
+    fun setCreateFlag(status: Boolean) {
+        _createFlag.value = status
+    }
+
+    fun setEditFlag(status: Boolean) {
+        _editFlag.value = status
     }
 
     fun deleteExpense(expenseId: Int){

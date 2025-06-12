@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +54,6 @@ fun BalanceScreenUser(eventId: Int,
                       onProfileClick: () -> Unit,
                       navController: NavController) {
 
-    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val purpleColor = Color(0xFFA181FA)
     val whiteBackground = Color(0xFFFFFFFF)
@@ -134,9 +134,9 @@ fun BalanceScreenUser(eventId: Int,
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
                     when (tabs[index]) {
-                        "Evento" -> navController.navigate("VisualizeEvent/1")
-                        "Gastos" -> navController.navigate("gastosUser")
-                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Gastos" -> navController.navigate("gastosUser/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
                     }
                 }
             )
@@ -192,7 +192,7 @@ fun BalanceScreenUser(eventId: Int,
             Spacer(Modifier.height(16.dp))
 
             expenses.forEach { expense ->
-                ExpenseItem(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id, navController)
+                ExpenseItemUser(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id)
             }
         }
     }

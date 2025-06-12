@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.EventViewModel
 import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
@@ -49,7 +50,6 @@ fun BalanceScreen(eventId: Int,
                   onProfileClick: () -> Unit,
                   navController: NavController){
 
-    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val purpleColor = Color(0xFFA181FA)
     val whiteBackground = Color(0xFFFFFFFF)
@@ -67,6 +67,15 @@ fun BalanceScreen(eventId: Int,
         expenseViewModel.loadUserExpensesInEvent(eventId)
     }
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEventAdmin") == true -> 0
+        currentRoute == "gastos" -> 1
+        currentRoute?.startsWith("VisualizeActivitiesAdmin") == true -> 2
+        else -> 0 // default
+    }
 
     val eventTitle = event?.nombre?: "Sin nombre"
 
@@ -100,7 +109,13 @@ fun BalanceScreen(eventId: Int,
             CustomTabBar(
                 tabs = tabs,
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { index ->
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Gastos" -> navController.navigate("gastos/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
+                    }
+                }
             )
 
             Spacer(Modifier.height(32.dp))
@@ -161,7 +176,6 @@ fun BalanceScreen(eventId: Int,
             Spacer(Modifier.height(16.dp))
 
             expenses.forEach { expense ->
-                Log.e("ID_GASTO", expense.id_gasto.toString())
                 ExpenseItem(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id, navController)
             }
 
@@ -178,7 +192,6 @@ fun ExpenseItem(
     navController: NavController
 ) {
     val lightGray = Color(0xFFCBC7C7)
-    Log.e("ExpenseID - ExpenseItem ", expenseId.toString())
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -211,4 +224,45 @@ fun ExpenseItem(
         HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
     }
 }
+
+@Composable
+fun ExpenseItemUser(
+    expenseId: Int,
+    description: String,
+    amount: String,
+    debtorId: Int,
+) {
+    val lightGray = Color(0xFFCBC7C7)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.AttachMoney, contentDescription = null, tint = lightGray)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(description, fontSize = 16.sp, color = lightGray, fontFamily = SaralaFont)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(amount, fontSize = 16.sp, color = lightGray, fontFamily = SaralaFont)
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(Icons.Default.MoreVert, contentDescription = null, tint = lightGray)
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            "Asignado al participante con ID = $debtorId",
+            fontSize = 14.sp,
+            color = lightGray,
+            fontFamily = SaralaFont
+        )
+        HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+    }
+}
+
 

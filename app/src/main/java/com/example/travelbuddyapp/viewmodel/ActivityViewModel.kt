@@ -18,6 +18,10 @@ class ActivityViewModel(
     val activities: State<List<ActivityDTO>> = _activities
     private val _currentActivity = mutableStateOf<ActivityDTO?>(null)
     val currentActivity: State<ActivityDTO?> = _currentActivity
+    private val _createFlag = mutableStateOf<Boolean>(false)
+    val createFlag: State<Boolean> = _createFlag
+    private val _editFlag = mutableStateOf<Boolean>(false)
+    val editFlag: State<Boolean> = _editFlag
 
     fun loadActivities(eventId:Int){
         viewModelScope.launch(Dispatchers.IO){
@@ -36,7 +40,8 @@ class ActivityViewModel(
 
     fun createActivity(eventId: Int, activityName:String, description:String, startDate: String, time: String, location: String ){
         viewModelScope.launch(Dispatchers.IO){
-            activityRepository.createActivity(
+            _createFlag.value =
+                activityRepository.createActivity(
                 eventId,
                 activityName,
                 description,
@@ -48,7 +53,8 @@ class ActivityViewModel(
     }
     fun editActivity(id: Int, newName: String, newDesc: String, newDate: String, newTime:String, newLoc:String){
         viewModelScope.launch(Dispatchers.IO){
-            activityRepository.editActivity(
+            _editFlag.value =
+                activityRepository.editActivity(
                 id,
                 newName,
                 newDesc,
@@ -57,6 +63,14 @@ class ActivityViewModel(
                 newLoc
             )
         }
+    }
+
+    fun setCreateFlag(status: Boolean) {
+        _createFlag.value = status
+    }
+
+    fun setEditFlag(status: Boolean) {
+        _editFlag.value = status
     }
 
     fun deleteActivity(id:Int){

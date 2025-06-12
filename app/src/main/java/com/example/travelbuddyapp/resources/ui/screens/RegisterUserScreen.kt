@@ -41,6 +41,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.AuthViewModel
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 
 
@@ -58,7 +61,23 @@ fun RegisterUserScreen(navController: NavController) {
     val location = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
+    val registerFlag by viewModel.registerFlag
 
+    if(registerFlag){
+        AlertDialog(
+            onDismissRequest = {viewModel.setRegisterFlag(false)},
+            title = {Text("Exito")},
+            text = { Text("Se ha registrado correctamente.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setRegisterFlag(false)
+                    navController.popBackStack()
+                }) {
+                    Text("Aceptar.")
+                }
+            }
+        )
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()

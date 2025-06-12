@@ -20,10 +20,17 @@ class EventViewModel(
     val currentEvent: State<EventResponse?> = _currentEvent
     private val _participants = mutableStateOf<List<String>>(emptyList())
     val participants: State<List<String>> = _participants
+    private val _createFlag = mutableStateOf<Boolean>(false)
+    val createFlag: State<Boolean> = _createFlag
+    private val _editFlag = mutableStateOf<Boolean>(false)
+    val editFlag: State<Boolean> = _editFlag
+    private val _joinFlag = mutableStateOf<Boolean>(false)
+    val joinFlag: State<Boolean> = _joinFlag
 
     fun createEvent(eventName: String, description: String, startDate: String, endDate: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            eventRepository.createEvent(
+            _createFlag.value =
+                eventRepository.createEvent(
                 eventName,
                 description,
                 startDate,
@@ -41,7 +48,8 @@ class EventViewModel(
     ) {
 
         viewModelScope.launch(Dispatchers.IO) {
-            eventRepository.editEvent(
+            _editFlag.value =
+                eventRepository.editEvent(
                 id,
                 newName,
                 newDesc,
@@ -53,48 +61,9 @@ class EventViewModel(
 
     fun getAllEvents() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = eventRepository.getAllEvents()
+            val response = eventRepository.getAllEvents()
+            _events.value = response!!
 
-                // Si el repositorio devuelve null, usamos datos mock
-                _events.value = response ?: listOf(
-                    EventResponse(
-                        id_evento = 1,
-                        nombre = "Evento de prueba",
-                        descripcion = "Este es un evento de ejemplo para pruebas",
-                        fecha_inicio = "2025-06-15",
-                        fecha_fin = "2025-06-17",
-                        codigo_union = "ABC123",
-                        id_administrador = 999
-                    ),
-                    EventResponse(
-                        id_evento = 2,
-                        nombre = "Segundo evento",
-                        descripcion = "Otro evento de prueba",
-                        fecha_inicio = "2025-07-01",
-                        fecha_fin = "2025-07-03",
-                        codigo_union = "XYZ789",
-                        id_administrador = 999
-                    )
-                )
-
-                Log.e("events success", _events.value.toString())
-            } catch (e: Exception) {
-                Log.e("events error", e.message ?: "Error desconocido")
-
-                // Fallback en caso de excepción
-                _events.value = listOf(
-                    EventResponse(
-                        id_evento = 1,
-                        nombre = "Evento Mock por excepción",
-                        descripcion = "No se pudo acceder a la BD",
-                        fecha_inicio = "2025-06-10",
-                        fecha_fin = "2025-06-11",
-                        codigo_union = "FAILSAFE1",
-                        id_administrador = 0
-                    )
-                )
-            }
         }
     }
 
@@ -116,8 +85,20 @@ class EventViewModel(
     fun joinEvent(unionCode: String) {
 
         viewModelScope.launch {
-            eventRepository.joinEvent(unionCode)
+            _joinFlag.value = eventRepository.joinEvent(unionCode)
         }
+    }
+
+    fun setCreateFlag(status: Boolean) {
+        _createFlag.value = status
+    }
+
+    fun setEditFlag(status: Boolean) {
+        _editFlag.value = status
+    }
+
+    fun setJoinFlag(status: Boolean) {
+        _joinFlag.value = status
     }
 
     fun loadParticipants(eventId: Int) {

@@ -33,10 +33,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
-
+import com.example.travelbuddyapp.viewmodel.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +46,7 @@ fun EditProfileScreen(
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
+    val viewModel: AuthViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -108,28 +110,16 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Campos de texto
-            ProfileInput(label = "Nombre", value = "Daniel", icon = Icons.Default.Person)
-            ProfileInput(label = "Apellido", value = "Escobar", icon = Icons.Default.Person)
-            ProfileInput(label = "Email", value = "daniEscobar9@hotmail.com", icon = Icons.Default.Email)
+            ProfileInput(label = "Nombre", value = "", icon = Icons.Default.Person)
+            ProfileInput(label = "Apellido", value = "", icon = Icons.Default.Person)
             ProfileInput(label = "Fecha de nacimiento", value = "DD/MM/YY", icon = Icons.Default.DateRange)
-            ProfileInput(label = "Teléfono", value = "", placeholder = "Escriba su número de contacto", icon = Icons.Default.Phone)
+            ProfileInput(label = "Teléfono", value = "", placeholder = "", icon = Icons.Default.Phone)
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Cambiar contraseña
-            Text(
-                text = "Cambiar contraseña",
-                color = Color(0xFF5B3EC8),
-                fontSize = 14.sp,
-                fontFamily = SaralaFont,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp)
-            )
-
             // Botón guardar
             Button(
-                onClick = { /* Guardar acción */ },
+                onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFA181FA)
                 ),
@@ -147,23 +137,6 @@ fun EditProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Botón eliminar cuenta
-            OutlinedButton(
-                onClick = { /* Acción eliminar cuenta */ },
-                border = BorderStroke(1.dp, Color.Red),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            ) {
-                Text(
-                    text = "Eliminar Cuenta",
-                    fontFamily = SaralaFont,
-                    fontSize = 16.sp,
-                    color = Color.Red
-                )
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }

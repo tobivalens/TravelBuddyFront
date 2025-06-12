@@ -37,7 +37,6 @@ private val PurplePrimary = Color(0xFF9B69E7)
 fun ActivitiesScreenParticipant(
     navController: NavController,
     eventId: Int
-    // Insertar nombre del viaje actual
 ) {
     val viewModel: ActivityViewModel = viewModel()
     val eventViewModel: EventViewModel = viewModel()
@@ -88,9 +87,9 @@ fun ActivitiesScreenParticipant(
                 selectedTab = selectedTab,
                 onTabSelected = { index ->
                     when (tabs[index]) {
-                        "Evento" -> navController.navigate("VisualizeEvent/1")
-                        "Gastos" -> navController.navigate("gastosUser")
-                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                        "Evento" -> navController.navigate("VisualizeEvent/${eventId}")
+                        "Gastos" -> navController.navigate("gastosUser/${eventId}")
+                        "Actividades" -> navController.navigate("VisualizeActivities/${eventId}")
                     }
                 }
             )
@@ -114,7 +113,7 @@ fun ActivitiesScreenParticipant(
             ActivitiesList(
                 items = activities,
                 onActivityClick = { activity ->
-                    navController.navigate("actDetail/${activity.id_actividad}")
+                    navController.navigate("actDetailUser/${activity.id_actividad}")
                 }
             )
         }
