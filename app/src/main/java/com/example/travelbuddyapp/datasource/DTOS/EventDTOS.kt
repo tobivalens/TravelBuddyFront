@@ -62,6 +62,9 @@ data class ParticipantName(
 )
 
 data class UsuarioWrapper(
+
+    @SerializedName("id_usuario")
+    val id: Int,
     @SerializedName("directus_user_id")
     val directusUser: DirectusUser?
 )

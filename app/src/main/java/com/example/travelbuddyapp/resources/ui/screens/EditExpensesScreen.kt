@@ -1,5 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -16,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -24,20 +25,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.travelbuddyapp.resources.ui.screens.TopAppBarComponent
 import com.example.travelbuddyapp.ui.theme.SaralaFont
-import com.example.travelbuddyapp.viewmodel.ActivityViewModel
 import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(eventId: Int,
-                     onBackClick: () -> Unit,
+fun EditExpensesScreen(
+    expenseId: Int,
+    onBackClick: () -> Unit,
 ) {
+
     val viewModel: ExpenseViewModel = viewModel()
     val purpleColor = Color(0xFFA181FA)
     val backgroundColor = Color(0xFFFFFFFB)
@@ -45,18 +46,30 @@ fun AddExpenseScreen(eventId: Int,
     val textColor = Color(0xFF52545B)
     val textColorPurple = Color(0xFFA181FA)
     val buttonWhiteText = Color(0xFFFFFFFB)
-    val innerGrayColor= Color(0xFFCBC7C7)
+    val innerGrayColor = Color(0xFFCBC7C7)
+    val expense by viewModel.currentExpense
 
-    var description by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    var deudorId by remember { mutableStateOf("") }
+    LaunchedEffect(expenseId) {
+        Log.e("expenseId - EditExpenseScreen", expenseId.toString())
+        viewModel.loadExpenseById(expenseId)
+    }
 
+    var title by remember{ mutableStateOf("")}
+    var amount by remember{ mutableStateOf("") }
+    var debtorId by remember { mutableStateOf("") }
 
+    LaunchedEffect(expense) {
+        expense?.let{
+            title = it.descripcion
+            amount = it.monto.toString()
+            debtorId = it.deudor_id.toString()
+        }
+    }
     val fieldShape = RoundedCornerShape(24.dp)
 
     Scaffold(
         topBar = {
-            TopAppBarComponent(eventTitle = "Añadir un gasto", onBackClick)
+            TopAppBarComponent(eventTitle = "Editar un gasto", onBackClick)
         },
         containerColor = backgroundColor
     ) { paddingValues ->
@@ -69,7 +82,7 @@ fun AddExpenseScreen(eventId: Int,
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("¡Hora de ajustar:", fontSize = 32.sp, fontFamily = SaralaFont, color = textColor)
+            Text("¡Hora de re-ajustar", fontSize = 32.sp, fontFamily = SaralaFont, color = textColor)
             Text("finanzas!", fontSize = 32.sp, fontFamily = SaralaFont, color = textColor)
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -77,8 +90,8 @@ fun AddExpenseScreen(eventId: Int,
             // Campo Nombre
             Text("Nombre", color = textColorPurple, fontFamily = SaralaFont, fontSize = 18.sp)
             OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
+                value = title,
+                onValueChange = { title = it },
                 placeholder = {
                     Text(
                         text = "Ingrese el nombre del gasto",
@@ -107,8 +120,45 @@ fun AddExpenseScreen(eventId: Int,
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Text("Deudor", color = textColorPurple, fontFamily = SaralaFont, fontSize = 18.sp)
+            OutlinedTextField(
+                value = debtorId,
+                onValueChange = { debtorId = it },
+                placeholder = {
+                    Text(
+                        text = "Ingrese el ID del deudor",
+                        color = innerGrayColor
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Nombre",
+                        tint = innerGrayColor
+                    )
+                },
+                textStyle = TextStyle(color = innerGrayColor),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .shadow(6.dp, shape = fieldShape),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = fieldColor,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = purpleColor
+                ),
+                shape = fieldShape
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Campo Valor del gasto
-            Text("Valor del gasto", color = textColorPurple, fontFamily = SaralaFont, fontSize = 18.sp)
+            Text(
+                "Valor del gasto",
+                color = textColorPurple,
+                fontFamily = SaralaFont,
+                fontSize = 18.sp
+            )
             OutlinedTextField(
                 value = amount,
                 onValueChange = { amount = it },
@@ -140,50 +190,31 @@ fun AddExpenseScreen(eventId: Int,
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text("Identificador del deudor", color = textColorPurple, fontFamily = SaralaFont, fontSize = 18.sp)
-            OutlinedTextField(
-                value = deudorId,
-                onValueChange = { deudorId = it },
-                placeholder = {
-                    Text(
-                        text = "Ingrese el identificador del deudor.",
-                        color = innerGrayColor
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.AttachMoney,
-                        contentDescription = "Identificador",
-                        tint = innerGrayColor
-                    )
-                },
-                textStyle = TextStyle(color = innerGrayColor),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .shadow(6.dp, shape = fieldShape),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    containerColor = fieldColor,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = purpleColor
-                ),
-                shape = fieldShape
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
             Button(
-                onClick = {val amountDouble = amount.toDoubleOrNull() ?: 0.0
-                    if (description.isNotBlank() && amountDouble > 0) {
-                        viewModel.addExpense(eventId, deudorId.toInt(), amountDouble, description)
-                    } },
+                onClick = {
+                    val amountDouble = amount.toDoubleOrNull() ?: 0.0
+                    if (title.isNotBlank() && amountDouble > 0) {
+                        viewModel.editExpense(expenseId, debtorId.toInt(), amountDouble, title)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = purpleColor),
                 shape = RoundedCornerShape(24.dp)
             ) {
-                Text("Añadir", color = buttonWhiteText, fontFamily = SaralaFont, fontSize = 18.sp)
+                Text("Editar", color = buttonWhiteText, fontFamily = SaralaFont, fontSize = 18.sp)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {viewModel.deleteExpense(expenseId)},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = purpleColor),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Text("Eliminar", color = buttonWhiteText, fontFamily = SaralaFont, fontSize = 18.sp)
             }
         }
     }

@@ -1,10 +1,13 @@
 package com.example.travelbuddyapp.viewmodel
 
+import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.datasource.DTOS.ExpenseDTO
 import com.example.travelbuddyapp.repository.EventsRepository
 import com.example.travelbuddyapp.repository.ExpensesRepository
@@ -14,33 +17,81 @@ class ExpenseViewModel(
     private val expensesRepository: ExpensesRepository = ExpensesRepository()
 ) : ViewModel() {
 
-    var expenses by mutableStateOf<List<ExpenseDTO>>(emptyList())
-        private set
+    private val _expenses = mutableStateOf<List<ExpenseDTO>>(emptyList())
+    val expenses: State<List<ExpenseDTO>> = _expenses
+    private val _total = mutableStateOf<Double>(0.0)
+    val total: State<Double> = _total
+    private val _userEventTotal = mutableStateOf<Double>(0.0)
+    val userEventTotal: State<Double> = _userEventTotal
+    private val _currentExpense = mutableStateOf<ExpenseDTO?>(null)
+    val currentExpense: State<ExpenseDTO?> =  _currentExpense
 
-    var total by mutableStateOf(0.0)
-        private set
 
     fun loadExpenses(eventId: Int) {
         viewModelScope.launch {
             try {
                 val loadedExpenses = expensesRepository.loadExpenses(eventId)
-                expenses = loadedExpenses
-                total = loadedExpenses.sumOf { it.GeneralValue }
+                _expenses.value = loadedExpenses
+                _total.value = loadedExpenses.sumOf { it.monto}
             } catch (e: Exception) {
                 println("Error al cargar gastos: ${e.message}")
             }
         }
     }
 
-    fun addExpense(eventId: Int, name: String, amount: Double, onSuccess: () -> Unit) {
+    fun loadUserExpenses(){
+
+    }
+
+    fun loadExpenseById(expId: Int){
+        Log.e("expenseId - GetExpenseById - ViewModel", expId.toString())
+        viewModelScope.launch{
+                val loadedExpense = expensesRepository.getExpenseById(expId)
+                _currentExpense.value = loadedExpense
+        }
+    }
+
+    fun loadUserExpensesInEvent(eventId: Int){
+        viewModelScope.launch{
+            try{
+                val userEventExpenses = expensesRepository.loadUserExpensesInEvent(eventId)
+                _userEventTotal.value = userEventExpenses.sumOf{it.monto}
+            }
+            catch(e: Exception){
+                println("Error al cargar gastos: ${e.message}")
+            }
+        }
+    }
+
+    fun addExpense(eventId: Int, debtorId: Int, value: Double, description: String) {
         viewModelScope.launch {
             try {
-                expensesRepository.createExpense(eventId, name, amount)
+                expensesRepository.createExpense(eventId, debtorId, description, value)
                 loadExpenses(eventId)
-                onSuccess()
             } catch (e: Exception) {
                 println("Error al añadir gasto: ${e.message}")
             }
+        }
+    }
+
+    fun editExpense(expenseId: Int, debtorId: Int, value: Double, description: String) {
+        viewModelScope.launch {
+            try {
+                Log.e("ExpenseID - ViewModel: ", expenseId.toString())
+                expensesRepository.editExpense(expenseId, debtorId, value, description)
+            } catch (e: Exception) {
+                println("Error al añadir gasto: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteExpense(expenseId: Int){
+        viewModelScope.launch {
+           try{
+               expensesRepository.deleteExpense(expenseId)
+           } catch (e: Exception){
+               println("Error: ${e.message}")
+           }
         }
     }
 }

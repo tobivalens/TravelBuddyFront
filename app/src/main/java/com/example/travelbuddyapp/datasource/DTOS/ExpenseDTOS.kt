@@ -3,21 +3,26 @@ package com.example.travelbuddyapp.datasource.DTOS
 
 data class ExpenseData(
     val id_evento: Int,
-    val expenseName: String,
-    var GeneralValue: Double,
+    val deudor_id: Int,
+    val acreedor_id: Int,
+    val monto: Double,
+    val descripcion: String,
 )
 
 data class EditExpenseData(
-    val expenseName: String,
-    var GeneralValue: Double
+    val deudor_id: Int,
+    val monto: Double,
+    val descripcion: String
 )
 
 
 data class ExpenseDTO(
-    val id: Int,
+    val id_gasto: Int,
     val id_evento: Int,
-    val expenseName: String,
-    var GeneralValue: Double,
+    val deudor_id: Int,
+    val acreedor_id: Int,
+    val monto: Double,
+    val descripcion: String
 )
 
 

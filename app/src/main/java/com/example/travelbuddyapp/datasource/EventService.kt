@@ -39,5 +39,5 @@ interface EventService {
 
     @GET("/items/participanteevento")
     suspend fun getParticipants(@Header ("Authorization") authorization: String, @Query("filter[id_evento][_eq]") eventId: Int,
-                                @Query("fields") fields: String = "id.usuario.directus_user_id.first_name,id_usuario.directus_user_id.last_name"): Response<DirectusResponse<List<ParticipantName>>>
+                                @Query("fields") fields: String = "id_usuario.id_usuario,id_usuario.directus_user_id.first_name,id_usuario.directus_user_id.last_name"): Response<DirectusResponse<List<ParticipantName>>>
 }
