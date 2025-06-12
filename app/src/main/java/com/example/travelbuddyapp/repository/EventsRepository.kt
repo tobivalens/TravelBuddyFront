@@ -138,7 +138,8 @@ class EventsRepository(
 
             return response.body()?.data?.map {
                 val user = it.usuario!!.directusUser!!
-                "${user.firstName} ${user.lastName}"
+                val userId = it.usuario.id
+                "${user.firstName} ${user.lastName} - ID: ${userId}"
             } ?: emptyList()
 
         } else {

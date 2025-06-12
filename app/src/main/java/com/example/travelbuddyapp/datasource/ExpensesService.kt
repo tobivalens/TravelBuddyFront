@@ -6,6 +6,7 @@ import com.example.travelbuddyapp.datasource.DTOS.ExpenseDTO
 
 import com.example.travelbuddyapp.datasource.DTOS.ExpenseData
 import com.example.travelbuddyapp.datasource.DTOS.GetExpensesData
+import com.example.travelbuddyapp.datasource.DTOS.SingleExpenseResponse
 import retrofit2.Response
 
 import retrofit2.http.Body
@@ -26,29 +27,22 @@ interface ExpensesService {
     ): List<ExpenseDTO>
 
     @POST("/items/gasto")
-    suspend fun createExpense(
-        @Header("Authorization") authorization: String,
-        @Body expenseData: ExpenseData
-    ): Response<EventResponse>
+    suspend fun createExpense(@Header("Authorization") authorization: String, @Body expenseData: ExpenseData): Response<ExpenseDTO>
 
     @PATCH("/items/gasto/{id}")
-    suspend fun editExpense(
-        @Header("Authorization") authorization: String,
-        @Path("id") id: Int,
-        @Body editExpenseData: EditExpenseData
-    ): Response<ExpenseDTO>
+    suspend fun editExpense(@Header("Authorization") authorization: String, @Path("id") id: Int, @Body editExpenseData: EditExpenseData): Response<ExpenseDTO>
 
     @GET("/items/gasto")
-    suspend fun getExpenses(
-        @Header("Authorization") authorization: String,
-        @Query("filter[id_evento][_eq]") idEvento: Int
-    ): Response<GetExpensesData>
+    suspend fun getExpenses(@Header("Authorization") authorization: String, @Query("filter[id_evento][_eq]") idEvento: Int): Response<GetExpensesData>
+
+    @GET("/items/gasto")
+    suspend fun getUserExpenses(@Header("Authorization") authorization: String, @Query("filter[deudor_id][_eq]") idDeudor: Int): Response<GetExpensesData>
+
+    @GET("/items/gasto")
+    suspend fun getUserExpensesInEvent(@Header("Authorization") authorization: String, @Query("filter[deudor_id][_eq]") idDeudor: Int, @Query("filter[id_evento][_eq]") eventId: Int): Response<GetExpensesData>
 
     @GET("/items/gasto/{id}")
-    suspend fun getExpense(
-        @Header("Authorization") authorization: String,
-        @Path("id") id: Int
-    ): Response<ExpenseDTO>
+    suspend fun getExpense(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<SingleExpenseResponse>
 
     @POST("expenses")
     suspend fun addExpense(
@@ -57,8 +51,5 @@ interface ExpensesService {
     ): ExpenseDTO
 
     @DELETE("/items/gasto/{id}")
-    suspend fun deleteExpense(
-        @Header("Authorization") authorization: String,
-        @Path("id") id: Int
-    ): Response<Unit>
+    suspend fun deleteExpense(@Header("Authorization") authorization: String, @Path("id") id: Int): Response<Unit>
 }

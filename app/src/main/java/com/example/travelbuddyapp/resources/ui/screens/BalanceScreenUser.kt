@@ -18,14 +18,14 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,27 +42,38 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.resources.ui.components.BottomNavigationBar
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.EventViewModel
-
+import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BalanceScreenUser(
-    generalExpenses: Double, personalExpense: Double, travelName: String, onBackClick: () -> Unit,
-    onHomeClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onProfileClick: () -> Unit,
-    navController: NavController
-) {
-    val viewModel: EventViewModel = viewModel()
-    val event by viewModel.currentEvent
+fun BalanceScreenUser(eventId: Int,
+                      onBackClick: () -> Unit,
+                      onHomeClick: () -> Unit,
+                      onAddClick: () -> Unit,
+                      onProfileClick: () -> Unit,
+                      navController: NavController) {
 
+    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
-    val eventTitle = event?.nombre ?: "Sin nombre"
     val purpleColor = Color(0xFFA181FA)
     val whiteBackground = Color(0xFFFFFFFF)
     val textColor = Color(0xFF52545B)
-    val generalExpensesString = "$ " + generalExpenses
-    val personalExpensesString = "$ " + personalExpense
+    val eventViewModel: EventViewModel = viewModel()
+    val event by eventViewModel.currentEvent
+    val expenseViewModel: ExpenseViewModel = viewModel()
+    val expenses by expenseViewModel.expenses
+    val total by expenseViewModel.total
+    val totalUser by expenseViewModel.userEventTotal
+
+    LaunchedEffect(eventId) {
+        eventViewModel.getEventById(eventId)
+        expenseViewModel.loadExpenses(eventId)
+        expenseViewModel.loadUserExpensesInEvent(eventId)
+    }
+
+
+    val eventTitle = event?.nombre?: "Sin nombre"
+
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -131,7 +142,7 @@ fun BalanceScreenUser(
             )
 
             Spacer(Modifier.height(32.dp))
-
+            
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -147,7 +158,7 @@ fun BalanceScreenUser(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    generalExpensesString,
+                    "$ $total",
                     fontSize = 32.sp,
                     fontFamily = SaralaFont,
                     color = textColor,
@@ -166,8 +177,8 @@ fun BalanceScreenUser(
                 fontWeight = FontWeight.Bold,
                 fontFamily = SaralaFont
             )
-            Text(personalExpensesString, color = textColor, fontFamily = SaralaFont)
-
+            Text("$ $totalUser", color = textColor, fontFamily = SaralaFont)
+            
             Spacer(Modifier.height(24.dp))
 
             Row(
@@ -175,20 +186,14 @@ fun BalanceScreenUser(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "Historial de Gastos",
-                    color = purpleColor,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = SaralaFont
-                )
+                Text("Historial de Gastos", color = purpleColor, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
             }
 
             Spacer(Modifier.height(16.dp))
-            //pruebas quemadas
-            ExpenseItem("Hospedaje", "$30,000")
-            ExpenseItem("Comida", "$10,000")
-            ExpenseItem("Pasajes", "$6,097")
-            ExpenseItem("Chimbo", "$6,097")
+
+            expenses.forEach { expense ->
+                ExpenseItem(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id, navController)
+            }
         }
     }
 }

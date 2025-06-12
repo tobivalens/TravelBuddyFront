@@ -77,6 +77,7 @@ fun VisualizeEventScreenAdmin(
     val description = event?.descripcion?: "Sin descripcion"
     val startDate = event?.fecha_inicio?: "Sin fecha"
     val endDate = event?.fecha_fin?: "Sin fecha"
+    val unionCode = event?.codigo_union?: "Sin codigo."
 
     Scaffold(
         topBar = {
@@ -130,8 +131,8 @@ fun VisualizeEventScreenAdmin(
                 onTabSelected = { index ->
                     selectedTab = index
                     when (index) {
-                        0 -> navController.navigate("VisualizeEvent")
-                        1 -> navController.navigate("gastos")
+                        0 -> navController.navigate("VisualizeEvent/$eventId")
+                        1 -> navController.navigate("gastos/$eventId")
                         2 -> navController.navigate("VisualizeActivities/$eventId"){
                             launchSingleTop = true
                             popUpTo("VisualizeEvent/$eventId") { inclusive = false }
@@ -195,7 +196,7 @@ fun VisualizeEventScreenAdmin(
                 modifier = Modifier.fillMaxWidth(),
                 border = BorderStroke(1.dp, Color(0xFFA38AFB))
             ) {
-                Text("+ Añadir participante", color = Color(0xFFA38AFB))
+                Text("Codigo de union: $unionCode", color = Color(0xFFA38AFB))
             }
 
             Spacer(Modifier.height(24.dp))

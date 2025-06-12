@@ -72,6 +72,7 @@ fun VisualizeEventScreen(
     val description = event?.descripcion?: "Sin descripcion"
     val startDate = event?.fecha_inicio?: "Sin fecha"
     val endDate = event?.fecha_fin?: "Sin fecha"
+    val unionCode = event?.codigo_union?: "Sin codigo"
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -192,7 +193,7 @@ fun VisualizeEventScreen(
                 modifier = Modifier.fillMaxWidth(),
                 border = BorderStroke(1.dp, Color(0xFFA38AFB))
             ) {
-                Text("+ Código de Evento", color = Color(0xFFA38AFB))
+                Text("Código de Evento: $unionCode", color = Color(0xFFA38AFB))
             }
 
             Spacer(Modifier.height(24.dp))

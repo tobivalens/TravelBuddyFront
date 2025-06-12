@@ -1,5 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,26 +34,47 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.travelbuddyapp.ui.theme.SaralaFont
+import com.example.travelbuddyapp.viewmodel.EventViewModel
+import com.example.travelbuddyapp.viewmodel.ExpenseViewModel
 
 
 @Composable
-fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: String,onBackClick: () -> Unit,
+fun BalanceScreen(eventId: Int,
+                  onBackClick: () -> Unit,
                   onHomeClick: () -> Unit,
                   onAddClick: () -> Unit,
-                  onProfileClick: () -> Unit) {
+                  onProfileClick: () -> Unit,
+                  navController: NavController){
+
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val purpleColor = Color(0xFFA181FA)
     val whiteBackground = Color(0xFFFFFFFF)
     val textColor = Color(0xFF52545B)
-    val generalExpensesString= "$ "+generalExpenses
-    val personalExpensesString= "$ "+personalExpense
+    val eventViewModel: EventViewModel = viewModel()
+    val event by eventViewModel.currentEvent
+    val expenseViewModel: ExpenseViewModel = viewModel()
+    val expenses by expenseViewModel.expenses
+    val total by expenseViewModel.total
+    val totalUser by expenseViewModel.userEventTotal
+
+    LaunchedEffect(eventId) {
+        eventViewModel.getEventById(eventId)
+        expenseViewModel.loadExpenses(eventId)
+        expenseViewModel.loadUserExpensesInEvent(eventId)
+    }
+
+
+    val eventTitle = event?.nombre?: "Sin nombre"
+
 
 
     Scaffold(
         topBar = {
-            TopAppBarComponent(eventTitle = travelName,onBackClick)
+            TopAppBarComponent(eventTitle = eventTitle,onBackClick)
 
         },
         bottomBar = {
@@ -95,7 +119,7 @@ fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: St
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    generalExpensesString,
+                    "$ $total",
                     fontSize = 32.sp,
                     fontFamily = SaralaFont,
                     color = textColor,
@@ -114,7 +138,7 @@ fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: St
                 fontWeight = FontWeight.Bold,
                 fontFamily = SaralaFont
             )
-            Text(personalExpensesString, color = textColor, fontFamily = SaralaFont)
+            Text("$ $totalUser", color = textColor, fontFamily = SaralaFont)
 
             Spacer(Modifier.height(24.dp))
 
@@ -125,7 +149,7 @@ fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: St
             ) {
                 Text("Historial de Gastos", color = purpleColor, fontWeight = FontWeight.Bold, fontFamily = SaralaFont)
                 Button(
-                    onClick = { /* Navegar a añadir gasto */ },
+                    onClick = { navController.navigate("addExpense/${eventId}") },
                     colors = ButtonDefaults.buttonColors(containerColor = purpleColor),
                     shape = RoundedCornerShape(20.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
@@ -135,36 +159,56 @@ fun BalanceScreen(generalExpenses: Double,personalExpense: Double,travelName: St
             }
 
             Spacer(Modifier.height(16.dp))
-            //pruebas quemadas
-            ExpenseItem("Hospedaje", "$30,000")
-            ExpenseItem("Comida", "$10,000")
-            ExpenseItem("Pasajes", "$6,097")
-            ExpenseItem("Chimbo", "$6,097")
+
+            expenses.forEach { expense ->
+                Log.e("ID_GASTO", expense.id_gasto.toString())
+                ExpenseItem(expenseId = expense.id_gasto, description = expense.descripcion, amount = "$ ${expense.monto}", debtorId = expense.deudor_id, navController)
+            }
+
         }
     }
 }
 
 @Composable
-fun ExpenseItem(name: String, amount: String) {
+fun ExpenseItem(
+    expenseId: Int,
+    description: String,
+    amount: String,
+    debtorId: Int,
+    navController: NavController
+) {
     val lightGray = Color(0xFFCBC7C7)
-
-    Row(
+    Log.e("ExpenseID - ExpenseItem ", expenseId.toString())
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .clickable { navController.navigate("editExpense/${expenseId}") }
+            .padding(vertical = 12.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.AttachMoney, contentDescription = null, tint = lightGray)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(name, fontSize = 16.sp, color = lightGray, fontFamily = SaralaFont)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.AttachMoney, contentDescription = null, tint = lightGray)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(description, fontSize = 16.sp, color = lightGray, fontFamily = SaralaFont)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(amount, fontSize = 16.sp, color = lightGray, fontFamily = SaralaFont)
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(Icons.Default.MoreVert, contentDescription = null, tint = lightGray)
+            }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(amount, fontSize = 16.sp, color = lightGray,fontFamily = SaralaFont)
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(Icons.Default.MoreVert, contentDescription = null, tint = lightGray)
-        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            "Asignado al participante con ID = $debtorId",
+            fontSize = 14.sp,
+            color = lightGray,
+            fontFamily = SaralaFont
+        )
+        HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
     }
-    HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
 }
+

@@ -94,9 +94,14 @@ CREATE TABLE ParticipanteEvento (
 
 CREATE TABLE Gasto (
     id_gasto SERIAL PRIMARY KEY,
-    id_evento INTEGER NOT NULL REFERENCES Evento(id_evento) ON DELETE CASCADE,
-    nombre VARCHAR(100) NOT NULL,
-    valor NUMERIC(10,2) NOT NULL
+    id_evento INTEGER NOT NULL,
+    deudor_id INTEGER NOT NULL,
+    acreedor_id INTEGER NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL,
+    descripcion VARCHAR(255),
+    FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
+    FOREIGN KEY (deudor_id) REFERENCES travel_buddy_user(id_usuario),
+    FOREIGN KEY (acreedor_id) REFERENCES travel_buddy_user(id_usuario)
 );
 
 
@@ -112,9 +117,6 @@ INSERT INTO Evento (nombre, descripcion, codigo_union, id_administrador) VALUES
 -- ============================
 -- Insertar datos de prueba para gastos
 -- ============================
-
-INSERT INTO Gasto (id_gasto, id_evento, nombre, valor) VALUES
-(111, 1,'name gasto 1',  1);
 
 INSERT INTO Actividad (id_evento, nombre, descripcion) VALUES
 (1, 'Actividad 1 Evento 1', 'Descripción actividad 1'),
@@ -191,6 +193,12 @@ INSERT INTO directus_permissions (collection, action, fields, policy, permission
 ('participanteevento', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
 ('participanteevento', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
 ('participanteevento', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
+
+INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
+('gasto', 'create', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'update', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}'),
+('gasto', 'delete', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
 
 INSERT INTO directus_permissions (collection, action, fields, policy, permissions, validation) VALUES
 ('travel_buddy_user', 'read', '*', 'd2b33d94-2f31-4d49-bc62-2afea76fc59e', '{}', '{}');
