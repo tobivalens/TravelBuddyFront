@@ -17,9 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -36,6 +38,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -171,24 +174,33 @@ fun LoginScreen(
 
                     )
 
+                    var passwordVisible by remember { mutableStateOf(false) }
+
                     TextField(
                         value = password.value,
-                        onValueChange = {password.value = it},
-                        placeholder = { Text("Contraseña",
-                            fontFamily = SaralaFont,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFFCBC7C7)
-                        ) },
+                        onValueChange = { password.value = it },
+                        placeholder = {
+                            Text(
+                                "Contraseña",
+                                fontFamily = SaralaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFFCBC7C7)
+                            )
+                        },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null)
                         },
                         trailingIcon = {
-                            Icon(Icons.Default.Visibility, contentDescription = null)
+                            val image = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                            val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, contentDescription = description)
+                            }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(40.dp),
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
@@ -197,7 +209,6 @@ fun LoginScreen(
                             unfocusedContainerColor = Color(0xFFFFFFFB),
                             disabledContainerColor = Color(0xFFFFFFFB)
                         )
-
                     )
 
                     Text(
