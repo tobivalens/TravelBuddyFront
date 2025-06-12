@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.travelbuddyapp.R
 import com.example.travelbuddyapp.ui.theme.SaralaFont
 import com.example.travelbuddyapp.viewmodel.EventViewModel
@@ -57,7 +58,6 @@ fun VisualizeEventScreen(
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
-    var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Evento", "Gastos", "Actividades")
     val viewModel: EventViewModel = viewModel()
     val event by viewModel.currentEvent
@@ -72,6 +72,16 @@ fun VisualizeEventScreen(
     val description = event?.descripcion?: "Sin descripcion"
     val startDate = event?.fecha_inicio?: "Sin fecha"
     val endDate = event?.fecha_fin?: "Sin fecha"
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedTab = when {
+        currentRoute?.startsWith("VisualizeEvent") == true -> 0
+        currentRoute == "gastosUser" -> 1
+        currentRoute?.startsWith("VisualizeActivities") == true -> 2
+        else -> 0 // default
+    }
 
 
     Scaffold(
@@ -115,8 +125,15 @@ fun VisualizeEventScreen(
             CustomTabBar(
                 tabs = tabs,
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { index ->
+                    when (tabs[index]) {
+                        "Evento" -> navController.navigate("VisualizeEvent/1")
+                        "Gastos" -> navController.navigate("gastosUser")
+                        "Actividades" -> navController.navigate("VisualizeActivities/1")
+                    }
+                }
             )
+
 
             Spacer(Modifier.height(16.dp))
 

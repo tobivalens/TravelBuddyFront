@@ -1,6 +1,7 @@
 package com.example.travelbuddyapp.resources.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -104,28 +106,32 @@ fun UserProfile(
                         // Opción 1: Editar perfil
                         OptionRow(
                             icon = Icons.Default.Edit,
-                            text = "Editar Perfil"
+                            text = "Editar Perfil",
+                            onClick = { navController.navigate("editProfile") }
                         )
                         Divider(color = Color(0xFFA181FA))
 
                         // Opción 2: Mis Gastos
                         OptionRow(
                             icon = Icons.Default.AttachMoney,
-                            text = "Mis Gastos"
+                            text = "Mis Gastos",
+                            onClick = { navController.navigate("userExpenses") }
                         )
                         Divider(color = Color(0xFFA181FA))
 
                         // Opción 3: Configuración
                         OptionRow(
                             icon = Icons.Default.Settings,
-                            text = "Configuración"
+                            text = "Configuración",
+                            onClick = { navController.navigate("settings") }
                         )
-                        Divider(color = Color(0xFFA181FA))
+                        HorizontalDivider(color = Color(0xFFA181FA))
 
                         // Opción 4: Cerrar sesión
                         OptionRow(
                             icon = Icons.Default.ExitToApp,
-                            text = "Cerrar Sesión"
+                            text = "Cerrar Sesión",
+                            onClick = { navController.navigate("loginScreen") }
                         )
                     }
                 }
@@ -135,13 +141,15 @@ fun UserProfile(
 }
 
 @Composable
-fun OptionRow(icon: ImageVector, text: String) {
+fun OptionRow(icon: ImageVector, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

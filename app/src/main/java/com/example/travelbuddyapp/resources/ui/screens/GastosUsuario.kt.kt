@@ -30,7 +30,6 @@ data class Viaje(val nombre: String, val gastos: List<Gasto>)
 @Composable
 fun PantallaGastosUsuario(
     navController: NavController,
-    onBack: () -> Unit
 ) {
     // Tus datos reales:
     val viajes = listOf(
@@ -66,7 +65,7 @@ fun PantallaGastosUsuario(
                 .background(PurpleHeader)
                 .padding(16.dp)
         ) {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = {navController.popBackStack()}) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
             }
             Spacer(Modifier.width(8.dp))
