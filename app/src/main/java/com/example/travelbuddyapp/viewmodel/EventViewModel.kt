@@ -16,6 +16,10 @@ class EventViewModel(
 
     private val _events = mutableStateOf<List<EventResponse>>(emptyList())
     val events: State<List<EventResponse>> = _events
+    private val _ownedEvents = mutableStateOf<List<EventResponse>>(emptyList())
+    val ownedEvents: State<List<EventResponse>> = _ownedEvents
+    private val _partEvents = mutableStateOf<List<EventResponse>>(emptyList())
+    val partEvents: State<List<EventResponse>> = _partEvents
     private val _currentEvent = mutableStateOf<EventResponse?>(null)
     val currentEvent: State<EventResponse?> = _currentEvent
     private val _participants = mutableStateOf<List<String>>(emptyList())
@@ -61,8 +65,40 @@ class EventViewModel(
 
     fun getAllEvents() {
         viewModelScope.launch(Dispatchers.IO) {
+
             val response = eventRepository.getAllEvents()
-            _events.value = response!!
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _events.value = response
+            }
+
+
+        }
+    }
+
+    fun getOwnedEvents(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val response = eventRepository.getOwnedEvents()
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _ownedEvents.value = response
+            }
+        }
+    }
+
+    fun getParticipatedEvents(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val response = eventRepository.getParticipatedEvents()
+            if(response.isNullOrEmpty()){
+                Log.e("Error: ", response.toString())
+            }else{
+                _partEvents.value = response
+            }
+
 
         }
     }

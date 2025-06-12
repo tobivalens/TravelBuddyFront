@@ -49,6 +49,8 @@ import com.example.travelbuddyapp.resources.ui.screens.EditActivityScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditExpensesScreen
 import com.example.travelbuddyapp.resources.ui.screens.EditProfileScreen
+import com.example.travelbuddyapp.resources.ui.screens.HomeScreenMT
+import com.example.travelbuddyapp.resources.ui.screens.HomeScreenOT
 import com.example.travelbuddyapp.resources.ui.screens.JoinEventScreen
 import com.example.travelbuddyapp.resources.ui.screens.LoginScreen
 import com.example.travelbuddyapp.resources.ui.screens.OptionAddScreen
@@ -241,22 +243,56 @@ fun AppNavigator() {
                 navController,
                 userName = username ?: "Invitado",
                 tabs = listOf("Todos", "Mis Viajes", "Otros"),
-                travels = listOf(
-                    TravelItem(
-                        id = "montaña",
-                        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg",
-                        title = "Viaje a montaña",
-                        description = "Un gran viaje a la montaña"
-                    )
-                ),
                 selectedTab = 0,
                 onTabSelected = { idx ->
                     var selectedTab = idx
+                    when(idx){
+                        0 -> navController.navigate("home")
+                        1 -> navController.navigate("homeMT")
+                        2 -> navController.navigate("homeOT")
+                    }
                 },
                 onSearchClick = {
                     navController.navigate("home")
+                }
+            )
+        }
+        composable("homeMT") {
+            HomeScreenMT(
+                navController,
+                userName = username ?: "Invitado",
+                tabs = listOf("Todos", "Mis Viajes", "Otros"),
+                selectedTab = 0,
+                onTabSelected = { idx ->
+                    var selectedTab = idx
+                    when(idx){
+                        0 -> navController.navigate("home")
+                        1 -> navController.navigate("homeMT")
+                        2 -> navController.navigate("homeOT")
+                    }
                 },
-                onTravelClick = {},
+                onSearchClick = {
+                    navController.navigate("home")
+                }
+            )
+        }
+        composable("homeOT") {
+            HomeScreenOT(
+                navController,
+                userName = username ?: "Invitado",
+                tabs = listOf("Todos", "Mis Viajes", "Otros"),
+                selectedTab = 0,
+                onTabSelected = { idx ->
+                    var selectedTab = idx
+                    when(idx){
+                        0 -> navController.navigate("home")
+                        1 -> navController.navigate("homeMT")
+                        2 -> navController.navigate("homeOT")
+                    }
+                },
+                onSearchClick = {
+                    navController.navigate("home")
+                }
             )
         }
         composable("createEvent") {

@@ -45,11 +45,9 @@ fun HomeScreen(
     navController: NavController,
     userName: String,
     tabs: List<String> = listOf("Todos", "Mis Viajes", "Otros"),
-    travels: List<TravelItem>,
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     onSearchClick: () -> Unit,
-    onTravelClick: (EventResponse) -> Unit,
 ) {
 
     val coroutineScope = rememberCoroutineScope()

@@ -92,6 +92,41 @@ class EventsRepository(
         return (adminEvents + participantEvents).distinctBy { it.id_evento }
     }
 
+    suspend fun getParticipatedEvents(): List<EventResponse>? {
+
+        val token = auxRepository.getAccessToken()
+        val userId = auxRepository.getUserId()?.toIntOrNull() ?: return null
+
+        val participationsResponse = eventService.getUserParticipations("Bearer $token", userId)
+        val participationData = participationsResponse.body()?.data ?: emptyList()
+
+        val eventResponse = eventService.getAllEvents("Bearer $token")
+        if (!eventResponse.isSuccessful) return null
+
+        val allEvents = eventResponse.body()?.data ?: emptyList()
+
+        val participantEventIds = participationData.map { it.idEvento }
+        val participantEvents = allEvents.filter { it.id_evento in participantEventIds }
+
+        return participantEvents
+    }
+
+    suspend fun getOwnedEvents(): List<EventResponse>?{
+
+        val token = auxRepository.getAccessToken()
+        val userId = auxRepository.getUserId()?.toIntOrNull() ?: return null
+
+        val eventResponse = eventService.getAllEvents("Bearer $token")
+        if (!eventResponse.isSuccessful) return null
+
+        val allEvents = eventResponse.body()?.data ?: emptyList()
+
+        val adminEvents = allEvents.filter { it.id_administrador == userId }
+
+        return adminEvents
+
+    }
+
 
 
 
