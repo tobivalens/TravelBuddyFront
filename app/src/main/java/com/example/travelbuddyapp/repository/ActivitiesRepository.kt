@@ -30,18 +30,19 @@ class ActivitiesRepository(
 
     }
 
-    suspend fun createActivity(id_evento: Int, activityName: String, activityDescription: String, startDate: String, time: String, location: String): Boolean{
+    suspend fun createActivity(id_evento: Int, activityName: String, activityDescription: String, startDate: String, time: String, location: String, id_imagen:String?): Boolean{
         val token = auxRepository.getAccessToken()
         val response =
             activitiesService.createActivity("Bearer $token", ActivityData(
-            id_evento,
-            activityName,
-            activityDescription,
-            startDate,
-            time,
-            location
-        )
-        )
+                id_evento,
+                activityName,
+                activityDescription,
+                startDate,
+                time,
+                location,
+                id_imagen
+            )
+            )
 
         return response.isSuccessful
 
@@ -50,9 +51,9 @@ class ActivitiesRepository(
         val token = auxRepository.getAccessToken()
         val response =
             activitiesService.editActivity("Bearer $token",
-            id,
-            EditActivityData(newName, newDesc, newDate, newTime, newLoc)
-        )
+                id,
+                EditActivityData(newName, newDesc, newDate, newTime, newLoc)
+            )
 
         return response.isSuccessful
     }

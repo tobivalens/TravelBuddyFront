@@ -7,7 +7,8 @@ data class ActivityData(
     val descripcion: String,
     val fecha_actividad: String,
     val hora_actividad: String,
-    val ubicacion: String
+    val ubicacion: String,
+    val id_imagen: String?=null
 
 )
 

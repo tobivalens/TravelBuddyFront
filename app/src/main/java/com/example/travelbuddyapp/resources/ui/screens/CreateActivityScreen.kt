@@ -68,6 +68,7 @@ fun CreateActivityScreen(
 ) {
     val viewModelImage: ImagesViewModel = viewModel()
     val urlImage by viewModelImage.urlImage.collectAsState()
+    val imageId by viewModelImage.imageId.collectAsState()
 
 
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -215,13 +216,17 @@ fun CreateActivityScreen(
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(
-                onClick = {viewModel.createActivity(
-                    eventId,
-                    title,
-                    description,
-                    date,
-                    time,
-                    location
+                onClick = {
+                    val imageIdToSend = viewModelImage.imageId.value ?: ""
+
+                    viewModel.createActivity(
+                        eventId,
+                        title,
+                        description,
+                        date,
+                        time,
+                        location,
+                        imageIdToSend
                     )},
                 modifier = Modifier
                     .fillMaxWidth()

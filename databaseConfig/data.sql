@@ -63,6 +63,7 @@ CREATE TABLE Evento (
 -- ============================
 -- Tabla Actividad
 -- ============================
+DROP TABLE IF EXISTS Actividad;
 
 CREATE TABLE Actividad (
     id_actividad SERIAL PRIMARY KEY,
@@ -72,9 +73,10 @@ CREATE TABLE Actividad (
     fecha_actividad DATE,
     hora_actividad VARCHAR(10),
     ubicacion VARCHAR(255),
-    id_imagen INTEGER,
-    FOREIGN KEY (id_imagen) REFERENCES Imagen(id_imagen)
+    id_imagen UUID,
+    FOREIGN KEY (id_imagen) REFERENCES directus_files(id)
 );
+
 
 -- ============================
 -- Tabla ParticipanteEvento

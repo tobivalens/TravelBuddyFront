@@ -9,13 +9,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelbuddyapp.config.RetrofitConfig
 import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
+import com.example.travelbuddyapp.datasource.DTOS.ActivityData
 import com.example.travelbuddyapp.datasource.local.FileDataSource
 import com.example.travelbuddyapp.datasource.local.FileUpdateRequest
 import com.example.travelbuddyapp.datasource.local.LocalDataSourceProvider
 import com.example.travelbuddyapp.datasource.local.LocalDataStore
 import com.example.travelbuddyapp.repository.ActivitiesRepository
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -47,7 +50,26 @@ class ActivityViewModel(
         }
     }
 
-    fun createActivity(eventId: Int, activityName:String, description:String, startDate: String, time: String, location: String ){
+    fun createActivity(eventId: Int, activityName:String,
+                       description:String,
+                       startDate: String, time: String,
+                       location: String, image_id : String? ){
+
+
+
+
+        val activityData = ActivityData(
+            id_evento = eventId,
+            nombre = activityName,
+            descripcion = description,
+            fecha_actividad = startDate,
+            hora_actividad = time,
+            ubicacion = location,
+            id_imagen = image_id // null si no hay imagen
+        )
+
+        val json = Gson().toJson(activityData)
+        Log.e("JSON_ACTIVIDAD", json)
         viewModelScope.launch(Dispatchers.IO){
             _createFlag.value =
                 activityRepository.createActivity(
@@ -56,7 +78,8 @@ class ActivityViewModel(
                 description,
                 startDate,
                 time,
-                location
+                location,
+                    if (image_id.isNullOrBlank()) null else image_id
             )
         }
     }
@@ -97,13 +120,20 @@ class ActivityViewModel(
 class ImagesViewModel(
     val imagenActividad: ImagesRepository = ImagesRepository()
 ) : ViewModel() {
-    var urlImage =
-        MutableStateFlow("https://raw.githubusercontent.com/Domiciano/AppMoviles251/refs/heads/main/res/images/Lab4Cover.png")
+
+    var urlImage = MutableStateFlow(
+        "https://raw.githubusercontent.com/Domiciano/AppMoviles251/refs/heads/main/res/images/Lab4Cover.png"
+    )
+
+    // ✅ ID real que necesitas para asociar la imagen en Directus
+    private val _imageId = MutableStateFlow<String?>(null)
+    val imageId: StateFlow<String?> = _imageId
 
     fun uploadImage(image: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             imagenActividad.uploadImage(image)?.let { imageId ->
-                urlImage.value = "https://1347-2800-e2-4b80-1136-9c89-da5f-59fd-c461.ngrok-free.app/assets/$imageId"
+                _imageId.value = imageId  // ✅ guarda el id
+                urlImage.value = " https://7c13-2800-e2-4b80-1136-59bf-5cb6-323c-27b6.ngrok-free.app/assets/$imageId"
             }
         }
     }
