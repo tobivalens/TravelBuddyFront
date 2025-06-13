@@ -1,13 +1,22 @@
 package com.example.travelbuddyapp.viewmodel
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelbuddyapp.config.RetrofitConfig
 import com.example.travelbuddyapp.datasource.DTOS.ActivityDTO
+import com.example.travelbuddyapp.datasource.local.FileDataSource
+import com.example.travelbuddyapp.datasource.local.FileUpdateRequest
+import com.example.travelbuddyapp.datasource.local.LocalDataSourceProvider
+import com.example.travelbuddyapp.datasource.local.LocalDataStore
 import com.example.travelbuddyapp.repository.ActivitiesRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ActivityViewModel(
@@ -78,4 +87,56 @@ class ActivityViewModel(
             activityRepository.deleteActivity(id)
         }
     }
+}
+
+
+
+///////////////
+
+
+class ImagesViewModel(
+    val imagenActividad: ImagesRepository = ImagesRepository()
+) : ViewModel() {
+    var urlImage =
+        MutableStateFlow("https://raw.githubusercontent.com/Domiciano/AppMoviles251/refs/heads/main/res/images/Lab4Cover.png")
+
+    fun uploadImage(image: Uri) {
+        viewModelScope.launch(Dispatchers.IO) {
+            imagenActividad.uploadImage(image)?.let { imageId ->
+                urlImage.value = "https://1347-2800-e2-4b80-1136-9c89-da5f-59fd-c461.ngrok-free.app/assets/$imageId"
+            }
+        }
+    }
+}
+
+class ImagesRepository(
+    val fileDataSource: FileDataSource = RetrofitConfig.directusRetrofit.create(
+        FileDataSource::class.java
+    )
+) {
+    suspend fun uploadImage(image: Uri):String? {
+        //Uri -> Multipart.Body
+        val mp = MultipartProvider.get().prepareMultipartFromUri(image);
+        val localDataSource: LocalDataStore = LocalDataSourceProvider.get()
+        val token = localDataSource.load("accesstoken").first()
+        val response = fileDataSource.uploadFile("Bearer $token", mp)
+        response.body()?.let {
+            Log.e(">>>", it.data.id)
+            val response = fileDataSource.updateFileMetadata(
+                "Bearer $token",
+                it.data.id,
+                FileUpdateRequest(
+                    it.data.id,
+                    it.data.id
+                )
+            )
+            Log.e(">>>", response.code().toString())
+            if(response.code() == 200){
+                return it.data.id
+            }
+
+        }
+        return null
+    }
+
 }

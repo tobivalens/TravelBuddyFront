@@ -1,5 +1,9 @@
 package com.example.travelbuddyapp.resources.ui.screens
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.travelbuddyapp.viewmodel.ActivityViewModel
+import com.example.travelbuddyapp.viewmodel.ImagesViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,8 +63,19 @@ import java.util.Locale
 fun CreateActivityScreen(
     eventId: Int,
     onBack: () -> Unit,
-    navController: NavController
+    navController: NavController,
+
 ) {
+    val viewModelImage: ImagesViewModel = viewModel()
+    val urlImage by viewModelImage.urlImage.collectAsState()
+
+
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        //Se ejecuta cuando el user selcciona un foto de la galeria
+        uri?.let {  viewModelImage.uploadImage(it) }
+    }
 
     val viewModel: ActivityViewModel = viewModel()
     val scrollState = rememberScrollState()
@@ -171,13 +188,29 @@ fun CreateActivityScreen(
                 { location = it },
                 "¿Dónde se va a realizar la actividad?"
             )
-            LabeledField(
-                "Foto",
-                photo,
-                Icons.Default.Image,
-                { photo = it },
-                "Añade una foto del evento (opcional)"
-            )
+            Button(
+                onClick = { pickImageLauncher.launch("image/*") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA181FA)),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Añadir una foto del evento (opcional)",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -226,7 +259,7 @@ fun CreateActivityScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun LabeledField(
     label: String,
@@ -287,6 +320,76 @@ fun LabeledField(
                 Text(
                     text = placeholder,
                     color = Color(0xFFCBC7C7) // ← Color del placeholder aquí
+                )
+            }
+        )
+    }
+}
+
+
+@Composable
+fun LabeledField2(
+    label: String,
+    value: String,
+    icon: ImageVector,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    onClick: () -> Unit = {} // ← Agregado
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color(0xFFA181FA),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = {}, // ← Desactivamos la edición directa
+            modifier = Modifier
+                .width(380.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x0F000000),
+                    ambientColor = Color(0x0F000000)
+                )
+                .clickable { onClick() }, // ← Aquí se dispara la acción
+            leadingIcon = {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Color(0xFFA181FA)
+                )
+            },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 16.sp
+            ),
+            shape = RoundedCornerShape(55.dp),
+            readOnly = true, // ← También marca el campo como solo lectura
+            singleLine = false,
+            maxLines = 6,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFA181FA),
+                unfocusedBorderColor = Color(0xFFD3D3D3),
+                focusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedLeadingIconColor = Color(0xFFA181FA),
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                disabledTextColor = Color.Gray,
+                cursorColor = Color(0xFFA181FA),
+                focusedContainerColor = Color(0xFFFFFBFB),
+                unfocusedContainerColor = Color(0xFFFFFBFB),
+            ),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Color(0xFFCBC7C7)
                 )
             }
         )
