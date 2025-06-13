@@ -38,3 +38,19 @@ La politica Manage Events es aquella que contiene los permisos CRUD necesarios s
 Se buscó e intentó de todas las maneras el asignar la politica Manage Events al rol Usuario de manera automática en el archivo data.sql, sin embargo, no se logró. Ninguna de las tablas como directus_permissions o directus_policies contiene una columna "role; la tabla directus_roles no ofrece una columna "policy"; tampoco se encontró una tabala pivote. 
 
 Por tanto, la asignación de la politica se debe hacer de forma manual en el panel administrativo de Directus.
+
+# Sprint 3.
+
+## Objetivos.
+
+El objetivo principal de este sprint es el de añadir tanto las funcionalidades CRUD para gastos, asi como la posibilidad de unirse a otros eventos por medio de un codigo y subir imagenes a los eventos y actividades. Por tanto, en la aplicación final se encontrarán las siguientes funcionalidades.
+
+- Creación, visualización, edición y eliminación de eventos, actividades y gastos.
+- Una pantalla "Mis gastos", donde el usuario puede ver listados los gastos que tiene asignados y la totalidad que debe.
+- Opcion para unirse a eventos, donde deberá ingresar el codigo de union proporcionado por el administrador del evento u otros participantes.
+- Se muestran tanto los eventos que el usuario coordina como en los que participa. En la pantalla principal puede seleccionar si quiere ver solo los eventos que coordina o solo los eventos en los que participa.
+
+### Politica Manage Events.
+
+La politica Manage Events cuenta con los permisos necesarios para el correcto funcionamiento de la aplicación. Esta aun debe asignarse manualmente desde el panel administrativo de Directus.
+  
